@@ -99,6 +99,8 @@ wWinMain(
 
     while(running) {
 
+        brewpanel_core_update_and_render(brewpanel_state);
+
         brewpanel_win32_process_pending_messages(window_handle);
         SwapBuffers(device_context);
     }
