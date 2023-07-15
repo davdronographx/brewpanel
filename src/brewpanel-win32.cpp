@@ -5,6 +5,8 @@
 #include "brewpanel-platform-api.hpp"
 #include "brewpanel-core.cpp"
 
+global bool running;
+
 internal void
 brewpanel_win32_process_pending_messages(
     HWND window_handle) {
@@ -29,6 +31,34 @@ brewpanel_win32_callback(
     LPARAM l_param) {
 
     switch (message) {
+
+        case WM_SIZE: {
+
+            RECT window_rect   = {0};
+
+
+            //size the window
+            window_rect.top    = 0;
+            window_rect.left   = 0;
+            window_rect.bottom = BREW_PANEL_HEIGHT_PIXELS;
+            window_rect.right  = BREW_PANEL_WIDTH_PIXELS;
+            SetWindowPos(
+                    window_handle, 
+                    NULL, 
+                    window_rect.left,
+                    window_rect.top,
+                    window_rect.right,
+                    window_rect.bottom,
+                            SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+
+
+        } break;
+
+        //window close
+        case WM_CLOSE:
+        case WM_DESTROY: {
+            running = false;
+        } break;
 
         default: {
             return DefWindowProc(window_handle,message,w_param,l_param);
@@ -61,10 +91,12 @@ wWinMain(
     PWSTR pw_str,
     s32 cmd_show) {
     
+    //create the api
     platform_api = {0};
     platform_api.memory_allocate = brewpanel_win32_allocate_memory;
     platform_api.memory_free     = brewpanel_win32_free_memory;
 
+    //open the window
     WNDCLASS window_class      = {0};
     window_class.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
     window_class.lpfnWndProc   = (WNDPROC)brewpanel_win32_callback;
@@ -77,7 +109,7 @@ wWinMain(
         0,
         window_class.lpszClassName,
         "BrewPanel",
-        WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_MAXIMIZE,
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -89,10 +121,12 @@ wWinMain(
 
     brewpanel_assert(window_handle);
 
+ 
+
+
     HDC device_context = GetDC(window_handle);
 
-    bool running = true;
-
+    running = true;
     
     brewpanel_core_init();
     brewpanel_assert(brewpanel_state != NULL);
