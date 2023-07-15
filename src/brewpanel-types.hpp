@@ -24,7 +24,7 @@ typedef uint64_t u64;
 typedef void* mem_data;
 typedef u8    mem_byte;
 
-typedef struct RGBAPixel {
+struct RGBAPixel {
     u8 red;
     u8 green;
     u8 blue;
