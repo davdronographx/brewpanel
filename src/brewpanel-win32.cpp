@@ -22,7 +22,6 @@ brewpanel_win32_process_pending_messages(
         }
     }
 }
-
 LRESULT CALLBACK
 brewpanel_win32_callback(
     HWND window_handle,
@@ -34,14 +33,21 @@ brewpanel_win32_callback(
 
         case WM_SIZE: {
 
-            RECT window_rect   = {0};
+            //get the screen dimensions
+            u32 screen_width  = GetSystemMetrics(SM_CXSCREEN);
+            u32 screen_height = GetSystemMetrics(SM_CYSCREEN);
 
+            u32 x_offset = (screen_width / 2) - (BREW_PANEL_WIDTH_PIXELS / 2); 
+            u32 y_offset = (screen_height / 2) - (BREW_PANEL_HEIGHT_PIXELS / 2); 
 
             //size the window
-            window_rect.top    = 0;
-            window_rect.left   = 0;
+            RECT window_rect   = {0};
+            window_rect.top    = y_offset;
+            window_rect.left   = x_offset;
             window_rect.bottom = BREW_PANEL_HEIGHT_PIXELS;
             window_rect.right  = BREW_PANEL_WIDTH_PIXELS;
+            
+            //set window position
             SetWindowPos(
                     window_handle, 
                     NULL, 
