@@ -5,20 +5,17 @@
 #include "brewpanel-memory.hpp"
 #include "brewpanel-memory.cpp"
 
-internal BrewPanelState*
-brewpanel_core_create_state() {
+internal void
+brewpanel_core_init() {
 
     BrewPanelMemory memory = brewpanel_memory_create();
     
-    BrewPanelState* brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
+    brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
     brewpanel_state->memory = memory;
-
-    return(brewpanel_state);
 }
 
 internal void
-brewpanel_core_update_and_render(
-    BrewPanelState* brewpanel_state) {
+brewpanel_core_update_and_render() {
 
     for (
         u32 pixel_index = 0;

@@ -93,13 +93,14 @@ wWinMain(
 
     bool running = true;
 
-    BrewPanelState* brewpanel_state = brewpanel_core_create_state();
+    
+    brewpanel_core_init();
     brewpanel_assert(brewpanel_state != NULL);
 
 
     while(running) {
 
-        brewpanel_core_update_and_render(brewpanel_state);
+        brewpanel_core_update_and_render();
 
         brewpanel_win32_process_pending_messages(window_handle);
         SwapBuffers(device_context);

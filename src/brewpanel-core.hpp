@@ -17,4 +17,6 @@ struct BrewPanelState{
     BrewPanelBackBuffer back_buffer;
 };
 
+global BrewPanelState* brewpanel_state;
+
 #endif //BREWPANEL_CORE_HPP
