@@ -2,6 +2,7 @@
 
 #include "brewpanel-types.hpp"
 #include "brewpanel-core.hpp"
+#include "brewpanel-images.hpp"
 #include "brewpanel-memory.hpp"
 #include "brewpanel-memory.cpp"
 
@@ -27,7 +28,6 @@ brewpanel_core_update_and_render() {
         } else {
             brewpanel_state->back_buffer.pixels[pixel_index].red += 1;
         }
-
 
         brewpanel_state->back_buffer.pixels[pixel_index].green = 0x00; 
         brewpanel_state->back_buffer.pixels[pixel_index].blue  = 0xFF; 

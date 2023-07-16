@@ -3,6 +3,7 @@
 
 #include "brewpanel-types.hpp"
 #include "brewpanel-platform-api.hpp"
+#include "brewpanel-win32-api.cpp"
 #include "brewpanel-core.cpp"
 
 global bool running;
@@ -14,7 +15,6 @@ global HBITMAP    bitmap_handle;
 global BITMAPINFO bitmap_info;
 global HDC        paint_context;
 global RECT       client_rect;
-
 
 internal void
 brewpanel_win32_draw_bitmap() {
@@ -169,22 +169,6 @@ brewpanel_win32_callback(
     return(0);
 }
 
-internal mem_data
-brewpanel_win32_allocate_memory(
-    u64 size) {
-
-    mem_data memory = VirtualAlloc(0,size,MEM_COMMIT,PAGE_READWRITE);
-    return(memory);
-}
-
-internal void
-brewpanel_win32_free_memory(
-    u64      size,
-    mem_data memory) {
-    
-    VirtualFree(memory,size,MEM_RELEASE);
-}
-
 s32 WINAPI 
 wWinMain(
     HINSTANCE instance,
@@ -194,8 +178,12 @@ wWinMain(
     
     //create the api
     platform_api = {0};
-    platform_api.memory_allocate = brewpanel_win32_allocate_memory;
-    platform_api.memory_free     = brewpanel_win32_free_memory;
+    platform_api.memory_allocate            = brewpanel_win32_allocate_memory;
+    platform_api.memory_free                = brewpanel_win32_free_memory;
+    platform_api.file_get_read_write_handle = brewpanel_win32_get_read_write_file_handle;
+    platform_api.file_get_size              = brewpanel_win32_get_file_size;
+    platform_api.file_create                = brewpanel_win32_create_file;
+    platform_api.file_close                 = brewpanel_win32_close_file;
 
     //open the window
     WNDCLASS window_class      = {0};

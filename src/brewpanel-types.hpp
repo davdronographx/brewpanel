@@ -24,6 +24,10 @@ typedef uint64_t u64;
 typedef void* mem_data;
 typedef u8    mem_byte;
 
+typedef void* file_handle;
+
+typedef char* str;
+
 struct RGBAPixel {
     u8 blue;
     u8 green;
