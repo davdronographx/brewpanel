@@ -25,9 +25,7 @@ brewpanel_win32_draw_bitmap(
     u32 window_width = client_rect.right - client_rect.left;
     u32 window_height = client_rect.bottom - client_rect.top;
 
-
-    
-
+    mem_data bitmap_data = brewpanel_back_buffer_data();
 
     StretchDIBits(
         paint_context,
@@ -39,12 +37,11 @@ brewpanel_win32_draw_bitmap(
         0,
         window_width,
         window_height,
-        (void*)&brewpanel_state->back_buffer.pixels,
+        &bitmap_data,
         &bitmap_info,
         DIB_RGB_COLORS,
         SRCCOPY
     );
-
 }
 
 internal void
@@ -58,7 +55,7 @@ brewpanel_win32_resize_bitmap() {
         bitmap_device_context = CreateCompatibleDC(0);
     }
 
-    BITMAPINFO bitmap_info = {0};
+    bitmap_info = {0};
     bitmap_info.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
     bitmap_info.bmiHeader.biWidth       = BREW_PANEL_WIDTH_PIXELS;
     bitmap_info.bmiHeader.biHeight      = BREW_PANEL_HEIGHT_PIXELS;
@@ -68,7 +65,7 @@ brewpanel_win32_resize_bitmap() {
 
     mem_data bitmap_data = brewpanel_back_buffer_data(); 
 
-    HBITMAP bitmap_handle = CreateDIBSection(
+    bitmap_handle = CreateDIBSection(
         bitmap_device_context,
         &bitmap_info,
         DIB_RGB_COLORS,
@@ -148,7 +145,7 @@ brewpanel_win32_callback(
                 paint_device_context,
                 x, y,
                 width, height,
-                WHITENESS
+                BLACKNESS
             );         
 
             RECT client_rect = {0};

@@ -25,12 +25,11 @@ typedef void* mem_data;
 typedef u8    mem_byte;
 
 struct RGBAPixel {
-    u8 red;
-    u8 green;
     u8 blue;
+    u8 green;
+    u8 red;
     u8 alpha;
 };
-
 
 #define brewpanel_kilobytes(value) ((u64)value * 1024)
 #define brewpanel_megabytes(value) (brewpanel_kilobytes(value) * 1024)
