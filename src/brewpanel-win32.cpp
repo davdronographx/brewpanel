@@ -9,6 +9,74 @@ global bool running;
 global HWND window_handle;
 global HDC  device_context;
 
+global HDC        bitmap_device_context;
+global HBITMAP    bitmap_handle;
+global BITMAPINFO bitmap_info;
+
+internal void
+brewpanel_win32_draw_bitmap(
+    HDC  paint_context,
+    RECT client_rect,
+    u32  x,
+    u32  y,
+    u32  width,
+    u32  height) {
+
+    u32 window_width = client_rect.right - client_rect.left;
+    u32 window_height = client_rect.bottom - client_rect.top;
+
+
+    
+
+
+    StretchDIBits(
+        paint_context,
+        0,
+        0,
+        BREW_PANEL_WIDTH_PIXELS,
+        BREW_PANEL_HEIGHT_PIXELS,
+        0,
+        0,
+        window_width,
+        window_height,
+        (void*)&brewpanel_state->back_buffer.pixels,
+        &bitmap_info,
+        DIB_RGB_COLORS,
+        SRCCOPY
+    );
+
+}
+
+internal void
+brewpanel_win32_resize_bitmap() {
+
+    if (bitmap_handle) {
+        DeleteObject(bitmap_handle);
+    }
+
+    if (!bitmap_device_context) {
+        bitmap_device_context = CreateCompatibleDC(0);
+    }
+
+    BITMAPINFO bitmap_info = {0};
+    bitmap_info.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
+    bitmap_info.bmiHeader.biWidth       = BREW_PANEL_WIDTH_PIXELS;
+    bitmap_info.bmiHeader.biHeight      = BREW_PANEL_HEIGHT_PIXELS;
+    bitmap_info.bmiHeader.biPlanes      = 1;
+    bitmap_info.bmiHeader.biBitCount    = 32;
+    bitmap_info.bmiHeader.biCompression = BI_RGB;
+
+    mem_data bitmap_data = brewpanel_back_buffer_data(); 
+
+    HBITMAP bitmap_handle = CreateDIBSection(
+        bitmap_device_context,
+        &bitmap_info,
+        DIB_RGB_COLORS,
+        &bitmap_data,
+        0,0
+    );
+}
+
 internal void
 brewpanel_win32_process_pending_messages(
     HWND window_handle) {
@@ -61,78 +129,41 @@ brewpanel_win32_callback(
                             SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 
 
+            brewpanel_win32_resize_bitmap();
+
         } break;
 
+        case WM_PAINT: {
 
+            PAINTSTRUCT paint = {0};
+            HDC paint_device_context = BeginPaint(window_handle,&paint);
+
+            u32 x = paint.rcPaint.left;
+            u32 y = paint.rcPaint.top;
+
+            u32 width  = paint.rcPaint.right - x;
+            u32 height = paint.rcPaint.bottom - y;
+
+            PatBlt(
+                paint_device_context,
+                x, y,
+                width, height,
+                WHITENESS
+            );         
+
+            RECT client_rect = {0};
+            GetClientRect(window_handle,&client_rect);
+
+            brewpanel_win32_draw_bitmap(paint_device_context, client_rect,x,y,width,height);
+
+            EndPaint(window_handle,&paint);
+
+        } break;
 
         //window close
         case WM_CLOSE:
         case WM_DESTROY: {
             running = false;
-        } break;
-
-        //drawing the backbuffer
-        case WM_PAINT: {
-            
-            PAINTSTRUCT ps = {0};
-            HDC paint_context = BeginPaint(window_handle, &ps);
- 
-            //create the win32 bitmap from our backbuffer
-
-            BITMAPINFO bitmap_info = { 
-                sizeof(BITMAPINFOHEADER),
-                BREW_PANEL_WIDTH_PIXELS,
-                BREW_PANEL_HEIGHT_PIXELS, 
-                1, 
-                32,
-                BI_RGB, 
-                BREW_PANEL_WIDTH_PIXELS * BREW_PANEL_HEIGHT_PIXELS * 4, 
-                0, 0, 0, 0 
-            };
-
-
-            StretchDIBits(
-                paint_context,
-                0,
-                0,
-                BREW_PANEL_WIDTH_PIXELS,
-                BREW_PANEL_HEIGHT_PIXELS,
-                0,
-                0,
-                1,
-                1,
-                brewpanel_back_buffer_data(),
-                &bitmap_info,
-                DIB_RGB_COLORS,
-                SRCPAINT
-            );
-
-
-            // if (bitmap != NULL) {
-            //     brewpanel_assert(bitmap != NULL);
-
-            //     HDC bitmap_dc = CreateCompatibleDC(NULL);
-            //     SelectObject(bitmap_dc,paint_context);
-
-            //     RECT window_rect = {0};
-            //     GetClientRect(window_handle, &window_rect);
-            //     BitBlt(
-            //         paint_context,
-            //         0,
-            //         0,
-            //         window_rect.right - window_rect.left,
-            //         window_rect.bottom - window_rect.top,
-            //         bitmap_dc,
-            //         0,
-            //         0,
-            //         SRCCOPY
-            //     );
-
-            // }
-
-
-            EndPaint(window_handle, &ps);
-
         } break;
 
         default: {
@@ -206,10 +237,11 @@ wWinMain(
 
     while(running) {
 
+        // SwapBuffers(device_context);
+        
         brewpanel_core_update_and_render();
 
         brewpanel_win32_process_pending_messages(window_handle);
-        SwapBuffers(device_context);
     }
 
     return 0;
