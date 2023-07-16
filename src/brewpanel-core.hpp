@@ -19,4 +19,7 @@ struct BrewPanelState{
 
 global BrewPanelState* brewpanel_state;
 
+#define brewpanel_back_buffer_data() (mem_data)brewpanel_state->back_buffer.pixels      
+
+
 #endif //BREWPANEL_CORE_HPP

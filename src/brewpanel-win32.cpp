@@ -6,6 +6,8 @@
 #include "brewpanel-core.cpp"
 
 global bool running;
+global HWND window_handle;
+global HDC  device_context;
 
 internal void
 brewpanel_win32_process_pending_messages(
@@ -31,6 +33,7 @@ brewpanel_win32_callback(
 
     switch (message) {
 
+        //resizing
         case WM_SIZE: {
 
             //get the screen dimensions
@@ -60,10 +63,76 @@ brewpanel_win32_callback(
 
         } break;
 
+
+
         //window close
         case WM_CLOSE:
         case WM_DESTROY: {
             running = false;
+        } break;
+
+        //drawing the backbuffer
+        case WM_PAINT: {
+            
+            PAINTSTRUCT ps = {0};
+            HDC paint_context = BeginPaint(window_handle, &ps);
+ 
+            //create the win32 bitmap from our backbuffer
+
+            BITMAPINFO bitmap_info = { 
+                sizeof(BITMAPINFOHEADER),
+                BREW_PANEL_WIDTH_PIXELS,
+                BREW_PANEL_HEIGHT_PIXELS, 
+                1, 
+                32,
+                BI_RGB, 
+                BREW_PANEL_WIDTH_PIXELS * BREW_PANEL_HEIGHT_PIXELS * 4, 
+                0, 0, 0, 0 
+            };
+
+
+            StretchDIBits(
+                paint_context,
+                0,
+                0,
+                BREW_PANEL_WIDTH_PIXELS,
+                BREW_PANEL_HEIGHT_PIXELS,
+                0,
+                0,
+                1,
+                1,
+                brewpanel_back_buffer_data(),
+                &bitmap_info,
+                DIB_RGB_COLORS,
+                SRCPAINT
+            );
+
+
+            // if (bitmap != NULL) {
+            //     brewpanel_assert(bitmap != NULL);
+
+            //     HDC bitmap_dc = CreateCompatibleDC(NULL);
+            //     SelectObject(bitmap_dc,paint_context);
+
+            //     RECT window_rect = {0};
+            //     GetClientRect(window_handle, &window_rect);
+            //     BitBlt(
+            //         paint_context,
+            //         0,
+            //         0,
+            //         window_rect.right - window_rect.left,
+            //         window_rect.bottom - window_rect.top,
+            //         bitmap_dc,
+            //         0,
+            //         0,
+            //         SRCCOPY
+            //     );
+
+            // }
+
+
+            EndPaint(window_handle, &ps);
+
         } break;
 
         default: {
@@ -111,7 +180,7 @@ wWinMain(
 
     brewpanel_assert(RegisterClass(&window_class));
 
-    HWND window_handle = CreateWindowEx(
+    window_handle = CreateWindowEx(
         0,
         window_class.lpszClassName,
         "BrewPanel",
@@ -127,10 +196,7 @@ wWinMain(
 
     brewpanel_assert(window_handle);
 
- 
-
-
-    HDC device_context = GetDC(window_handle);
+    device_context = GetDC(window_handle);
 
     running = true;
     
