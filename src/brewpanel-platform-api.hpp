@@ -17,7 +17,7 @@ typedef void
 );
 
 typedef file_handle
-(*func_platform_file_get_read_write_handle)
+(*func_platform_file_open)
 (
     str file_path
 );
@@ -40,22 +40,33 @@ typedef void
     file_handle file
 );
 
+typedef u64
+(*func_platform_file_read)
+(
+    file_handle file_handle,
+    mem_data    file_buffer,
+    u64         file_buffer_size,
+    u64         file_offset
+);
+
 struct BrewpanelPlatformApi {
-    func_platform_memory_allocate            memory_allocate;
-    func_platform_memory_free                memory_free;
-    func_platform_file_get_read_write_handle file_get_read_write_handle;
-    func_platform_file_get_size              file_get_size;
-    func_platform_file_create                file_create;
-    func_platform_file_close                 file_close;
+    func_platform_memory_allocate memory_allocate;
+    func_platform_memory_free     memory_free;
+    func_platform_file_open       file_open;
+    func_platform_file_get_size   file_get_size;
+    func_platform_file_create     file_create;
+    func_platform_file_close      file_close;
+    func_platform_file_read       file_read;
 };
 
 global BrewpanelPlatformApi platform_api;
 
-#define brewpanel_platform_memory_allocate(size)            platform_api.memory_allocate(size)
-#define brewpanel_platform_memory_free(size,memory)         platform_api.memory_free(size,memory)
-#define brewpanel_platform_file_get_read_write_handle(path) platform_api.file_get_read_write_handle(path)
-#define brewpanel_platform_file_get_size(file)              platform_api.file_get_size(file)
-#define brewpanel_platform_file_create(path)                platform_api.file_create(path)
-#define brewpanel_platform_file_close(file)                 platform_api.file_close(file)
+#define brewpanel_platform_memory_allocate(size)    platform_api.memory_allocate(size)
+#define brewpanel_platform_memory_free(size,memory) platform_api.memory_free(size,memory)
+#define brewpanel_platform_file_open(path)          platform_api.file_open(path)
+#define brewpanel_platform_file_get_size(file)      platform_api.file_get_size(file)
+#define brewpanel_platform_file_create(path)        platform_api.file_create(path)
+#define brewpanel_platform_file_close(file)         platform_api.file_close(file)
+#define brewpanel_platform_file_read(file)          platform_api.file_read(file)
 
 #endif //BREWPANEL_PLATFORM_API_HPP

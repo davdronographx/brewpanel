@@ -6,4 +6,50 @@
 
 #define BREWPANEL_IMAGES_FILE "brewpanel-images.bpi"
 
+#define BREWPANEL_IMAGES_COUNT           128
+#define BREWPANEL_IMAGES_NAME_LENGTH     16
+#define BREWPANEL_IMAGES_COLOR_CHANNELS  4
+#define BREWPANEL_IMAGES_ALLOCATION_SIZE BREW_PANEL_PIXEL_COUNT
+
+struct BrewPanelImage {
+    s32        width;
+    s32        height;
+    s32        channels;
+    RGBAPixel* pixels;
+    mem_data   temp_image_file_data;
+};
+
+enum BrewPanelImagesIds : u16 {
+    BREWPANEL_IMAGES_ID_MAIN_SCREEN = 0,
+    BREWPANEL_IMAGES_ID_COUNT       = 1
+};
+
+global str brewpanel_images_file_paths[] = {
+    "main-screen.png"
+};
+
+global str brewpanel_images_image_names[] = {
+    "main-screen"
+};
+
+struct BrewPanelImagesFileIndex {
+    u16  image_id;
+    u16  image_offset;
+    u16  image_size;
+    char image_name[BREWPANEL_IMAGES_NAME_LENGTH];
+};
+
+struct BrewPanelImagesFileHeader {
+    BrewPanelImagesFileIndex image_indexes[BREWPANEL_IMAGES_COUNT];
+};
+
+struct BrewPanelImagesFile {
+    file_handle    file_handle;
+    BrewPanelImage image_data;
+};
+
+struct BrewPanelImagesState {
+    BrewPanelImagesFile images_file;
+};
+
 #endif //BREWPANEL_IMAGES_HPP

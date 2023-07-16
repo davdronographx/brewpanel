@@ -4,7 +4,9 @@
 #include "brewpanel-core.hpp"
 #include "brewpanel-images.hpp"
 #include "brewpanel-memory.hpp"
+
 #include "brewpanel-memory.cpp"
+#include "brewpanel-images.cpp"
 
 internal void
 brewpanel_core_init() {
@@ -13,6 +15,8 @@ brewpanel_core_init() {
     
     brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
     brewpanel_state->memory = memory;
+
+    brewpanel_state->images = brewpanel_images_state_create(&memory);
 }
 
 internal void

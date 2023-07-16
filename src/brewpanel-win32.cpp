@@ -67,7 +67,7 @@ brewpanel_win32_resize_bitmap() {
         bitmap_device_context,
         &bitmap_info,
         DIB_RGB_COLORS,
-        &bitmap_data,
+        &((void*)bitmap_data),
         0,0
     );
 }
@@ -178,12 +178,13 @@ wWinMain(
     
     //create the api
     platform_api = {0};
-    platform_api.memory_allocate            = brewpanel_win32_allocate_memory;
-    platform_api.memory_free                = brewpanel_win32_free_memory;
-    platform_api.file_get_read_write_handle = brewpanel_win32_get_read_write_file_handle;
-    platform_api.file_get_size              = brewpanel_win32_get_file_size;
-    platform_api.file_create                = brewpanel_win32_create_file;
-    platform_api.file_close                 = brewpanel_win32_close_file;
+    platform_api.memory_allocate = brewpanel_win32_allocate_memory;
+    platform_api.memory_free     = brewpanel_win32_free_memory;
+    platform_api.file_open       = brewpanel_win32_open_file;
+    platform_api.file_get_size   = brewpanel_win32_get_file_size;
+    platform_api.file_create     = brewpanel_win32_create_file;
+    platform_api.file_close      = brewpanel_win32_close_file;
+    platform_api.file_read       = brewpanel_win32_read_file;
 
     //open the window
     WNDCLASS window_class      = {0};
@@ -217,10 +218,8 @@ wWinMain(
     brewpanel_core_init();
     brewpanel_assert(brewpanel_state != NULL);
 
-
     while(running) {
 
-        // SwapBuffers(device_context);
         brewpanel_win32_process_pending_messages(window_handle);
 
         brewpanel_core_update_and_render();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+
 #include "brewpanel-types.hpp"
 #include "brewpanel-platform-api.hpp"
 
@@ -8,7 +9,7 @@ internal mem_data
 brewpanel_win32_allocate_memory(
     u64 size) {
 
-    mem_data memory = VirtualAlloc(0,size,MEM_COMMIT,PAGE_READWRITE);
+    mem_data memory = (mem_data)VirtualAlloc(0,size,MEM_COMMIT,PAGE_READWRITE);
     return(memory);
 }
 
@@ -21,7 +22,7 @@ brewpanel_win32_free_memory(
 }
 
 internal file_handle
-brewpanel_win32_get_read_write_file_handle(
+brewpanel_win32_open_file(
     str file_path) {
 
     HANDLE file_handle = 
@@ -44,7 +45,12 @@ internal u64
 brewpanel_win32_get_file_size(
     file_handle file) {
 
-    return(0);
+    u64 file_size = 
+        file != INVALID_HANDLE_VALUE 
+        ? GetFileSize(file,NULL)
+        : 0;
+
+    return(file_size);
 } 
 
 internal file_handle
@@ -72,4 +78,48 @@ brewpanel_win32_close_file(
     file_handle file) {
     
     CloseHandle(file);
+}
+
+global u64 bytes_read = 0;
+
+VOID CALLBACK
+brewpanel_win32_file_io_completion_routine(
+    DWORD          error_code,
+    DWORD          bytes_transferred,
+    LPOVERLAPPED   lpOverlapped) {
+        
+    bytes_read = bytes_transferred;
+}
+
+
+internal u64
+brewpanel_win32_read_file(
+    file_handle file_handle,
+    mem_data    file_buffer,
+    u64         file_buffer_size,
+    u64         file_offset
+) {
+
+    //make sure we have a valid buffer to copy into
+    brewpanel_assert(file_buffer);
+
+    //read the file
+    OVERLAPPED overlapped = {0};
+    overlapped.Offset = file_offset;
+    
+    bool read_result =
+        ReadFileEx(
+            file_handle,
+            file_buffer,
+            file_buffer_size,
+            &overlapped,
+            brewpanel_win32_file_io_completion_routine
+    );
+ 
+    file_buffer[file_buffer_size] = '\0';
+
+    brewpanel_assert(read_result);
+ 
+    //TODO: why isn't this working?
+    return(bytes_read);
 }

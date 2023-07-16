@@ -21,8 +21,8 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
-typedef void* mem_data;
-typedef u8    mem_byte;
+typedef u8        mem_byte;
+typedef mem_byte* mem_data;
 
 typedef void* file_handle;
 
@@ -39,5 +39,10 @@ struct RGBAPixel {
 #define brewpanel_megabytes(value) (brewpanel_kilobytes(value) * 1024)
 #define brewpanel_gigabytes(value) (brewpanel_megabytes(value) * 1024)
 #define brewpanel_terabytes(value) (brewpanel_gigabytes(value) * 1024)
+
+#define BREW_PANEL_WIDTH_PIXELS  1024
+#define BREW_PANEL_HEIGHT_PIXELS 600
+#define BREW_PANEL_PIXEL_COUNT   (BREW_PANEL_WIDTH_PIXELS * BREW_PANEL_HEIGHT_PIXELS)
+
 
 #endif //BREWPANEL_HPP
