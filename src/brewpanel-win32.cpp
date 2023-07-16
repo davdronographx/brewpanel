@@ -12,15 +12,12 @@ global HDC  device_context;
 global HDC        bitmap_device_context;
 global HBITMAP    bitmap_handle;
 global BITMAPINFO bitmap_info;
+global HDC        paint_context;
+global RECT       client_rect;
+
 
 internal void
-brewpanel_win32_draw_bitmap(
-    HDC  paint_context,
-    RECT client_rect,
-    u32  x,
-    u32  y,
-    u32  width,
-    u32  height) {
+brewpanel_win32_draw_bitmap() {
 
     u32 window_width = client_rect.right - client_rect.left;
     u32 window_height = client_rect.bottom - client_rect.top;
@@ -37,11 +34,12 @@ brewpanel_win32_draw_bitmap(
         0,
         window_width,
         window_height,
-        &bitmap_data,
+        (void*)&brewpanel_state->back_buffer.pixels,
         &bitmap_info,
         DIB_RGB_COLORS,
         SRCCOPY
     );
+
 }
 
 internal void
@@ -133,7 +131,7 @@ brewpanel_win32_callback(
         case WM_PAINT: {
 
             PAINTSTRUCT paint = {0};
-            HDC paint_device_context = BeginPaint(window_handle,&paint);
+            paint_context = BeginPaint(window_handle,&paint);
 
             u32 x = paint.rcPaint.left;
             u32 y = paint.rcPaint.top;
@@ -142,16 +140,16 @@ brewpanel_win32_callback(
             u32 height = paint.rcPaint.bottom - y;
 
             PatBlt(
-                paint_device_context,
+                paint_context,
                 x, y,
                 width, height,
                 BLACKNESS
             );         
 
-            RECT client_rect = {0};
+            client_rect = {0};
             GetClientRect(window_handle,&client_rect);
 
-            brewpanel_win32_draw_bitmap(paint_device_context, client_rect,x,y,width,height);
+            brewpanel_win32_draw_bitmap();
 
             EndPaint(window_handle,&paint);
 
@@ -235,10 +233,11 @@ wWinMain(
     while(running) {
 
         // SwapBuffers(device_context);
-        
+        brewpanel_win32_process_pending_messages(window_handle);
+
         brewpanel_core_update_and_render();
 
-        brewpanel_win32_process_pending_messages(window_handle);
+        brewpanel_win32_draw_bitmap();
     }
 
     return 0;
