@@ -11,20 +11,17 @@
 internal void
 brewpanel_core_init() {
 
+    //allocate memory for the state
     BrewPanelMemory memory = brewpanel_memory_create();
-    
     brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
     brewpanel_state->memory = memory;
 
+    //get the images
     brewpanel_state->images = brewpanel_images_state_create(&memory);
 }
 
 internal void
 brewpanel_core_update_and_render() {
-
-    memmove(
-        brewpanel_state->back_buffer.pixels,
-        brewpanel_state->images.images_file.image_data,
-        BREW_PANEL_PIXEL_COUNT * 4
-    );
+    
+    brewpanel_core_render_main_screen()
 }

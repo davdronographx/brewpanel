@@ -19,4 +19,6 @@ global BrewPanelState* brewpanel_state;
 
 #define brewpanel_back_buffer_data() (mem_data)brewpanel_state->back_buffer.pixels      
 
+#define brewpanel_core_render_main_screen() brewpanel_images_draw_image(&brewpanel_state->images,BREWPANEL_IMAGES_ID_MAIN_SCREEN,0,0,(mem_data)brewpanel_state->back_buffer.pixels);
+
 #endif //BREWPANEL_CORE_HPP

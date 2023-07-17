@@ -16,7 +16,7 @@ brewpanel_images_build_file(
     images_file->file_header.verifiction[2] = 'I'; 
     images_file->file_header.image_count    = BREWPANEL_IMAGES_ID_COUNT;
 
-    u32 offset = header_size;
+    u32 offset = 0;
 
     for (
         u32 image_index = 0;
@@ -72,7 +72,7 @@ brewpanel_images_build_file(
             images_file->file_handle,
             (mem_data)images_file->temp_image.pixels,
             image_data_size,
-            offset
+            offset + header_size
         );
     
         //update the index for this image
@@ -132,7 +132,19 @@ brewpanel_images_state_create(
         brewpanel_images_build_file(&images_state.images_file);
     }
     else {
-        //TODO: read the file header
+
+        brewpanel_platform_file_read(
+            images_state.images_file.file_handle,
+            (mem_data)(&images_state.images_file.file_header),
+            sizeof(BrewPanelImagesFileHeader),
+            0
+        );
+
+        images_state.images_file.image_data = 
+            brewpanel_memory_allocate(
+                memory,
+                images_state.images_file.file_header.image_data_size
+        );
     }
 
     //with the file header parsed, we can read the image data
@@ -151,4 +163,24 @@ brewpanel_images_state_create(
 
 
     return(images_state);
+}
+
+internal void
+brewpanel_images_draw_image(
+    BrewPanelImagesState* images_state,
+    BrewPanelImagesId     image_id,
+    u32                   x_offset,
+    u32                   y_offset,
+    mem_data              draw_buffer) {
+
+    //get image data
+    BrewPanelImagesFileIndex image_index = brewpanel_images_index(images_state,image_id);
+    RGBAPixel* image_address = brewpanel_images_address(images_state,image_id)
+
+    //write the image to the buffer
+    memmove(
+        draw_buffer,
+        image_address,
+        image_index.image_size
+    );    
 }

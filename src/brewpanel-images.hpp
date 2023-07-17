@@ -11,6 +11,7 @@
 #define BREWPANEL_IMAGES_COLOR_CHANNELS  4
 #define BREWPANEL_IMAGES_ALLOCATION_SIZE BREW_PANEL_PIXEL_COUNT
 
+//TODO: rename
 struct BrewPanelImage {
     s32        width;
     s32        height;
@@ -19,7 +20,7 @@ struct BrewPanelImage {
     mem_data   temp_image_file_data;
 };
 
-enum BrewPanelImagesIds : u16 {
+enum BrewPanelImagesId : u16 {
     BREWPANEL_IMAGES_ID_MAIN_SCREEN = 0,
     BREWPANEL_IMAGES_ID_COUNT       = 1
 };
@@ -34,10 +35,10 @@ global str brewpanel_images_image_names[] = {
 
 struct BrewPanelImagesFileIndex {
     u16  image_id;
-    u16  image_offset;
-    u16  image_width;
-    u16  image_height;
-    u16  image_size;    
+    u32  image_offset;
+    u32  image_width;
+    u32  image_height;
+    u32  image_size;    
     char image_name[BREWPANEL_IMAGES_NAME_LENGTH];
 };
 
@@ -58,5 +59,8 @@ struct BrewPanelImagesFile {
 struct BrewPanelImagesState {
     BrewPanelImagesFile images_file;
 };
+
+#define brewpanel_images_index(images_state,image_id)   images_state->images_file.file_header.image_indexes[image_id]
+#define brewpanel_images_address(images_state,image_id) (RGBAPixel*)(&images_state->images_file.image_data[brewpanel_images_index(images_state,image_id).image_offset]);
 
 #endif //BREWPANEL_IMAGES_HPP
