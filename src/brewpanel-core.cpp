@@ -7,6 +7,7 @@
 
 #include "brewpanel-memory.cpp"
 #include "brewpanel-images.cpp"
+#include "brewpanel-buttons.cpp"
 
 internal void
 brewpanel_core_init() {

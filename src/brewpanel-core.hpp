@@ -4,6 +4,8 @@
 #include "brewpanel-types.hpp"
 #include "brewpanel-memory.hpp"
 #include "brewpanel-images.hpp"
+#include "brewpanel-core.hpp"
+#include "brewpanel-buttons.hpp"
 
 struct BrewPanelBackBuffer {
     RGBAPixel pixels[BREW_PANEL_PIXEL_COUNT];
@@ -13,6 +15,7 @@ struct BrewPanelState{
     BrewPanelMemory      memory;
     BrewPanelBackBuffer  back_buffer;
     BrewPanelImagesState images;
+    BrewPanelButtonStore buttons; 
 };
 
 global BrewPanelState* brewpanel_state;
