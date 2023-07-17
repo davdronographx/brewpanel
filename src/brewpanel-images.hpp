@@ -35,7 +35,9 @@ global str brewpanel_images_image_names[] = {
 struct BrewPanelImagesFileIndex {
     u16  image_id;
     u16  image_offset;
-    u16  image_size;
+    u16  image_width;
+    u16  image_height;
+    u16  image_size;    
     char image_name[BREWPANEL_IMAGES_NAME_LENGTH];
 };
 

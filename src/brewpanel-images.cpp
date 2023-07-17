@@ -54,6 +54,20 @@ brewpanel_images_build_file(
             images_file->temp_image.width * 
             images_file->temp_image.height;
 
+        for (
+            u32 pixel_index = 0;
+            pixel_index < image_data_size / 4;
+            ++pixel_index
+        ) {
+
+            RGBAPixel* pixel_buffer = (RGBAPixel*)images_file->temp_image.pixels;
+            RGBAPixel* pixel = &pixel_buffer[pixel_index];
+
+            u8 tmp_red = pixel->red;
+            pixel->red = pixel->blue;
+            pixel->blue = tmp_red;
+        }
+
         //write the data to the file
         brewpanel_platform_file_write(
             images_file->file_handle,
@@ -66,6 +80,8 @@ brewpanel_images_build_file(
         BrewPanelImagesFileIndex image_file_index = {0};
         image_file_index.image_id     = image_index;
         image_file_index.image_offset = offset;
+        image_file_index.image_width  = images_file->temp_image.width;
+        image_file_index.image_height = images_file->temp_image.height;
         image_file_index.image_size   = image_data_size;
         strcpy(image_file_index.image_name,brewpanel_images_image_names[image_index]);
 

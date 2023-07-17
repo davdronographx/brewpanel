@@ -25,6 +25,6 @@ brewpanel_core_update_and_render() {
     memmove(
         brewpanel_state->back_buffer.pixels,
         brewpanel_state->images.images_file.image_data,
-        BREW_PANEL_PIXEL_COUNT
+        BREW_PANEL_PIXEL_COUNT * 4
     );
 }
