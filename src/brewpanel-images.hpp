@@ -40,12 +40,15 @@ struct BrewPanelImagesFileIndex {
 };
 
 struct BrewPanelImagesFileHeader {
-    BrewPanelImagesFileIndex image_indexes[BREWPANEL_IMAGES_COUNT];
+    char                     verifiction[3];
+    u16                      image_count;
+    BrewPanelImagesFileIndex image_indexes[BREWPANEL_IMAGES_ID_COUNT];
 };
 
 struct BrewPanelImagesFile {
-    file_handle    file_handle;
-    BrewPanelImage image_data;
+    file_handle               file_handle;
+    BrewPanelImagesFileHeader file_header;
+    BrewPanelImage            image_data;
 };
 
 struct BrewPanelImagesState {

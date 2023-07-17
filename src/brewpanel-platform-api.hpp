@@ -40,12 +40,21 @@ typedef void
     file_handle file
 );
 
-typedef u64
+typedef void
 (*func_platform_file_read)
 (
     file_handle file_handle,
-    mem_data    file_buffer,
-    u64         file_buffer_size,
+    mem_data    read_buffer,
+    u64         read_buffer_size,
+    u64         file_offset
+);
+
+typedef void
+(*func_platform_file_write)
+(
+    file_handle file_handle,
+    mem_data    write_buffer,
+    u64         write_buffer_size,
     u64         file_offset
 );
 
@@ -57,6 +66,7 @@ struct BrewpanelPlatformApi {
     func_platform_file_create     file_create;
     func_platform_file_close      file_close;
     func_platform_file_read       file_read;
+    func_platform_file_write      file_write;
 };
 
 global BrewpanelPlatformApi platform_api;
@@ -68,5 +78,6 @@ global BrewpanelPlatformApi platform_api;
 #define brewpanel_platform_file_create(path)        platform_api.file_create(path)
 #define brewpanel_platform_file_close(file)         platform_api.file_close(file)
 #define brewpanel_platform_file_read(file)          platform_api.file_read(file)
+#define brewpanel_platform_file_write(file)         platform_api.file_write(file)
 
 #endif //BREWPANEL_PLATFORM_API_HPP

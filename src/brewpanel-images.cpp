@@ -10,6 +10,14 @@ internal void
 brewpanel_images_build_file(
     BrewPanelImagesFile* images_file) {
 
+    u32 header_size = sizeof(BrewPanelImagesFileHeader);
+    images_file->file_header.verifiction[0] = 'B'; 
+    images_file->file_header.verifiction[1] = 'P'; 
+    images_file->file_header.verifiction[2] = 'I'; 
+    images_file->file_header.image_count    = BREWPANEL_IMAGES_ID_COUNT;
+
+    u32 offset = header_size;
+
     for (
         u32 image_index = 0;
         image_index < BREWPANEL_IMAGES_ID_COUNT;
@@ -24,17 +32,14 @@ brewpanel_images_build_file(
         u32 file_size = brewpanel_platform_file_get_size(image_file_handle);
 
         //read the file contents
-        u32 bytes_read = 
-            platform_api.file_read(
-                image_file_handle,
-                images_file->image_data.temp_image_file_data,
-                file_size,
-                0
+        platform_api.file_read(
+            image_file_handle,
+            images_file->image_data.temp_image_file_data,
+            file_size,
+            0
         );
-
-        //TODO: overlapped something something blah blah blah
-        // brewpanel_assert(bytes_read > 0);
-
+        
+        //get the pixel data for the image
         images_file->image_data.pixels = (RGBAPixel*)stbi_load_from_memory(
             images_file->image_data.temp_image_file_data,
             file_size,
@@ -44,8 +49,38 @@ brewpanel_images_build_file(
             BREWPANEL_IMAGES_COLOR_CHANNELS
         );
 
+        u32 image_data_size = 
+            sizeof(RGBAPixel) * 
+            images_file->image_data.width * 
+            images_file->image_data.height;
+
+        //write the data to the file
+        platform_api.file_write(
+            images_file->file_handle,
+            (mem_data)images_file->image_data.pixels,
+            image_data_size,
+            offset
+        );
+    
+        //update the index for this image
+        BrewPanelImagesFileIndex image_file_index = {0};
+        image_file_index.image_id     = image_index;
+        image_file_index.image_offset = offset;
+        image_file_index.image_size   = image_data_size;
+        strcpy(image_file_index.image_name,brewpanel_images_image_names[image_index]);
+
+        images_file->file_header.image_indexes[image_index] = image_file_index;
+
+        offset += image_data_size; 
     }
 
+    //now we can write the header
+    platform_api.file_write(
+        images_file->file_handle,
+        (mem_data)(&images_file->file_header),
+        sizeof(BrewPanelImagesFileHeader),
+        0
+    );
 }
 
 internal BrewPanelImagesState

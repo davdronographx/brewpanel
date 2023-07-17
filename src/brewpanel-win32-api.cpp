@@ -92,13 +92,12 @@ brewpanel_win32_file_io_completion_routine(
 }
 
 
-internal u64
+internal void
 brewpanel_win32_read_file(
     file_handle file_handle,
     mem_data    file_buffer,
     u64         file_buffer_size,
-    u64         file_offset
-) {
+    u64         file_offset) {
 
     //make sure we have a valid buffer to copy into
     brewpanel_assert(file_buffer);
@@ -119,7 +118,29 @@ brewpanel_win32_read_file(
     file_buffer[file_buffer_size] = '\0';
 
     brewpanel_assert(read_result);
- 
-    //TODO: why isn't this working?
-    return(bytes_read);
+}
+
+internal void
+brewpanel_win32_write_file(
+    file_handle file_handle,
+    mem_data    write_buffer,
+    u64         write_buffer_size,
+    u64         file_offset) {
+
+    brewpanel_assert(write_buffer);
+
+    //write to the file
+    OVERLAPPED overlapped = {0};
+    overlapped.Offset = file_offset;
+    
+    bool write_result =
+        WriteFileEx(
+            file_handle,
+            write_buffer,
+            write_buffer_size,
+            &overlapped,
+            brewpanel_win32_file_io_completion_routine
+    );
+
+    brewpanel_assert(write_result);
 }

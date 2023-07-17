@@ -185,6 +185,7 @@ wWinMain(
     platform_api.file_create     = brewpanel_win32_create_file;
     platform_api.file_close      = brewpanel_win32_close_file;
     platform_api.file_read       = brewpanel_win32_read_file;
+    platform_api.file_write      = brewpanel_win32_write_file;
 
     //open the window
     WNDCLASS window_class      = {0};
