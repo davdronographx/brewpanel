@@ -187,6 +187,7 @@ wWinMain(
     platform_api.file_read       = brewpanel_win32_read_file;
     platform_api.file_write      = brewpanel_win32_write_file;
 
+
     //open the window
     WNDCLASS window_class      = {0};
     window_class.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -209,6 +210,10 @@ wWinMain(
         0,
         instance,
         0);
+
+    LONG lStyle = GetWindowLong(window_handle, GWL_STYLE);
+    lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+    SetWindowLong(window_handle, GWL_STYLE, lStyle);
 
     brewpanel_assert(window_handle);
 

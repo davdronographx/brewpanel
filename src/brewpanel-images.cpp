@@ -54,13 +54,12 @@ brewpanel_images_build_file(
             images_file->temp_image.width * 
             images_file->temp_image.height;
 
+        RGBAPixel* pixel_buffer = (RGBAPixel*)images_file->temp_image.pixels;
         for (
             u32 pixel_index = 0;
             pixel_index < image_data_size / 4;
             ++pixel_index
         ) {
-
-            RGBAPixel* pixel_buffer = (RGBAPixel*)images_file->temp_image.pixels;
             RGBAPixel* pixel = &pixel_buffer[pixel_index];
 
             u8 tmp_red = pixel->red;
