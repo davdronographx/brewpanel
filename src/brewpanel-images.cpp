@@ -32,32 +32,32 @@ brewpanel_images_build_file(
         u32 file_size = brewpanel_platform_file_get_size(image_file_handle);
 
         //read the file contents
-        platform_api.file_read(
+        brewpanel_platform_file_read(
             image_file_handle,
-            images_file->image_data.temp_image_file_data,
+            images_file->temp_image.temp_image_file_data,
             file_size,
             0
         );
         
         //get the pixel data for the image
-        images_file->image_data.pixels = (RGBAPixel*)stbi_load_from_memory(
-            images_file->image_data.temp_image_file_data,
+        images_file->temp_image.pixels = (RGBAPixel*)stbi_load_from_memory(
+            images_file->temp_image.temp_image_file_data,
             file_size,
-            &images_file->image_data.width,
-            &images_file->image_data.height,
-            &images_file->image_data.channels,
+            &images_file->temp_image.width,
+            &images_file->temp_image.height,
+            &images_file->temp_image.channels,
             BREWPANEL_IMAGES_COLOR_CHANNELS
         );
 
         u32 image_data_size = 
             sizeof(RGBAPixel) * 
-            images_file->image_data.width * 
-            images_file->image_data.height;
+            images_file->temp_image.width * 
+            images_file->temp_image.height;
 
         //write the data to the file
-        platform_api.file_write(
+        brewpanel_platform_file_write(
             images_file->file_handle,
-            (mem_data)images_file->image_data.pixels,
+            (mem_data)images_file->temp_image.pixels,
             image_data_size,
             offset
         );
@@ -72,10 +72,11 @@ brewpanel_images_build_file(
         images_file->file_header.image_indexes[image_index] = image_file_index;
 
         offset += image_data_size; 
+        images_file->file_header.image_data_size += image_data_size;
     }
 
     //now we can write the header
-    platform_api.file_write(
+    brewpanel_platform_file_write(
         images_file->file_handle,
         (mem_data)(&images_file->file_header),
         sizeof(BrewPanelImagesFileHeader),
@@ -91,11 +92,11 @@ brewpanel_images_state_create(
 
     //allocate space for temporarily storing image data
     //there will never be an image bigger than the resolution of 1024x600
-    images_state.images_file.image_data.pixels = (RGBAPixel*)brewpanel_memory_allocate(memory,BREWPANEL_IMAGES_ALLOCATION_SIZE);
+    images_state.images_file.temp_image.pixels = (RGBAPixel*)brewpanel_memory_allocate(memory,BREWPANEL_IMAGES_ALLOCATION_SIZE);
     
     //this allocation is for the actual file
     //to be safe, we will allocate twice that size to give us more than enough memory
-    images_state.images_file.image_data.temp_image_file_data = brewpanel_memory_allocate(memory,BREWPANEL_IMAGES_ALLOCATION_SIZE * 2);
+    images_state.images_file.temp_image.temp_image_file_data = brewpanel_memory_allocate(memory,BREWPANEL_IMAGES_ALLOCATION_SIZE * 2);
 
     //open the file or create it if it doesn't exist
     images_state.images_file.file_handle = 
@@ -115,6 +116,24 @@ brewpanel_images_state_create(
         //now, build the file contents from the individual images
         brewpanel_images_build_file(&images_state.images_file);
     }
+    else {
+        //TODO: read the file header
+    }
+
+    //with the file header parsed, we can read the image data
+    images_state.images_file.image_data = 
+        brewpanel_memory_allocate(
+            memory,
+            images_state.images_file.file_header.image_data_size
+    );
+
+    brewpanel_platform_file_read(
+        images_state.images_file.file_handle,
+        images_state.images_file.image_data,
+        images_state.images_file.file_header.image_data_size,
+        sizeof(BrewPanelImagesFileHeader)
+    );
+
 
     return(images_state);
 }

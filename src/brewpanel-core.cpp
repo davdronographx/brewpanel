@@ -22,19 +22,9 @@ brewpanel_core_init() {
 internal void
 brewpanel_core_update_and_render() {
 
-    for (
-        u32 pixel_index = 0;
-        pixel_index < BREW_PANEL_PIXEL_COUNT;
-        ++pixel_index
-    ) {
-        if (brewpanel_state->back_buffer.pixels[pixel_index].red == 0xFF) {
-            brewpanel_state->back_buffer.pixels[pixel_index].red = 0x00;
-        } else {
-            brewpanel_state->back_buffer.pixels[pixel_index].red += 1;
-        }
-
-        brewpanel_state->back_buffer.pixels[pixel_index].green = 0x00; 
-        brewpanel_state->back_buffer.pixels[pixel_index].blue  = 0xFF; 
-        brewpanel_state->back_buffer.pixels[pixel_index].alpha = 0xFF; 
-    }
+    memmove(
+        brewpanel_state->back_buffer.pixels,
+        brewpanel_state->images.images_file.image_data,
+        BREW_PANEL_PIXEL_COUNT
+    );
 }

@@ -42,13 +42,15 @@ struct BrewPanelImagesFileIndex {
 struct BrewPanelImagesFileHeader {
     char                     verifiction[3];
     u16                      image_count;
+    u32                      image_data_size;
     BrewPanelImagesFileIndex image_indexes[BREWPANEL_IMAGES_ID_COUNT];
 };
 
 struct BrewPanelImagesFile {
     file_handle               file_handle;
     BrewPanelImagesFileHeader file_header;
-    BrewPanelImage            image_data;
+    BrewPanelImage            temp_image;
+    mem_data                  image_data;
 };
 
 struct BrewPanelImagesState {

@@ -71,13 +71,13 @@ struct BrewpanelPlatformApi {
 
 global BrewpanelPlatformApi platform_api;
 
-#define brewpanel_platform_memory_allocate(size)    platform_api.memory_allocate(size)
-#define brewpanel_platform_memory_free(size,memory) platform_api.memory_free(size,memory)
-#define brewpanel_platform_file_open(path)          platform_api.file_open(path)
-#define brewpanel_platform_file_get_size(file)      platform_api.file_get_size(file)
-#define brewpanel_platform_file_create(path)        platform_api.file_create(path)
-#define brewpanel_platform_file_close(file)         platform_api.file_close(file)
-#define brewpanel_platform_file_read(file)          platform_api.file_read(file)
-#define brewpanel_platform_file_write(file)         platform_api.file_write(file)
+#define brewpanel_platform_memory_allocate(size)               platform_api.memory_allocate(size)
+#define brewpanel_platform_memory_free(size,memory)            platform_api.memory_free(size,memory)
+#define brewpanel_platform_file_open(path)                     platform_api.file_open(path)
+#define brewpanel_platform_file_get_size(file)                 platform_api.file_get_size(file)
+#define brewpanel_platform_file_create(path)                   platform_api.file_create(path)
+#define brewpanel_platform_file_close(file)                    platform_api.file_close(file)
+#define brewpanel_platform_file_read(file,buffer,size,offset)  platform_api.file_read(file,buffer,size,offset)
+#define brewpanel_platform_file_write(file,buffer,size,offset) platform_api.file_write(file,buffer,size,offset)
 
 #endif //BREWPANEL_PLATFORM_API_HPP
