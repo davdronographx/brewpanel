@@ -21,16 +21,19 @@ struct BrewPanelImage {
 };
 
 enum BrewPanelImagesId : u16 {
-    BREWPANEL_IMAGES_ID_MAIN_SCREEN = 0,
-    BREWPANEL_IMAGES_ID_COUNT       = 1
+    BREWPANEL_IMAGES_ID_MAIN_SCREEN       = 0,
+    BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE = 1,
+    BREWPANEL_IMAGES_ID_COUNT             = 2
 };
 
 global str brewpanel_images_file_paths[] = {
-    "main-screen.png"
+    "main-screen.png",
+    "green-button-idle.png"
 };
 
 global str brewpanel_images_image_names[] = {
-    "main-screen"
+    "main-screen",
+    "green-button-idle"
 };
 
 struct BrewPanelImagesFileIndex {

@@ -19,10 +19,24 @@ brewpanel_core_init() {
 
     //get the images
     brewpanel_state->images = brewpanel_images_state_create(&memory);
+
+    //get the button store
+    brewpanel_state->button_store = brewpanel_buttons_create_store(&memory);
+
+    //create the buttons
+    brewpanel_state->ui_buttons.test_button_id = brewpanel_buttons_create_button(
+        &brewpanel_state->button_store,
+        BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
+        BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
+        BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
+        BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
+        0,
+        0
+    );
 }
 
 internal void
 brewpanel_core_update_and_render() {
     
-    brewpanel_core_render_main_screen()
+    brewpanel_core_render_main_screen();
 }

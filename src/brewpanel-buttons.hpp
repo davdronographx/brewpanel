@@ -5,21 +5,22 @@
 #include "brewpanel-memory.hpp"
 #include "brewpanel-images.hpp"
 
-#define BREW_PANEL_MAX_BUTTONS 32
+#define BREW_PANEL_BUTTONS_MAX 32
+#define BREW_PANEL_BUTTONS_NULL -1
 
 enum BrewPanelButtonState : u8
 {
     BREWPANEL_BUTTON_STATE_IDLE     = 0,
-    BREWPANEL_BUTTON_STATE_HOVER    = 0,
-    BREWPANEL_BUTTON_STATE_CLICKED  = 0,
-    BREWPANEL_BUTTON_STATE_DISABLED = 0,
+    BREWPANEL_BUTTON_STATE_HOVER    = 1,
+    BREWPANEL_BUTTON_STATE_CLICKED  = 2,
+    BREWPANEL_BUTTON_STATE_DISABLED = 3,
 };
 
 struct BrewPanelButtonImages {
-    BrewPanelImagesId idle[BREW_PANEL_MAX_BUTTONS];
-    BrewPanelImagesId hover[BREW_PANEL_MAX_BUTTONS];
-    BrewPanelImagesId clicked[BREW_PANEL_MAX_BUTTONS];
-    BrewPanelImagesId disabled[BREW_PANEL_MAX_BUTTONS];
+    BrewPanelImagesId idle[BREW_PANEL_BUTTONS_MAX];
+    BrewPanelImagesId hover[BREW_PANEL_BUTTONS_MAX];
+    BrewPanelImagesId clicked[BREW_PANEL_BUTTONS_MAX];
+    BrewPanelImagesId disabled[BREW_PANEL_BUTTONS_MAX];
 };
 
 struct BrewPanelButtonOffsets {
@@ -32,10 +33,11 @@ typedef void
 (void* data);
 
 struct BrewPanelButtonStore {
-    u8                         button_count;
+    s8                         button_count;
     BrewPanelButtonImages      images;
-    BrewPanelButtonOffsets     offsets[BREW_PANEL_MAX_BUTTONS];
-    func_button_click_callback on_click_callbacks[BREW_PANEL_MAX_BUTTONS];
+    BrewPanelButtonOffsets     offsets[BREW_PANEL_BUTTONS_MAX];
+    func_button_click_callback on_click_callbacks[BREW_PANEL_BUTTONS_MAX];
+    s8*                        button_id_matrix;
 };
 
 
