@@ -168,7 +168,7 @@ brewpanel_images_state_create(
 internal void
 brewpanel_images_draw_image(
     BrewPanelImagesState* images_state,
-    BrewPanelImagesId     image_id,
+    u16                   image_id,
     u32                   x_offset,
     u32                   y_offset,
     mem_data              draw_buffer) {

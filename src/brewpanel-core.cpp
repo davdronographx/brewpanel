@@ -39,4 +39,10 @@ internal void
 brewpanel_core_update_and_render() {
     
     brewpanel_core_render_main_screen();
+    
+    brewpanel_buttons_draw(
+        &brewpanel_state->button_store,
+        &brewpanel_state->images,
+        (mem_data)brewpanel_state->back_buffer.pixels
+    );
 }

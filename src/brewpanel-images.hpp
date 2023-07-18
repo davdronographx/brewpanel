@@ -7,7 +7,7 @@
 #define BREWPANEL_IMAGES_FILE "brewpanel-images.bpi"
 
 #define BREWPANEL_IMAGES_COUNT           128
-#define BREWPANEL_IMAGES_NAME_LENGTH     16
+#define BREWPANEL_IMAGES_NAME_LENGTH     32
 #define BREWPANEL_IMAGES_COLOR_CHANNELS  4
 #define BREWPANEL_IMAGES_ALLOCATION_SIZE BREW_PANEL_PIXEL_COUNT
 
@@ -20,7 +20,8 @@ struct BrewPanelImage {
     mem_data   temp_image_file_data;
 };
 
-enum BrewPanelImagesId : u16 {
+enum BrewPanelImagesId : s16 {
+    BREWPANEL_IMAGES_ID_NULL              = -1,
     BREWPANEL_IMAGES_ID_MAIN_SCREEN       = 0,
     BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE = 1,
     BREWPANEL_IMAGES_ID_COUNT             = 2

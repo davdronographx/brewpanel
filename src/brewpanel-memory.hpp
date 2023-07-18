@@ -3,7 +3,7 @@
 
 #include "brewpanel-types.hpp"
 
-#define BREWPANEL_MEMORY_TOTAL brewpanel_gigabytes(1)
+#define BREWPANEL_MEMORY_TOTAL brewpanel_megabytes(128)
 
 struct BrewPanelMemory {
     s32 total;
