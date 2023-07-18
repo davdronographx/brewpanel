@@ -177,10 +177,26 @@ brewpanel_images_draw_image(
     BrewPanelImagesFileIndex image_index = brewpanel_images_index(images_state,image_id);
     RGBAPixel* image_address = brewpanel_images_address(images_state,image_id)
 
-    //write the image to the buffer
-    memmove(
-        draw_buffer,
-        image_address,
-        image_index.image_size
-    );    
+    //set the pixel offset
+    u32 draw_buffer_row_offset = (x_offset * sizeof(RGBAPixel)) + (y_offset * BREW_PANEL_WIDTH_PIXELS);
+
+    for (
+        u32 image_pixel_row_offset = 0;
+        image_pixel_row_offset < (image_index.image_size - BREW_PANEL_WIDTH_PIXELS);
+        image_pixel_row_offset += image_index.image_width
+    ) {
+        //get the source and destination pixel rows
+        mem_data image_pixel_row = (mem_data)(&((mem_data)image_address)[image_pixel_row_offset]);
+        mem_data draw_buffer_row = (mem_data)(&((mem_data)draw_buffer)[draw_buffer_row_offset]);
+        
+        //move the image pixels into the back buffer
+        memmove(
+            draw_buffer_row,
+            image_pixel_row,
+            image_index.image_width
+        );
+
+        //update the back buffer row offset
+        draw_buffer_row_offset += BREW_PANEL_WIDTH_PIXELS;
+    }
 }
