@@ -43,16 +43,16 @@ brewpanel_images_build_file(
         images_file->temp_image.pixels = (RGBAPixel*)stbi_load_from_memory(
             images_file->temp_image.temp_image_file_data,
             file_size,
-            &images_file->temp_image.width,
-            &images_file->temp_image.height,
+            &images_file->temp_image.width_pixels,
+            &images_file->temp_image.height_pixels,
             &images_file->temp_image.channels,
             BREWPANEL_IMAGES_COLOR_CHANNELS
         );
 
         u32 image_data_size = 
             sizeof(RGBAPixel) * 
-            images_file->temp_image.width * 
-            images_file->temp_image.height;
+            images_file->temp_image.width_pixels * 
+            images_file->temp_image.height_pixels;
 
         RGBAPixel* pixel_buffer = (RGBAPixel*)images_file->temp_image.pixels;
         for (
@@ -77,11 +77,13 @@ brewpanel_images_build_file(
     
         //update the index for this image
         BrewPanelImagesFileIndex image_file_index = {0};
-        image_file_index.image_id     = image_index;
-        image_file_index.image_offset = offset;
-        image_file_index.image_width  = images_file->temp_image.width;
-        image_file_index.image_height = images_file->temp_image.height;
-        image_file_index.image_size   = image_data_size;
+        image_file_index.image_id             = image_index;
+        image_file_index.image_offset         = offset;
+        image_file_index.image_width_pixels   = images_file->temp_image.width_pixels;
+        image_file_index.image_height_pixels  = images_file->temp_image.height_pixels;
+        image_file_index.image_size_pixels    = images_file->temp_image.width_pixels * images_file->temp_image.height_pixels; 
+        image_file_index.image_row_size_bytes = images_file->temp_image.width_pixels * sizeof(RGBAPixel);
+        image_file_index.image_size_bytes     = image_data_size;
         strcpy(image_file_index.image_name,brewpanel_images_image_names[image_index]);
 
         images_file->file_header.image_indexes[image_index] = image_file_index;
@@ -181,22 +183,24 @@ brewpanel_images_draw_image(
     u32 draw_buffer_row_offset = (x_offset * sizeof(RGBAPixel)) + (y_offset * BREW_PANEL_WIDTH_PIXELS);
 
     for (
-        u32 image_pixel_row_offset = 0;
-        image_pixel_row_offset < (image_index.image_size - BREW_PANEL_WIDTH_PIXELS);
-        image_pixel_row_offset += image_index.image_width
+        u32 image_pixel_row = 0;
+        image_pixel_row < image_index.image_height_pixels;
+        ++image_pixel_row
     ) {
-        //get the source and destination pixel rows
-        mem_data image_pixel_row = (mem_data)(&((mem_data)image_address)[image_pixel_row_offset]);
-        mem_data draw_buffer_row = (mem_data)(&((mem_data)draw_buffer)[draw_buffer_row_offset]);
+        
+        //calculate the offsets
+        u32 image_byte_offset = image_pixel_row * image_index.image_row_size_bytes;
+        u32 draw_byte_offset  = image_pixel_row * BREW_PANEL_ROW_BYTES;
+
+        //get the source and destination rows
+        mem_data image_row       = ((mem_data)image_address) + image_byte_offset; 
+        mem_data draw_buffer_row = draw_buffer + draw_byte_offset;
         
         //move the image pixels into the back buffer
         memmove(
             draw_buffer_row,
-            image_pixel_row,
-            image_index.image_width
+            image_row,
+            image_index.image_row_size_bytes
         );
-
-        //update the back buffer row offset
-        draw_buffer_row_offset += BREW_PANEL_WIDTH_PIXELS;
     }
 }

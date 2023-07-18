@@ -13,8 +13,8 @@
 
 //TODO: rename
 struct BrewPanelImage {
-    s32        width;
-    s32        height;
+    s32        width_pixels;
+    s32        height_pixels;
     s32        channels;
     RGBAPixel* pixels;
     mem_data   temp_image_file_data;
@@ -40,9 +40,11 @@ global str brewpanel_images_image_names[] = {
 struct BrewPanelImagesFileIndex {
     u16  image_id;
     u32  image_offset;
-    u32  image_width;
-    u32  image_height;
-    u32  image_size;    
+    u32  image_width_pixels;
+    u32  image_height_pixels;
+    u32  image_size_pixels;
+    u32  image_row_size_bytes;
+    u32  image_size_bytes;    
     char image_name[BREWPANEL_IMAGES_NAME_LENGTH];
 };
 

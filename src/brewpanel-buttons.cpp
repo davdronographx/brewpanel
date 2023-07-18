@@ -8,7 +8,7 @@ brewpanel_buttons_create_store(
 
     BrewPanelButtonStore button_store = {0};
 
-    button_store.button_count = 0;
+    button_store.button_count = -1;
     button_store.button_id_matrix = (s8*)brewpanel_memory_allocate(memory,BREW_PANEL_PIXEL_COUNT);
 
     // memset(
@@ -20,7 +20,7 @@ brewpanel_buttons_create_store(
     // memset(
     //     (button_store.images.idle),
     //     BREW_PANEL_BUTTONS_NULL,
-    //     sizeof(BrewPanelButtonImages)
+    //     (BREW_PANEL_BUTTONS_MAX * 4)
     // );
 
     // memset(
@@ -47,8 +47,11 @@ brewpanel_buttons_create_button(
 
     //get the new button id
     s8 button_id = 0;
+    if (button_store->button_count <= 0) {
+        button_store->button_count = 0;
+    }
     ++button_store->button_count;
-    button_id = button_store->button_count;
+    button_id = button_store->button_count - 1;
 
     //set the image ids
     button_store->images.idle[button_id]     = button_image_id_idle; 
