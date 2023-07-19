@@ -21,20 +21,23 @@ struct BrewPanelImage {
 };
 
 enum BrewPanelImagesId : s16 {
-    BREWPANEL_IMAGES_ID_NULL              = -1,
-    BREWPANEL_IMAGES_ID_MAIN_SCREEN       = 0,
-    BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE = 1,
-    BREWPANEL_IMAGES_ID_COUNT             = 2
+    BREWPANEL_IMAGES_ID_NULL               = -1,
+    BREWPANEL_IMAGES_ID_MAIN_SCREEN        = 0,
+    BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE  = 1,
+    BREWPANEL_IMAGES_ID_GREEN_BUTTON_HOVER = 2,
+    BREWPANEL_IMAGES_ID_COUNT              = 3
 };
 
 global str brewpanel_images_file_paths[] = {
     "main-screen.png",
-    "green-button-idle.png"
+    "green-button-idle.png",
+    "green-button-hover.png"
 };
 
 global str brewpanel_images_image_names[] = {
     "main-screen",
-    "green-button-idle"
+    "green-button-idle",
+    "green-button-hover"
 };
 
 struct BrewPanelImagesFileIndex {
