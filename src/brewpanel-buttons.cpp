@@ -11,6 +11,12 @@ brewpanel_buttons_create_store(
     button_store.button_count = -1;
     button_store.button_id_matrix = (s8*)brewpanel_memory_allocate(memory,BREW_PANEL_PIXEL_COUNT);
 
+    memset(
+        button_store.button_id_matrix,
+        BREW_PANEL_BUTTONS_NULL,
+        BREW_PANEL_PIXEL_COUNT
+    );
+
     return(button_store);
 }
 
@@ -41,8 +47,19 @@ brewpanel_buttons_create_button(
     button_store->images.clicked[button_id]  = button_image_id_clicked;
     button_store->images.disabled[button_id] = button_image_id_disabled;
 
+    //set the offsets
     button_store->offsets[button_id].x_pixels = x_offset;
     button_store->offsets[button_id].y_pixels = y_offset;
+
+    //update the button matrix
+    // u32 button_height = 
+    
+    // u32 button_matrix_offset = x_offset + (y_offset * BREW_PANEL_WIDTH_PIXELS);
+    // u32* button_matrix_address = &button_store->button_id_matrix[button_matrix_offset];
+    // for (
+    //     u32 button_matrix_row = 0;
+    //     button_matrix_row < button_store->
+    // )
 
     return(button_id);
 }

@@ -207,10 +207,6 @@ brewpanel_images_draw_image(
 
             f32 transparency = image_pixel->alpha / 255;
 
-            tmp_pixel.red   = (u32)(transparency * (image_pixel->red));
-            tmp_pixel.green = (u32)(transparency * (image_pixel->green));
-            tmp_pixel.blue  = (u32)(transparency * (image_pixel->blue));
-
             draw_pixel->red   = (u8)((transparency * image_pixel->red) + (draw_pixel->red * (1.0f - transparency))); 
             draw_pixel->green = (u8)((transparency * image_pixel->green) + (draw_pixel->green * (1.0f - transparency)));
             draw_pixel->blue  = (u8)((transparency * image_pixel->blue) + (draw_pixel->blue * (1.0f - transparency)));
