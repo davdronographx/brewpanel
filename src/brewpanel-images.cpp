@@ -180,7 +180,7 @@ brewpanel_images_draw_image(
     RGBAPixel* image_address = brewpanel_images_address(images_state,image_id)
 
     //set the pixel offset
-    u32 draw_buffer_row_offset = (x_offset * sizeof(RGBAPixel)) + (y_offset * BREW_PANEL_WIDTH_PIXELS);
+    u32 draw_buffer_row_offset = (x_offset * sizeof(RGBAPixel)) + (y_offset * BREW_PANEL_ROW_BYTES);
 
     for (
         u32 image_pixel_row = 0;
@@ -190,17 +190,30 @@ brewpanel_images_draw_image(
         
         //calculate the offsets
         u32 image_byte_offset = image_pixel_row * image_index.image_row_size_bytes;
-        u32 draw_byte_offset  = image_pixel_row * BREW_PANEL_ROW_BYTES;
+        u32 draw_byte_offset  = (image_pixel_row * BREW_PANEL_ROW_BYTES) + draw_buffer_row_offset;
 
         //get the source and destination rows
-        mem_data image_row       = ((mem_data)image_address) + image_byte_offset; 
-        mem_data draw_buffer_row = draw_buffer + draw_byte_offset;
+        mem_data image_pixels = ((mem_data)image_address) + image_byte_offset; 
+        mem_data draw_pixels  = draw_buffer + draw_byte_offset;
         
-        //move the image pixels into the back buffer
-        memmove(
-            draw_buffer_row,
-            image_row,
-            image_index.image_row_size_bytes
-        );
+        for (
+            u32 pixel_index = 0;
+            pixel_index < image_index.image_row_size_bytes;
+            pixel_index += 4
+        ) {
+            RGBAPixel* image_pixel = (RGBAPixel*)(&image_pixels[pixel_index]);
+            RGBAPixel* draw_pixel  = (RGBAPixel*)(&draw_pixels[pixel_index]);                
+            RGBAPixel  tmp_pixel   = {0};
+
+            f32 transparency = image_pixel->alpha / 255;
+
+            tmp_pixel.red   = (u32)(transparency * (image_pixel->red));
+            tmp_pixel.green = (u32)(transparency * (image_pixel->green));
+            tmp_pixel.blue  = (u32)(transparency * (image_pixel->blue));
+
+            draw_pixel->red   = (u8)((transparency * image_pixel->red) + (draw_pixel->red * (1.0f - transparency))); 
+            draw_pixel->green = (u8)((transparency * image_pixel->green) + (draw_pixel->green * (1.0f - transparency)));
+            draw_pixel->blue  = (u8)((transparency * image_pixel->blue) + (draw_pixel->blue * (1.0f - transparency)));
+        }
     }
 }

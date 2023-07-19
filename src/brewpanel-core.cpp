@@ -30,8 +30,8 @@ brewpanel_core_init() {
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-        0,
-        0
+        50,
+        50
     );
 }
 

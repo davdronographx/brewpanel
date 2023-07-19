@@ -11,24 +11,6 @@ brewpanel_buttons_create_store(
     button_store.button_count = -1;
     button_store.button_id_matrix = (s8*)brewpanel_memory_allocate(memory,BREW_PANEL_PIXEL_COUNT);
 
-    // memset(
-    //     button_store.button_id_matrix,
-    //     BREW_PANEL_BUTTONS_NULL,
-    //     BREW_PANEL_PIXEL_COUNT
-    // );
-
-    // memset(
-    //     (button_store.images.idle),
-    //     BREW_PANEL_BUTTONS_NULL,
-    //     (BREW_PANEL_BUTTONS_MAX * 4)
-    // );
-
-    // memset(
-    //     (void*)(button_store.offsets),
-    //     BREW_PANEL_BUTTONS_NULL,
-    //     sizeof(BrewPanelButtonOffsets) * BREW_PANEL_BUTTONS_MAX
-    // );
-
     return(button_store);
 }
 
@@ -59,8 +41,8 @@ brewpanel_buttons_create_button(
     button_store->images.clicked[button_id]  = button_image_id_clicked;
     button_store->images.disabled[button_id] = button_image_id_disabled;
 
-    //TODO: we'll do the offsets after we make sure  the button draws   
-
+    button_store->offsets[button_id].x_pixels = x_offset;
+    button_store->offsets[button_id].y_pixels = y_offset;
 
     return(button_id);
 }
@@ -83,10 +65,15 @@ brewpanel_buttons_draw(
         u16 button_image_id_clicked  = button_store->images.clicked[button_index];
         u16 button_image_id_disabled = button_store->images.disabled[button_index];
     
+        u32 x_offset = button_store->offsets[button_index].x_pixels;
+        u32 y_offset = button_store->offsets[button_index].y_pixels;
+
         brewpanel_images_draw_image(
             images_state,
             button_image_id_idle,
-            0,0,draw_buffer
+            x_offset,
+            y_offset,
+            draw_buffer
         );
     }
 
