@@ -205,7 +205,7 @@ brewpanel_images_draw_image(
             RGBAPixel* draw_pixel  = (RGBAPixel*)(&draw_pixels[pixel_index]);                
             RGBAPixel  tmp_pixel   = {0};
 
-            f32 transparency = image_pixel->alpha / 255;
+            f32 transparency = image_pixel->alpha * BREWPANEL_IMAGES_TRANSPARENCY;
 
             draw_pixel->red   = (u8)((transparency * image_pixel->red) + (draw_pixel->red * (1.0f - transparency))); 
             draw_pixel->green = (u8)((transparency * image_pixel->green) + (draw_pixel->green * (1.0f - transparency)));
