@@ -36,11 +36,11 @@ brewpanel_core_init() {
         &brewpanel_state->images,
         brewpanel_core_test_button_click,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
+        BREWPANEL_IMAGES_ID_GREEN_BUTTON_HOVER,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-        BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-        0,
-        0
+        50,
+        50
     );
 }
 
@@ -51,13 +51,18 @@ brewpanel_core_update_and_render(
     //render the main background
     brewpanel_core_render_main_screen();
     
-    if (input->click) {
-        brewpanel_buttons_click(
-            &brewpanel_state->button_store,
-            input->mouse_x_pos,
-            input->mouse_y_pos
-        );
-    }
+    // if (input->click) {
+    //     brewpanel_buttons_click(
+    //         &brewpanel_state->button_store,
+    //         input->mouse_x_pos,
+    //         input->mouse_y_pos
+    //     );
+    // }
+
+    brewpanel_buttons_update(
+        input,
+        &brewpanel_state->button_store
+    );
 
     //draw the buttons
     brewpanel_buttons_draw(
@@ -67,5 +72,5 @@ brewpanel_core_update_and_render(
     );
 
     //reset user input
-    *input = {0};
+    // *input = {0};
 }

@@ -35,6 +35,7 @@ typedef void
 struct BrewPanelButtonStore {
     s8                         button_count;
     BrewPanelButtonImages      images;
+    BrewPanelButtonState       states[BREW_PANEL_BUTTONS_MAX];
     BrewPanelButtonOffsets     offsets[BREW_PANEL_BUTTONS_MAX];
     func_button_click_callback on_click_callbacks[BREW_PANEL_BUTTONS_MAX];
     s8*                        button_id_matrix;

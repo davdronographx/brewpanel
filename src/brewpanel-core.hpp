@@ -15,12 +15,6 @@ struct BrewPanelUIButtons {
     s8 test_button_id;
 };
 
-struct BrewPanelInput {
-    bool click;
-    u32  mouse_x_pos;
-    u32  mouse_y_pos;
-};
-
 struct BrewPanelState{
     BrewPanelMemory      memory;
     BrewPanelBackBuffer  back_buffer;

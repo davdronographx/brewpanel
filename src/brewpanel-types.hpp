@@ -38,6 +38,12 @@ struct RGBAPixel {
     u8 alpha;
 };
 
+struct BrewPanelInput {
+    bool click;
+    u32  mouse_x_pos;
+    u32  mouse_y_pos;
+};
+
 #define brewpanel_kilobytes(value) ((u64)value * 1024)
 #define brewpanel_megabytes(value) (brewpanel_kilobytes(value) * 1024)
 #define brewpanel_gigabytes(value) (brewpanel_megabytes(value) * 1024)

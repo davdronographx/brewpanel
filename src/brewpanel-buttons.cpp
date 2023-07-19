@@ -43,6 +43,8 @@ brewpanel_buttons_create_button(
     ++button_store->button_count;
     button_id = button_store->button_count - 1;
 
+    button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
+
     //set the image ids
     button_store->images.idle[button_id]     = button_image_id_idle; 
     button_store->images.hover[button_id]    = button_image_id_hover;
@@ -81,6 +83,32 @@ brewpanel_buttons_create_button(
 }
 
 internal void
+brewpanel_buttons_update(
+    BrewPanelInput* input,
+    BrewPanelButtonStore* button_store
+    ) {
+
+    //get the button id
+    u32 button_id_index = (input->mouse_y_pos * BREW_PANEL_WIDTH_PIXELS) + input->mouse_y_pos;
+    s8 button_id = button_store->button_id_matrix[button_id_index];
+
+    for (
+        s8 button_index = 0;
+        button_index < button_store->button_count;
+        ++button_index
+    ) {
+        if (button_store->states[button_index] == BREWPANEL_BUTTON_STATE_HOVER) {
+            button_store->states[button_index] = BREWPANEL_BUTTON_STATE_IDLE;
+        }
+    }
+
+    if (button_id != BREW_PANEL_BUTTONS_NULL) {
+        button_store->states[button_id] = BREWPANEL_BUTTON_STATE_HOVER;
+    }
+
+}
+
+internal void
 brewpanel_buttons_click(
     BrewPanelButtonStore* button_store,
     u32 x_pos,
@@ -116,12 +144,16 @@ brewpanel_buttons_draw(
         u16 button_image_id_clicked  = button_store->images.clicked[button_index];
         u16 button_image_id_disabled = button_store->images.disabled[button_index];
     
+        u16 button_to_draw = button_store->states[button_index] == BREWPANEL_BUTTON_STATE_IDLE
+            ? button_image_id_idle
+            : button_image_id_hover; 
+
         u32 x_offset = button_store->offsets[button_index].x_pixels;
         u32 y_offset = button_store->offsets[button_index].y_pixels;
 
         brewpanel_images_draw_image(
             images_state,
-            button_image_id_idle,
+            button_to_draw,
             x_offset,
             y_offset,
             draw_buffer
