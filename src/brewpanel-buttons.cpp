@@ -23,6 +23,7 @@ brewpanel_buttons_create_store(
 internal s8
 brewpanel_buttons_create_button(
     BrewPanelButtonStore* button_store,
+    BrewPanelImagesState* images_state,
     BrewPanelImagesId     button_image_id_idle,
     BrewPanelImagesId     button_image_id_hover,
     BrewPanelImagesId     button_image_id_clicked,
@@ -52,14 +53,25 @@ brewpanel_buttons_create_button(
     button_store->offsets[button_id].y_pixels = y_offset;
 
     //update the button matrix
-    // u32 button_height = 
+    //NOTE: also, we're assuming here that all the images are the same dimensions
+    BrewPanelImagesFileIndex image_index = brewpanel_images_index(images_state, button_image_id_idle);
+    u32 button_height = image_index.image_height_pixels;
+    u32 button_width  = image_index.image_width_pixels;
     
-    // u32 button_matrix_offset = x_offset + (y_offset * BREW_PANEL_WIDTH_PIXELS);
-    // u32* button_matrix_address = &button_store->button_id_matrix[button_matrix_offset];
-    // for (
-    //     u32 button_matrix_row = 0;
-    //     button_matrix_row < button_store->
-    // )
+    u32 button_matrix_offset = x_offset + (y_offset * BREW_PANEL_WIDTH_PIXELS);
+    mem_data button_matrix_address = (mem_data)(&button_store->button_id_matrix[button_matrix_offset]);
+    for (
+        u32 button_matrix_row = 0;
+        button_matrix_row < button_height;
+        ++button_matrix_row
+    ) {
+        button_matrix_address += (button_matrix_row * BREW_PANEL_WIDTH_PIXELS);
+        memset(
+            button_matrix_address,
+            button_id,
+            button_width
+        );
+    }
 
     return(button_id);
 }

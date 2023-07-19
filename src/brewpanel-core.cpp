@@ -26,6 +26,7 @@ brewpanel_core_init() {
     //create the buttons
     brewpanel_state->ui_buttons.test_button_id = brewpanel_buttons_create_button(
         &brewpanel_state->button_store,
+        &brewpanel_state->images,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
