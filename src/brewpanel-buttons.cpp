@@ -69,7 +69,7 @@ brewpanel_buttons_create_button(
         button_matrix_row < button_height;
         ++button_matrix_row
     ) {
-        button_matrix_address += (button_matrix_row * BREW_PANEL_WIDTH_PIXELS);
+        button_matrix_address +=  BREW_PANEL_WIDTH_PIXELS;
         memset(
             button_matrix_address,
             button_id,
