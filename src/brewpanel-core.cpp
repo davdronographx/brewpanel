@@ -10,6 +10,13 @@
 #include "brewpanel-buttons.cpp"
 
 internal void
+brewpanel_core_test_button_click(
+    void* data) {
+
+    brewpanel_nop();
+}
+
+internal void
 brewpanel_core_init() {
 
     //allocate memory for the state
@@ -27,23 +34,38 @@ brewpanel_core_init() {
     brewpanel_state->ui_buttons.test_button_id = brewpanel_buttons_create_button(
         &brewpanel_state->button_store,
         &brewpanel_state->images,
+        brewpanel_core_test_button_click,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
         BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-        50,
-        50
+        0,
+        0
     );
 }
 
 internal void
-brewpanel_core_update_and_render() {
+brewpanel_core_update_and_render(
+    BrewPanelInput* input) {
     
+    //render the main background
     brewpanel_core_render_main_screen();
     
+    if (input->click) {
+        brewpanel_buttons_click(
+            &brewpanel_state->button_store,
+            input->mouse_x_pos,
+            input->mouse_y_pos
+        );
+    }
+
+    //draw the buttons
     brewpanel_buttons_draw(
         &brewpanel_state->button_store,
         &brewpanel_state->images,
         (mem_data)brewpanel_state->back_buffer.pixels
     );
+
+    //reset user input
+    *input = {0};
 }

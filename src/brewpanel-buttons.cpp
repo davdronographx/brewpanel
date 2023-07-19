@@ -22,14 +22,15 @@ brewpanel_buttons_create_store(
 
 internal s8
 brewpanel_buttons_create_button(
-    BrewPanelButtonStore* button_store,
-    BrewPanelImagesState* images_state,
-    BrewPanelImagesId     button_image_id_idle,
-    BrewPanelImagesId     button_image_id_hover,
-    BrewPanelImagesId     button_image_id_clicked,
-    BrewPanelImagesId     button_image_id_disabled,
-    u32                   x_offset,
-    u32                   y_offset) {
+    BrewPanelButtonStore*      button_store,
+    BrewPanelImagesState*      images_state,
+    func_button_click_callback click_callback,
+    BrewPanelImagesId          button_image_id_idle,
+    BrewPanelImagesId          button_image_id_hover,
+    BrewPanelImagesId          button_image_id_clicked,
+    BrewPanelImagesId          button_image_id_disabled,
+    u32                        x_offset,
+    u32                        y_offset) {
 
     //make sure we have space available for the button
     brewpanel_assert(button_store->button_count != BREW_PANEL_BUTTONS_MAX);
@@ -51,6 +52,9 @@ brewpanel_buttons_create_button(
     //set the offsets
     button_store->offsets[button_id].x_pixels = x_offset;
     button_store->offsets[button_id].y_pixels = y_offset;
+
+    //callbacks
+    button_store->on_click_callbacks[button_id] = click_callback;
 
     //update the button matrix
     //NOTE: also, we're assuming here that all the images are the same dimensions
@@ -74,6 +78,24 @@ brewpanel_buttons_create_button(
     }
 
     return(button_id);
+}
+
+internal void
+brewpanel_buttons_click(
+    BrewPanelButtonStore* button_store,
+    u32 x_pos,
+    u32 y_pos) {
+
+    //get the button id
+    u32 button_id_index = (y_pos * BREW_PANEL_WIDTH_PIXELS) + x_pos;
+    s8 button_id = button_store->button_id_matrix[button_id_index];
+
+    if (button_id != BREW_PANEL_BUTTONS_NULL) {
+
+        func_button_click_callback callback = button_store->on_click_callbacks[button_id];
+        callback(NULL); 
+    }
+
 }
 
 internal void

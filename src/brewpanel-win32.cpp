@@ -16,6 +16,8 @@ global BITMAPINFO bitmap_info;
 global HDC        paint_context;
 global RECT       client_rect;
 
+global BrewPanelInput brewpanel_input;
+
 internal void
 brewpanel_win32_draw_bitmap() {
 
@@ -80,6 +82,40 @@ brewpanel_win32_process_pending_messages(
     while (PeekMessage(&window_message, 0,0,0,PM_REMOVE)) {
 
         switch(window_message.message) {
+
+            case WM_LBUTTONDOWN: {
+
+                brewpanel_input.click = true;
+
+                //get mouse position
+                POINT current_cursor_position = {0};
+                GetCursorPos(&current_cursor_position);
+
+                brewpanel_input.mouse_x_pos = GET_X_LPARAM(window_message.lParam);
+                brewpanel_input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - GET_Y_LPARAM(window_message.lParam);
+
+            } break;
+
+            case WM_LBUTTONUP: {
+
+                brewpanel_input.click = false;
+
+                brewpanel_input.mouse_x_pos = GET_X_LPARAM(window_message.lParam);
+                brewpanel_input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - GET_Y_LPARAM(window_message.lParam);
+
+            } break;
+
+            case WM_MOUSEMOVE: {
+
+                //get mouse position
+                POINT current_cursor_position = {0};
+                GetCursorPos(&current_cursor_position);
+
+                brewpanel_input.mouse_x_pos = GET_X_LPARAM(window_message.lParam);
+                brewpanel_input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - GET_Y_LPARAM(window_message.lParam);
+
+            } break;
+
             default: {
                 TranslateMessage(&window_message);
                 DispatchMessage(&window_message);
@@ -228,7 +264,7 @@ wWinMain(
 
         brewpanel_win32_process_pending_messages(window_handle);
 
-        brewpanel_core_update_and_render();
+        brewpanel_core_update_and_render(&brewpanel_input);
 
         brewpanel_win32_draw_bitmap();
     }
