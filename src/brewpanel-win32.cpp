@@ -260,13 +260,16 @@ wWinMain(
     brewpanel_core_init();
     brewpanel_assert(brewpanel_state != NULL);
 
+    brewpanel_win32_draw_bitmap();
     while(running) {
 
         brewpanel_win32_process_pending_messages(window_handle);
 
-        brewpanel_core_update_and_render(&brewpanel_input);
+        if (brewpanel_core_update_and_render(&brewpanel_input)){
+            brewpanel_win32_draw_bitmap();
+        }
 
-        brewpanel_win32_draw_bitmap();
+        SwapBuffers(device_context);
     }
 
     return 0;

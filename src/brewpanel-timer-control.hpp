@@ -5,6 +5,15 @@
 #include "brewpanel-buttons.hpp"
 #include "brewpanel-images.hpp"
 
+#define BREWPANEL_TIMER_CONTROL_START_X 0
+#define BREWPANEL_TIMER_CONTROL_START_Y 0
+#define BREWPANEL_TIMER_CONTROL_STOP_X  0
+#define BREWPANEL_TIMER_CONTROL_STOP_Y  100
+#define BREWPANEL_TIMER_CONTROL_PAUSE_X 0
+#define BREWPANEL_TIMER_CONTROL_PAUSE_Y 200
+#define BREWPANEL_TIMER_CONTROL_RESET_X 0
+#define BREWPANEL_TIMER_CONTROL_RESET_Y 300
+
 struct BrewPanelTimerControlButtons {
     button_id start_button_id;
     button_id stop_button_id;
@@ -16,5 +25,11 @@ struct BrewPanelTimerControl {
     BrewPanelTimerControlButtons buttons;
     image_id                     panel_image;
 };
+
+#define brewpanel_timer_control_create_start_button(buttons,images) brewpanel_buttons_create_button(buttons,images,brewpanel_timer_control_on_start_button_click,BREWPANEL_IMAGES_ID_TIMER_START_IDLE,BREWPANEL_IMAGES_ID_TIMER_START_HOVER,BREWPANEL_IMAGES_ID_TIMER_START_CLICKED,BREWPANEL_IMAGES_ID_TIMER_START_DISABLED,BREWPANEL_TIMER_CONTROL_START_X,BREWPANEL_TIMER_CONTROL_START_Y)
+#define brewpanel_timer_control_create_stop_button(buttons,images)  brewpanel_buttons_create_button(buttons,images,brewpanel_timer_control_on_start_button_click,BREWPANEL_IMAGES_ID_TIMER_STOP_IDLE, BREWPANEL_IMAGES_ID_TIMER_STOP_HOVER, BREWPANEL_IMAGES_ID_TIMER_STOP_CLICKED, BREWPANEL_IMAGES_ID_TIMER_STOP_DISABLED, BREWPANEL_TIMER_CONTROL_STOP_X,BREWPANEL_TIMER_CONTROL_STOP_Y)
+#define brewpanel_timer_control_create_pause_button(buttons,images) brewpanel_buttons_create_button(buttons,images,brewpanel_timer_control_on_start_button_click,BREWPANEL_IMAGES_ID_TIMER_PAUSE_IDLE,BREWPANEL_IMAGES_ID_TIMER_PAUSE_HOVER,BREWPANEL_IMAGES_ID_TIMER_PAUSE_CLICKED,BREWPANEL_IMAGES_ID_TIMER_PAUSE_DISABLED,BREWPANEL_TIMER_CONTROL_PAUSE_X,BREWPANEL_TIMER_CONTROL_PAUSE_Y)
+#define brewpanel_timer_control_create_reset_button(buttons,images) brewpanel_buttons_create_button(buttons,images,brewpanel_timer_control_on_start_button_click,BREWPANEL_IMAGES_ID_TIMER_RESET_IDLE,BREWPANEL_IMAGES_ID_TIMER_RESET_HOVER,BREWPANEL_IMAGES_ID_TIMER_RESET_CLICKED,BREWPANEL_IMAGES_ID_TIMER_RESET_DISABLED,BREWPANEL_TIMER_CONTROL_RESET_X,BREWPANEL_TIMER_CONTROL_RESET_Y)
+
 
 #endif //BREWPANEL_TIMER_CONTROL_HPP

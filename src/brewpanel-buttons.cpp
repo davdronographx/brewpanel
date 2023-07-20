@@ -126,11 +126,13 @@ brewpanel_buttons_click(
 
 }
 
-internal void
+internal bool
 brewpanel_buttons_draw(
     BrewPanelButtonStore* button_store,
     BrewPanelImagesState* images_state,
     mem_data              draw_buffer) {
+
+    bool render_screen = false;
 
     for (
         s8 button_index = 0;
@@ -145,6 +147,8 @@ brewpanel_buttons_draw(
         if (current_button_state == state_currently_drawn) {
             continue;
         }
+
+        render_screen = true;
 
         //set the draw state        
         button_store->draw_state[button_index] = current_button_state;
@@ -171,6 +175,7 @@ brewpanel_buttons_draw(
         );
     }
 
+    return(render_screen);
 }
 
 

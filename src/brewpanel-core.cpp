@@ -27,19 +27,6 @@ brewpanel_core_init() {
     //get the button store
     brewpanel_state->button_store = brewpanel_buttons_create_store(&memory);
 
-    //create the buttons
-    // brewpanel_state->ui_buttons.test_button_id = brewpanel_buttons_create_button(
-    //     &brewpanel_state->button_store,
-    //     &brewpanel_state->images,
-    //     brewpanel_core_test_button_click,
-    //     BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-    //     BREWPANEL_IMAGES_ID_GREEN_BUTTON_HOVER,
-    //     BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-    //     BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-    //     50,
-    //     50
-    //);
-
     //timer controls
     brewpanel_state->timer_control = brewpanel_timer_control_create(
         &brewpanel_state->button_store,
@@ -50,9 +37,11 @@ brewpanel_core_init() {
     brewpanel_core_render_main_screen();
 }
 
-internal void
+internal bool
 brewpanel_core_update_and_render(
     BrewPanelInput* input) {
+
+    bool render_screen = false;
 
     brewpanel_buttons_update(
         input,
@@ -60,12 +49,11 @@ brewpanel_core_update_and_render(
     );
 
     //draw the buttons
-    brewpanel_buttons_draw(
+    render_screen = brewpanel_buttons_draw(
         &brewpanel_state->button_store,
         &brewpanel_state->images,
         (mem_data)brewpanel_state->back_buffer.pixels
     );
 
-    //reset user input
-    // *input = {0};
+    return(render_screen);
 }
