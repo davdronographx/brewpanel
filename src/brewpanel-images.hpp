@@ -22,11 +22,27 @@ struct BrewPanelImage {
 };
 
 enum BrewPanelImagesId : s16 {
-    BREWPANEL_IMAGES_ID_NULL               = -1,
-    BREWPANEL_IMAGES_ID_MAIN_SCREEN        = 0,
-    BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE  = 1,
-    BREWPANEL_IMAGES_ID_GREEN_BUTTON_HOVER = 2,
-    BREWPANEL_IMAGES_ID_COUNT              = 3
+    BREWPANEL_IMAGES_ID_NULL                 = -1,
+    BREWPANEL_IMAGES_ID_MAIN_SCREEN          = 0,
+    BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE    = 1,
+    BREWPANEL_IMAGES_ID_GREEN_BUTTON_HOVER   = 2,
+    BREWPANEL_IMAGES_ID_TIMER_START_IDLE     = 3,
+    BREWPANEL_IMAGES_ID_TIMER_STOP_IDLE      = 4,
+    BREWPANEL_IMAGES_ID_TIMER_PAUSE_IDLE     = 5,
+    BREWPANEL_IMAGES_ID_TIMER_RESET_IDLE     = 6,
+    BREWPANEL_IMAGES_ID_TIMER_START_HOVER    = 7,
+    BREWPANEL_IMAGES_ID_TIMER_STOP_HOVER     = 8,
+    BREWPANEL_IMAGES_ID_TIMER_PAUSE_HOVER    = 9,
+    BREWPANEL_IMAGES_ID_TIMER_RESET_HOVER    = 10,
+    BREWPANEL_IMAGES_ID_TIMER_START_CLICKED  = 11,
+    BREWPANEL_IMAGES_ID_TIMER_STOP_CLICKED   = 12,
+    BREWPANEL_IMAGES_ID_TIMER_PAUSE_CLICKED  = 13,
+    BREWPANEL_IMAGES_ID_TIMER_RESET_CLICKED  = 14,
+    BREWPANEL_IMAGES_ID_TIMER_START_DISABLED = 15,
+    BREWPANEL_IMAGES_ID_TIMER_STOP_DISABLED  = 16,
+    BREWPANEL_IMAGES_ID_TIMER_PAUSE_DISABLED = 17,
+    BREWPANEL_IMAGES_ID_TIMER_RESET_DISABLED = 18,
+    BREWPANEL_IMAGES_ID_COUNT                = 19
 };
 
 typedef s16 image_id;
@@ -34,13 +50,45 @@ typedef s16 image_id;
 global str brewpanel_images_file_paths[] = {
     "main-screen.png",
     "green-button-idle.png",
-    "green-button-hover.png"
+    "green-button-hover.png",
+    "start-idle.png",
+    "stop-idle.png",
+    "pause-idle.png",
+    "reset-idle.png",
+    "start-hover.png",
+    "stop-hover.png",
+    "pause-hover.png",
+    "reset-hover.png",
+    "start-clicked.png",
+    "stop-clicked.png",
+    "pause-clicked.png",
+    "reset-clicked.png",
+    "start-disabled.png",
+    "stop-disabled.png",
+    "pause-disabled.png",
+    "reset-disabled.png"
 };
 
 global str brewpanel_images_image_names[] = {
     "main-screen",
     "green-button-idle",
-    "green-button-hover"
+    "green-button-hover",
+    "start-idle",
+    "stop-idle",
+    "pause-idle",
+    "reset-idle",
+    "start-hover",
+    "stop-hover",
+    "pause-hover",
+    "reset-hover",
+    "start-clicked",
+    "stop-clicked",
+    "pause-clicked",
+    "reset-clicked",
+    "start-disabled",
+    "stop-disabled",
+    "pause-disabled",
+    "reset-disabled"
 };
 
 struct BrewPanelImagesFileIndex {
