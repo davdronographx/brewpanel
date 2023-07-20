@@ -65,6 +65,11 @@ brewpanel_images_build_file(
             u8 tmp_red = pixel->red;
             pixel->red = pixel->blue;
             pixel->blue = tmp_red;
+
+            f32 transparency = pixel->alpha * BREWPANEL_IMAGES_TRANSPARENCY;
+            pixel->red *= transparency;
+            pixel->green *= transparency;
+            pixel->blue *= transparency; 
         }
 
         //write the data to the file
@@ -207,9 +212,9 @@ brewpanel_images_draw_image(
 
             f32 transparency = image_pixel->alpha * BREWPANEL_IMAGES_TRANSPARENCY;
 
-            draw_pixel->red   = (u8)((transparency * image_pixel->red) + (draw_pixel->red * (1.0f - transparency))); 
-            draw_pixel->green = (u8)((transparency * image_pixel->green) + (draw_pixel->green * (1.0f - transparency)));
-            draw_pixel->blue  = (u8)((transparency * image_pixel->blue) + (draw_pixel->blue * (1.0f - transparency)));
+            draw_pixel->red   = (u8)(image_pixel->red + (draw_pixel->red * (1.0f - transparency))); 
+            draw_pixel->green = (u8)(image_pixel->green + (draw_pixel->green * (1.0f - transparency)));
+            draw_pixel->blue  = (u8)(image_pixel->blue + (draw_pixel->blue * (1.0f - transparency)));
         }
     }
 }
