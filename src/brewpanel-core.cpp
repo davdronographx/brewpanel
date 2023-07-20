@@ -42,22 +42,14 @@ brewpanel_core_init() {
         50,
         50
     );
+
+    //render the main background
+    brewpanel_core_render_main_screen();
 }
 
 internal void
 brewpanel_core_update_and_render(
     BrewPanelInput* input) {
-    
-    //render the main background
-    brewpanel_core_render_main_screen();
-    
-    // if (input->click) {
-    //     brewpanel_buttons_click(
-    //         &brewpanel_state->button_store,
-    //         input->mouse_x_pos,
-    //         input->mouse_y_pos
-    //     );
-    // }
 
     brewpanel_buttons_update(
         input,

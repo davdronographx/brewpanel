@@ -200,7 +200,7 @@ brewpanel_images_draw_image(
         //get the source and destination rows
         mem_data image_pixels = ((mem_data)image_address) + image_byte_offset; 
         mem_data draw_pixels  = draw_buffer + draw_byte_offset;
-        
+
         for (
             u32 pixel_index = 0;
             pixel_index < image_index.image_row_size_bytes;

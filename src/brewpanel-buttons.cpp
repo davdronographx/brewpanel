@@ -138,12 +138,23 @@ brewpanel_buttons_draw(
         ++button_index
     ) {
 
+        BrewPanelButtonState current_button_state  = button_store->states[button_index];
+        BrewPanelButtonState state_currently_drawn = button_store->draw_state[button_index];
+
+        //we only want to draw if the state is different
+        if (current_button_state == state_currently_drawn) {
+            continue;
+        }
+
+        //set the draw state        
+        button_store->draw_state[button_index] = current_button_state;
+
         //get the current button
         u16 button_image_id_idle     = button_store->images.idle[button_index];
         u16 button_image_id_hover    = button_store->images.hover[button_index];
         u16 button_image_id_clicked  = button_store->images.clicked[button_index];
         u16 button_image_id_disabled = button_store->images.disabled[button_index];
-    
+
         u16 button_to_draw = button_store->states[button_index] == BREWPANEL_BUTTON_STATE_IDLE
             ? button_image_id_idle
             : button_image_id_hover; 
