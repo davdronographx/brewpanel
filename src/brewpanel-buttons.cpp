@@ -66,17 +66,18 @@ brewpanel_buttons_create_button(
     
     u32 button_matrix_offset = x_offset + (y_offset * BREW_PANEL_WIDTH_PIXELS);
     mem_data button_matrix_address = (mem_data)(&button_store->button_id_matrix[button_matrix_offset]);
+
     for (
         u32 button_matrix_row = 0;
         button_matrix_row < button_height;
         ++button_matrix_row
     ) {
-        button_matrix_address +=  BREW_PANEL_WIDTH_PIXELS;
         memset(
             button_matrix_address,
             button_id,
             button_width
         );
+        button_matrix_address +=  BREW_PANEL_WIDTH_PIXELS;
     }
 
     return(button_id);
@@ -85,11 +86,10 @@ brewpanel_buttons_create_button(
 internal void
 brewpanel_buttons_update(
     BrewPanelInput* input,
-    BrewPanelButtonStore* button_store
-    ) {
+    BrewPanelButtonStore* button_store) {
 
     //get the button id
-    u32 button_id_index = (input->mouse_y_pos * BREW_PANEL_WIDTH_PIXELS) + input->mouse_y_pos;
+    u32 button_id_index = (input->mouse_y_pos * BREW_PANEL_WIDTH_PIXELS) + input->mouse_x_pos;
     s8 button_id = button_store->button_id_matrix[button_id_index];
 
     for (
