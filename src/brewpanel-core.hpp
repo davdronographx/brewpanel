@@ -6,21 +6,18 @@
 #include "brewpanel-images.hpp"
 #include "brewpanel-core.hpp"
 #include "brewpanel-buttons.hpp"
+#include "brewpanel-timer-control.hpp"
 
 struct BrewPanelBackBuffer {
     RGBAPixel pixels[BREW_PANEL_PIXEL_COUNT];
 };
 
-struct BrewPanelUIButtons {
-    s8 test_button_id;
-};
-
 struct BrewPanelState{
-    BrewPanelMemory      memory;
-    BrewPanelBackBuffer  back_buffer;
-    BrewPanelImagesState images;
-    BrewPanelButtonStore button_store;
-    BrewPanelUIButtons   ui_buttons; 
+    BrewPanelMemory       memory;
+    BrewPanelBackBuffer   back_buffer;
+    BrewPanelImagesState  images;
+    BrewPanelButtonStore  button_store;
+    BrewPanelTimerControl timer_control;
 };
 
 global BrewPanelState* brewpanel_state;

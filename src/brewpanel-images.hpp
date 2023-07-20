@@ -29,6 +29,8 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_COUNT              = 3
 };
 
+typedef s16 image_id;
+
 global str brewpanel_images_file_paths[] = {
     "main-screen.png",
     "green-button-idle.png",

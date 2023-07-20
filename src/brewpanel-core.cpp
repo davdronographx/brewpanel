@@ -1,13 +1,10 @@
 #pragma once
 
-#include "brewpanel-types.hpp"
 #include "brewpanel-core.hpp"
-#include "brewpanel-images.hpp"
-#include "brewpanel-memory.hpp"
-
 #include "brewpanel-memory.cpp"
 #include "brewpanel-images.cpp"
 #include "brewpanel-buttons.cpp"
+#include "brewpanel-timer-control.cpp"
 
 internal void
 brewpanel_core_test_button_click(
@@ -31,16 +28,22 @@ brewpanel_core_init() {
     brewpanel_state->button_store = brewpanel_buttons_create_store(&memory);
 
     //create the buttons
-    brewpanel_state->ui_buttons.test_button_id = brewpanel_buttons_create_button(
+    // brewpanel_state->ui_buttons.test_button_id = brewpanel_buttons_create_button(
+    //     &brewpanel_state->button_store,
+    //     &brewpanel_state->images,
+    //     brewpanel_core_test_button_click,
+    //     BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
+    //     BREWPANEL_IMAGES_ID_GREEN_BUTTON_HOVER,
+    //     BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
+    //     BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
+    //     50,
+    //     50
+    //);
+
+    //timer controls
+    brewpanel_state->timer_control = brewpanel_timer_control_create(
         &brewpanel_state->button_store,
-        &brewpanel_state->images,
-        brewpanel_core_test_button_click,
-        BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-        BREWPANEL_IMAGES_ID_GREEN_BUTTON_HOVER,
-        BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-        BREWPANEL_IMAGES_ID_GREEN_BUTTON_IDLE,
-        50,
-        50
+        &brewpanel_state->images
     );
 
     //render the main background

@@ -8,6 +8,8 @@
 #define BREW_PANEL_BUTTONS_MAX 32
 #define BREW_PANEL_BUTTONS_NULL -1
 
+typedef s8 button_id;
+
 enum BrewPanelButtonState : u8
 {
     BREWPANEL_BUTTON_STATE_NULL     = 0,
