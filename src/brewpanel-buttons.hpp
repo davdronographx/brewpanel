@@ -10,10 +10,11 @@
 
 enum BrewPanelButtonState : u8
 {
-    BREWPANEL_BUTTON_STATE_IDLE     = 0,
-    BREWPANEL_BUTTON_STATE_HOVER    = 1,
-    BREWPANEL_BUTTON_STATE_CLICKED  = 2,
-    BREWPANEL_BUTTON_STATE_DISABLED = 3,
+    BREWPANEL_BUTTON_STATE_NULL     = 0,
+    BREWPANEL_BUTTON_STATE_IDLE     = 1,
+    BREWPANEL_BUTTON_STATE_HOVER    = 2,
+    BREWPANEL_BUTTON_STATE_CLICKED  = 3,
+    BREWPANEL_BUTTON_STATE_DISABLED = 4
 };
 
 struct BrewPanelButtonImages {
@@ -36,6 +37,7 @@ struct BrewPanelButtonStore {
     s8                         button_count;
     BrewPanelButtonImages      images;
     BrewPanelButtonState       states[BREW_PANEL_BUTTONS_MAX];
+    BrewPanelButtonState       draw_state[BREW_PANEL_BUTTONS_MAX];
     BrewPanelButtonOffsets     offsets[BREW_PANEL_BUTTONS_MAX];
     func_button_click_callback on_click_callbacks[BREW_PANEL_BUTTONS_MAX];
     s8*                        button_id_matrix;
