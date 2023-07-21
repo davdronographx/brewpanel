@@ -42,7 +42,8 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_TIMER_STOP_DISABLED  = 16,
     BREWPANEL_IMAGES_ID_TIMER_PAUSE_DISABLED = 17,
     BREWPANEL_IMAGES_ID_TIMER_RESET_DISABLED = 18,
-    BREWPANEL_IMAGES_ID_COUNT                = 19
+    BREWPANEL_IMAGES_ID_TIMER_PANEL          = 19,
+    BREWPANEL_IMAGES_ID_COUNT                = 20
 };
 
 typedef s16 image_id;
@@ -66,7 +67,8 @@ global str brewpanel_images_file_paths[] = {
     "start-disabled.png",
     "stop-disabled.png",
     "pause-disabled.png",
-    "reset-disabled.png"
+    "reset-disabled.png",
+    "timer-panel.png"
 };
 
 global str brewpanel_images_image_names[] = {
@@ -88,7 +90,8 @@ global str brewpanel_images_image_names[] = {
     "start-disabled",
     "stop-disabled",
     "pause-disabled",
-    "reset-disabled"
+    "reset-disabled",
+    "timer-panel"
 };
 
 struct BrewPanelImagesFileIndex {

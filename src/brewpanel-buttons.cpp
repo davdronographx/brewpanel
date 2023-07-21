@@ -178,4 +178,51 @@ brewpanel_buttons_draw(
     return(render_screen);
 }
 
+internal void
+brewpanel_buttons_draw_button(
+    BrewPanelButtonStore* button_store,
+    BrewPanelImagesState* images_state,
+    button_id             button_id,
+    mem_data              draw_buffer) {
+
+    BrewPanelButtonState current_button_state  = button_store->states[button_id];
+    button_store->draw_state[button_id] = current_button_state;
+
+    //get the current button
+    image_id button_image;
+    switch (current_button_state) {
+        
+        case BREWPANEL_BUTTON_STATE_IDLE: {
+            button_image = button_store->images.idle[button_id];
+        } break;
+
+        case BREWPANEL_BUTTON_STATE_HOVER: {
+            button_image = button_store->images.hover[button_id];
+        } break;
+
+        case BREWPANEL_BUTTON_STATE_CLICKED: {
+            button_image = button_store->images.clicked[button_id];
+        } break;
+
+        case BREWPANEL_BUTTON_STATE_DISABLED: {
+            button_image = button_store->images.disabled[button_id];
+        } break;
+
+        default: {
+            button_image = button_store->images.idle[button_id];
+        } break;
+    }    
+
+    u32 x_offset = button_store->offsets[button_id].x_pixels;
+    u32 y_offset = button_store->offsets[button_id].y_pixels;
+
+    brewpanel_images_draw_image(
+        images_state,
+        button_image,
+        x_offset,
+        y_offset,
+        draw_buffer
+    );
+}
+
 

@@ -55,5 +55,12 @@ brewpanel_core_update_and_render(
         (mem_data)brewpanel_state->back_buffer.pixels
     );
 
+    brewpanel_timer_control_update(
+        &brewpanel_state->timer_control,
+        &brewpanel_state->images,
+        &brewpanel_state->button_store,
+        (mem_data)brewpanel_state->back_buffer.pixels
+    );
+
     return(render_screen);
 }

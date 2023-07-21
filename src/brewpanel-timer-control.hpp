@@ -5,14 +5,17 @@
 #include "brewpanel-buttons.hpp"
 #include "brewpanel-images.hpp"
 
-#define BREWPANEL_TIMER_CONTROL_START_X 0
-#define BREWPANEL_TIMER_CONTROL_START_Y 0
-#define BREWPANEL_TIMER_CONTROL_STOP_X  0
-#define BREWPANEL_TIMER_CONTROL_STOP_Y  100
-#define BREWPANEL_TIMER_CONTROL_PAUSE_X 0
-#define BREWPANEL_TIMER_CONTROL_PAUSE_Y 200
-#define BREWPANEL_TIMER_CONTROL_RESET_X 0
-#define BREWPANEL_TIMER_CONTROL_RESET_Y 300
+#define BREWPANEL_TIMER_CONTROL_START_X 315
+#define BREWPANEL_TIMER_CONTROL_START_Y 325
+#define BREWPANEL_TIMER_CONTROL_STOP_X  315
+#define BREWPANEL_TIMER_CONTROL_STOP_Y  275
+#define BREWPANEL_TIMER_CONTROL_PAUSE_X 443
+#define BREWPANEL_TIMER_CONTROL_PAUSE_Y 325
+#define BREWPANEL_TIMER_CONTROL_RESET_X 443
+#define BREWPANEL_TIMER_CONTROL_RESET_Y 275
+
+#define BREWPANEL_TIMER_PANEL_X 300
+#define BREWPANEL_TIMER_PANEL_Y 255
 
 struct BrewPanelTimerControlButtons {
     button_id start_button_id;
@@ -21,9 +24,16 @@ struct BrewPanelTimerControlButtons {
     button_id reset_button_id;
 };
 
+struct BrewPanelTimerPanel {
+    image_id panel_image;
+    u32 x_offset;
+    u32 y_offset;
+};
+
 struct BrewPanelTimerControl {
+    bool                         redraw;
     BrewPanelTimerControlButtons buttons;
-    image_id                     panel_image;
+    BrewPanelTimerPanel          panel;
 };
 
 #define brewpanel_timer_control_create_start_button(buttons,images) brewpanel_buttons_create_button(buttons,images,brewpanel_timer_control_on_start_button_click,BREWPANEL_IMAGES_ID_TIMER_START_IDLE,BREWPANEL_IMAGES_ID_TIMER_START_HOVER,BREWPANEL_IMAGES_ID_TIMER_START_CLICKED,BREWPANEL_IMAGES_ID_TIMER_START_DISABLED,BREWPANEL_TIMER_CONTROL_START_X,BREWPANEL_TIMER_CONTROL_START_Y)
