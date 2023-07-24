@@ -10,7 +10,6 @@
 #define BREWPANEL_IMAGES_NAME_LENGTH     32
 #define BREWPANEL_IMAGES_COLOR_CHANNELS  4
 #define BREWPANEL_IMAGES_ALLOCATION_SIZE BREW_PANEL_PIXEL_COUNT
-#define BREWPANEL_IMAGES_TRANSPARENCY    0.003921568627451
 
 //TODO: rename
 struct BrewPanelImage {
@@ -43,7 +42,20 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_TIMER_PAUSE_DISABLED = 17,
     BREWPANEL_IMAGES_ID_TIMER_RESET_DISABLED = 18,
     BREWPANEL_IMAGES_ID_TIMER_PANEL          = 19,
-    BREWPANEL_IMAGES_ID_COUNT                = 20
+    BREWPANEL_IMAGES_ID_CLOCK_0              = 20,
+    BREWPANEL_IMAGES_ID_CLOCK_1              = 21,
+    BREWPANEL_IMAGES_ID_CLOCK_2              = 22,
+    BREWPANEL_IMAGES_ID_CLOCK_3              = 23,
+    BREWPANEL_IMAGES_ID_CLOCK_4              = 24,
+    BREWPANEL_IMAGES_ID_CLOCK_5              = 25,
+    BREWPANEL_IMAGES_ID_CLOCK_6              = 26,
+    BREWPANEL_IMAGES_ID_CLOCK_7              = 27,
+    BREWPANEL_IMAGES_ID_CLOCK_8              = 28,
+    BREWPANEL_IMAGES_ID_CLOCK_9              = 29,
+    BREWPANEL_IMAGES_ID_CLOCK_COLON          = 30,
+    BREWPANEL_IMAGES_ID_CLOCK_AM             = 31,
+    BREWPANEL_IMAGES_ID_CLOCK_PM             = 32,
+    BREWPANEL_IMAGES_ID_COUNT                = 33
 };
 
 typedef s16 image_id;
@@ -68,7 +80,20 @@ global str brewpanel_images_file_paths[] = {
     "stop-disabled.png",
     "pause-disabled.png",
     "reset-disabled.png",
-    "timer-panel.png"
+    "timer-panel.png",
+    "clock-0.png",
+    "clock-1.png",
+    "clock-2.png",
+    "clock-3.png",
+    "clock-4.png",
+    "clock-5.png",
+    "clock-6.png",
+    "clock-7.png",
+    "clock-8.png",
+    "clock-9.png",
+    "clock-colon.png",
+    "clock-am.png",
+    "clock-pm.png"
 };
 
 global str brewpanel_images_image_names[] = {
@@ -91,7 +116,20 @@ global str brewpanel_images_image_names[] = {
     "stop-disabled",
     "pause-disabled",
     "reset-disabled",
-    "timer-panel"
+    "timer-panel",
+    "clock-0",
+    "clock-1",
+    "clock-2",
+    "clock-3",
+    "clock-4",
+    "clock-5",
+    "clock-6",
+    "clock-7",
+    "clock-8",
+    "clock-9",
+    "clock-colon",
+    "clock-am",
+    "clock-pm"
 };
 
 struct BrewPanelImagesFileIndex {

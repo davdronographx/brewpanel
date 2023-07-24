@@ -5,13 +5,8 @@
 #include "brewpanel-images.cpp"
 #include "brewpanel-buttons.cpp"
 #include "brewpanel-timer-control.cpp"
+#include "brewpanel-clock.cpp"
 
-internal void
-brewpanel_core_test_button_click(
-    void* data) {
-
-    brewpanel_nop();
-}
 
 internal void
 brewpanel_core_init() {
@@ -33,6 +28,9 @@ brewpanel_core_init() {
         &brewpanel_state->images
     );
 
+    //initialize the clock
+    brewpanel_state->clock = brewpanel_clock_create();
+
     //render the main background
     brewpanel_core_render_main_screen();
 }
@@ -42,6 +40,10 @@ brewpanel_core_update_and_render(
     BrewPanelInput* input) {
 
     bool render_screen = false;
+
+    //update the clock
+    brewpanel_clock_update(&brewpanel_state->clock);
+
 
     brewpanel_buttons_update(
         input,

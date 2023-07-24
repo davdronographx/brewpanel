@@ -18,6 +18,21 @@ global RECT       client_rect;
 
 global BrewPanelInput brewpanel_input;
 
+internal BrewPanelSystemTime
+brewpanel_win32_get_system_time() {
+
+    BrewPanelSystemTime bp_system_time = {0};
+
+    SYSTEMTIME system_time = {0};
+    GetLocalTime(&system_time);
+
+    bp_system_time.hours   = system_time.wHour;
+    bp_system_time.minutes = system_time.wMinute;
+    bp_system_time.seconds = system_time.wSecond;
+
+    return(bp_system_time);
+}
+
 internal void
 brewpanel_win32_draw_bitmap() {
 
@@ -222,7 +237,7 @@ wWinMain(
     platform_api.file_close      = brewpanel_win32_close_file;
     platform_api.file_read       = brewpanel_win32_read_file;
     platform_api.file_write      = brewpanel_win32_write_file;
-
+    platform_api.system_time_get = brewpanel_win32_get_system_time;
 
     //open the window
     WNDCLASS window_class      = {0};

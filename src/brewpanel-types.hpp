@@ -44,6 +44,12 @@ struct BrewPanelInput {
     u32  mouse_y_pos;
 };
 
+struct BrewPanelSystemTime {
+    u8 hours;
+    u8 minutes;
+    u8 seconds;
+};
+
 #define brewpanel_kilobytes(value) ((u64)value * 1024)
 #define brewpanel_megabytes(value) (brewpanel_kilobytes(value) * 1024)
 #define brewpanel_gigabytes(value) (brewpanel_megabytes(value) * 1024)

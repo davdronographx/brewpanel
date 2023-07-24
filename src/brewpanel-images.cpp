@@ -65,11 +65,6 @@ brewpanel_images_build_file(
             u8 tmp_red = pixel->red;
             pixel->red = pixel->blue;
             pixel->blue = tmp_red;
-
-            f32 transparency = pixel->alpha * BREWPANEL_IMAGES_TRANSPARENCY;
-            pixel->red *= transparency;
-            pixel->green *= transparency;
-            pixel->blue *= transparency; 
         }
 
         //write the data to the file

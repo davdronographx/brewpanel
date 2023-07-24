@@ -58,6 +58,12 @@ typedef void
     u64         file_offset
 );
 
+typedef BrewPanelSystemTime
+(*func_brewpanel_system_time)
+(
+    void
+);
+
 struct BrewpanelPlatformApi {
     func_platform_memory_allocate memory_allocate;
     func_platform_memory_free     memory_free;
@@ -67,6 +73,7 @@ struct BrewpanelPlatformApi {
     func_platform_file_close      file_close;
     func_platform_file_read       file_read;
     func_platform_file_write      file_write;
+    func_brewpanel_system_time    system_time_get;
 };
 
 global BrewpanelPlatformApi platform_api;
@@ -79,5 +86,6 @@ global BrewpanelPlatformApi platform_api;
 #define brewpanel_platform_file_close(file)                    platform_api.file_close(file)
 #define brewpanel_platform_file_read(file,buffer,size,offset)  platform_api.file_read(file,buffer,size,offset)
 #define brewpanel_platform_file_write(file,buffer,size,offset) platform_api.file_write(file,buffer,size,offset)
+#define brewpanel_platform_system_time_get()                   platform_api.system_time_get()
 
 #endif //BREWPANEL_PLATFORM_API_HPP
