@@ -5,6 +5,19 @@
 #include "brewpanel-images.hpp"
 #include "brewpanel-platform-api.hpp"
 
+const image_id brewpanel_clock_glyph_table[] = {
+    BREWPANEL_IMAGES_ID_CLOCK_0,
+    BREWPANEL_IMAGES_ID_CLOCK_1,
+    BREWPANEL_IMAGES_ID_CLOCK_2,
+    BREWPANEL_IMAGES_ID_CLOCK_3,
+    BREWPANEL_IMAGES_ID_CLOCK_4,
+    BREWPANEL_IMAGES_ID_CLOCK_5,
+    BREWPANEL_IMAGES_ID_CLOCK_6,
+    BREWPANEL_IMAGES_ID_CLOCK_7,
+    BREWPANEL_IMAGES_ID_CLOCK_8,
+    BREWPANEL_IMAGES_ID_CLOCK_9
+};
+
 struct BrewPanelClockFaceDigits {
     image_id tens_face;
     image_id ones_face;
