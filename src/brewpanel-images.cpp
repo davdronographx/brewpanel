@@ -201,20 +201,10 @@ brewpanel_images_draw_image(
         mem_data image_pixels = ((mem_data)image_address) + image_byte_offset; 
         mem_data draw_pixels  = draw_buffer + draw_byte_offset;
 
-        for (
-            u32 pixel_index = 0;
-            pixel_index < image_index.image_row_size_bytes;
-            pixel_index += 4
-        ) {
-            RGBAPixel* image_pixel = (RGBAPixel*)(&image_pixels[pixel_index]);
-            RGBAPixel* draw_pixel  = (RGBAPixel*)(&draw_pixels[pixel_index]);                
-            RGBAPixel  tmp_pixel   = {0};
-
-            f32 transparency = image_pixel->alpha * BREWPANEL_IMAGES_TRANSPARENCY;
-
-            draw_pixel->red   = (u8)(image_pixel->red + (draw_pixel->red * (1.0f - transparency))); 
-            draw_pixel->green = (u8)(image_pixel->green + (draw_pixel->green * (1.0f - transparency)));
-            draw_pixel->blue  = (u8)(image_pixel->blue + (draw_pixel->blue * (1.0f - transparency)));
-        }
+        memmove(
+            draw_pixels,
+            image_pixels,
+            image_index.image_row_size_bytes
+        );
     }
 }
