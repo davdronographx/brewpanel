@@ -42,7 +42,11 @@ brewpanel_core_update_and_render(
     bool render_screen = false;
 
     //update the clock
-    brewpanel_clock_update(&brewpanel_state->clock);
+    brewpanel_clock_update(
+        &brewpanel_state->clock,
+        &brewpanel_state->images,
+        (mem_data)brewpanel_state->back_buffer.pixels
+    );
 
 
     brewpanel_buttons_update(
