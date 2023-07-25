@@ -52,7 +52,7 @@ brewpanel_clock_update(
     //get the offset info for the faces
     u32 face_offset = BREWPANEL_CLOCK_OFFSET_X;
     BrewPanelImagesFileIndex digit_image_info = brewpanel_images_index(images_state,clock_state->faces.seconds.ones_face);
-    u32 y_offset = BREW_PANEL_HEIGHT_PIXELS - digit_image_info.image_height_pixels;
+    u32 y_offset = BREW_PANEL_HEIGHT_PIXELS - (digit_image_info.image_height_pixels);
 
     //draw the hours
     if (previous_faces.hours.tens_face != clock_state->faces.hours.tens_face) {
@@ -152,5 +152,5 @@ brewpanel_clock_update(
         draw_buffer
     );
 
-    brewpanel_nop();0
+    brewpanel_nop();
 }
