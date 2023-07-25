@@ -39,10 +39,8 @@ internal bool
 brewpanel_core_update_and_render(
     BrewPanelInput* input) {
 
-    bool render_screen = false;
-
     //update the clock
-    brewpanel_clock_update(
+    bool render_screen_clock = brewpanel_clock_update(
         &brewpanel_state->clock,
         &brewpanel_state->images,
         (mem_data)brewpanel_state->back_buffer.pixels
@@ -55,7 +53,7 @@ brewpanel_core_update_and_render(
     );
 
     //draw the buttons
-    render_screen = brewpanel_buttons_draw(
+    bool render_screen_buttons = brewpanel_buttons_draw(
         &brewpanel_state->button_store,
         &brewpanel_state->images,
         (mem_data)brewpanel_state->back_buffer.pixels
@@ -68,5 +66,8 @@ brewpanel_core_update_and_render(
         (mem_data)brewpanel_state->back_buffer.pixels
     );
 
-    return(render_screen);
+    return(
+        render_screen_clock |
+        render_screen_buttons
+    );
 }
