@@ -18,7 +18,7 @@ struct BrewPanelState{
     BrewPanelBackBuffer   back_buffer;
     BrewPanelImagesState  images;
     BrewPanelButtonStore  button_store;
-    BrewPanelTimerControl timer_control;
+    BrewPanelTimers       timers;
     BrewPanelClock        clock;
 };
 

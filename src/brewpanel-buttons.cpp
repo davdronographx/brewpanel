@@ -25,6 +25,7 @@ brewpanel_buttons_create_button(
     BrewPanelButtonStore*      button_store,
     BrewPanelImagesState*      images_state,
     func_button_click_callback click_callback,
+    mem_data                   payload,
     BrewPanelImagesId          button_image_id_idle,
     BrewPanelImagesId          button_image_id_hover,
     BrewPanelImagesId          button_image_id_clicked,
@@ -57,6 +58,7 @@ brewpanel_buttons_create_button(
 
     //callbacks
     button_store->on_click_callbacks[button_id] = click_callback;
+    button_store->on_click_payloads[button_id]  = payload;
 
     //update the button matrix
     //NOTE: also, we're assuming here that all the images are the same dimensions
@@ -84,6 +86,25 @@ brewpanel_buttons_create_button(
 }
 
 internal void
+brewpanel_buttons_click(
+    BrewPanelButtonStore* button_store,
+    u32 x_pos,
+    u32 y_pos) {
+
+    //get the button id
+    u32 button_id_index = (y_pos * BREW_PANEL_WIDTH_PIXELS) + x_pos;
+    s8 button_id = button_store->button_id_matrix[button_id_index];
+
+    if (button_id != BREW_PANEL_BUTTONS_NULL) {
+
+        func_button_click_callback callback = button_store->on_click_callbacks[button_id];
+        mem_data payload = button_store->on_click_payloads[button_id];
+        callback(payload); 
+    }
+
+}
+
+internal void
 brewpanel_buttons_update(
     BrewPanelInput* input,
     BrewPanelButtonStore* button_store) {
@@ -100,28 +121,18 @@ brewpanel_buttons_update(
         if (button_store->states[button_index] == BREWPANEL_BUTTON_STATE_HOVER) {
             button_store->states[button_index] = BREWPANEL_BUTTON_STATE_IDLE;
         }
+
+        if (input->click) {
+            brewpanel_buttons_click(
+                button_store,
+                input->mouse_x_pos,
+                input->mouse_y_pos
+            );
+        }
     }
 
     if (button_id != BREW_PANEL_BUTTONS_NULL) {
         button_store->states[button_id] = BREWPANEL_BUTTON_STATE_HOVER;
-    }
-
-}
-
-internal void
-brewpanel_buttons_click(
-    BrewPanelButtonStore* button_store,
-    u32 x_pos,
-    u32 y_pos) {
-
-    //get the button id
-    u32 button_id_index = (y_pos * BREW_PANEL_WIDTH_PIXELS) + x_pos;
-    s8 button_id = button_store->button_id_matrix[button_id_index];
-
-    if (button_id != BREW_PANEL_BUTTONS_NULL) {
-
-        func_button_click_callback callback = button_store->on_click_callbacks[button_id];
-        callback(NULL); 
     }
 
 }

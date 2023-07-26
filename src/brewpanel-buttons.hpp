@@ -33,7 +33,7 @@ struct BrewPanelButtonOffsets {
 
 typedef void
 (*func_button_click_callback)
-(void* data);
+(mem_data data);
 
 struct BrewPanelButtonStore {
     s8                         button_count;
@@ -42,6 +42,7 @@ struct BrewPanelButtonStore {
     BrewPanelButtonState       draw_state[BREW_PANEL_BUTTONS_MAX];
     BrewPanelButtonOffsets     offsets[BREW_PANEL_BUTTONS_MAX];
     func_button_click_callback on_click_callbacks[BREW_PANEL_BUTTONS_MAX];
+    mem_data                   on_click_payloads[BREW_PANEL_BUTTONS_MAX];
     s8*                        button_id_matrix;
 };
 
