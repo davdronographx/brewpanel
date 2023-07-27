@@ -27,6 +27,30 @@
 #define BREWPANEL_TIMER_CONTROL_BOIL_RESET_Y 275
 #define BREWPANEL_TIMER_PANEL_BOIL_Y         255
 
+const image_id brewpanel_timer_glyph_table[] = {
+    BREWPANEL_IMAGES_ID_TIMER_0,
+    BREWPANEL_IMAGES_ID_TIMER_1,
+    BREWPANEL_IMAGES_ID_TIMER_2,
+    BREWPANEL_IMAGES_ID_TIMER_3,
+    BREWPANEL_IMAGES_ID_TIMER_4,
+    BREWPANEL_IMAGES_ID_TIMER_5,
+    BREWPANEL_IMAGES_ID_TIMER_6,
+    BREWPANEL_IMAGES_ID_TIMER_7,
+    BREWPANEL_IMAGES_ID_TIMER_8,
+    BREWPANEL_IMAGES_ID_TIMER_9
+};
+
+struct BrewPanelTimerDigitImages {
+    image_id tens_face;
+    image_id ones_face;
+};
+
+struct BrewPanelTimerDigits {
+    BrewPanelTimerDigitImages hours;
+    BrewPanelTimerDigitImages minutes;
+    BrewPanelTimerDigitImages seconds;
+};
+
 struct BrewPanelTimerControlButtons {
     button_id start_button_id;
     button_id stop_button_id;
@@ -40,10 +64,28 @@ struct BrewPanelTimerPanel {
     u32 y_offset;
 };
 
+struct BrewPanelTimerTimestamp {
+    u32 hours;
+    u32 minutes;
+    u32 seconds;
+};
+
+enum BrewPanelTimerState : u8 {
+    BREWPANEL_TIMER_STATE_IDLE    = 0,
+    BREWPANEL_TIMER_STATE_SET     = 1,
+    BREWPANEL_TIMER_STATE_RUNNING = 2,
+    BREWPANEL_TIMER_STATE_PAUSED  = 3,
+    BREWPANEL_TIMER_STATE_EXPIRED = 4
+};
+
 struct BrewPanelTimerControl {
     bool                         redraw;
     BrewPanelTimerControlButtons buttons;
     BrewPanelTimerPanel          panel;
+    u32                          set_time_seconds;
+    u32                          elapsed_time_seconds;
+    BrewPanelTimerState          state;
+    BrewPanelTimerDigits         digits;
 };
 
 struct BrewPanelTimers {
