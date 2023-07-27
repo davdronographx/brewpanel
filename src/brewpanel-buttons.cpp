@@ -86,25 +86,6 @@ brewpanel_buttons_create_button(
 }
 
 internal void
-brewpanel_buttons_click(
-    BrewPanelButtonStore* button_store,
-    u32 x_pos,
-    u32 y_pos) {
-
-    //get the button id
-    u32 button_id_index = (y_pos * BREW_PANEL_WIDTH_PIXELS) + x_pos;
-    s8 button_id = button_store->button_id_matrix[button_id_index];
-
-    if (button_id != BREW_PANEL_BUTTONS_NULL) {
-
-        func_button_click_callback callback = button_store->on_click_callbacks[button_id];
-        mem_data payload = button_store->on_click_payloads[button_id];
-        callback(payload); 
-    }
-
-}
-
-internal void
 brewpanel_buttons_update(
     BrewPanelInput* input,
     BrewPanelButtonStore* button_store) {
@@ -121,8 +102,8 @@ brewpanel_buttons_update(
         ++button_index
     ) {
 
-        if (button_store->states[button_index] == BREWPANEL_BUTTON_STATE_HOVER) {
-            button_store->states[button_index] = BREWPANEL_BUTTON_STATE_IDLE;
+        if (brewpanel_buttons_is_hover(button_store,button_index)) {
+            brewpanel_buttons_set_idle(button_store,button_index);
         }
     }
     //if we have a button id, the mouse is over a valid button
@@ -130,11 +111,25 @@ brewpanel_buttons_update(
 
         //we have a click event, so change the button to its clicked state
         if (input->click) {
-            button_store->states[button_id] = BREWPANEL_BUTTON_STATE_CLICKED;
+            brewpanel_buttons_set_clicked(button_store,button_id);
+            last_button_click = button_id;
         }
         else {
             //otherwise, just set the state to hover
-            button_store->states[button_id] = BREWPANEL_BUTTON_STATE_HOVER;
+            brewpanel_buttons_set_hover(button_store,button_id);
+
+            //if this is true, the button was clicked, then unclicked, so we need to
+            //use the click callback
+            if (last_button_click == button_id) {
+  
+                func_button_click_callback button_callback = brewpanel_buttons_click_callbacks(button_store,button_id);
+                mem_data button_payload = brewpanel_buttons_click_payloads(button_store,button_id);
+
+                button_callback(button_payload);
+            }
+
+            //always set the last clicked to null
+            last_button_click = BREW_PANEL_BUTTONS_NULL;
         }
     }
 
@@ -154,52 +149,52 @@ brewpanel_buttons_draw(
         ++button_index
     ) {
 
-        BrewPanelButtonState current_button_state  = button_store->states[button_index];
-        BrewPanelButtonState state_currently_drawn = button_store->draw_state[button_index];
+        BrewPanelButtonState current_button_state  = brewpanel_buttons_state(button_store,button_index);
+        BrewPanelButtonState state_currently_drawn = brewpanel_buttons_draw_state(button_store,button_index); 
 
         //we only want to draw if the state is different
         if (current_button_state == state_currently_drawn) {
             continue;
         }
 
+        //we're drawing something so we're re-rendering the screen
         render_screen = true;
 
         //set the draw state        
         button_store->draw_state[button_index] = current_button_state;
 
-        //get the current button
+        //get the button image to draw
         image_id button_image = 0;
-        switch (button_store->states[button_index]) {
+        switch (brewpanel_buttons_state(button_store,button_index)) {
             
             case BREWPANEL_BUTTON_STATE_IDLE: {
-                button_image = button_store->images.idle[button_index];
+                button_image = brewpanel_buttons_image_idle(button_store,button_index);
             } break;
 
             case BREWPANEL_BUTTON_STATE_HOVER: {
-                button_image = button_store->images.hover[button_index];
+                button_image = brewpanel_buttons_image_hover(button_store,button_index);
             } break;
             
             case BREWPANEL_BUTTON_STATE_CLICKED: {
-                button_image = button_store->images.clicked[button_index];
+                button_image = brewpanel_buttons_image_clicked(button_store,button_index);
             } break;
             
             case BREWPANEL_BUTTON_STATE_DISABLED: {
-                button_image = button_store->images.disabled[button_index];
+                button_image = brewpanel_buttons_image_disabled(button_store,button_index);
             } break;
             
             default: {
-                button_image = button_store->images.idle[button_index];
+                button_image = brewpanel_buttons_image_idle(button_store,button_index);
             } break;
         }
 
-        u32 x_offset = button_store->offsets[button_index].x_pixels;
-        u32 y_offset = button_store->offsets[button_index].y_pixels;
+        BrewPanelButtonOffsets button_offsets = brewpanel_buttons_offsets(button_store,button_index);
 
         brewpanel_images_draw_image(
             images_state,
             button_image,
-            x_offset,
-            y_offset,
+            button_offsets.x_pixels,
+            button_offsets.y_pixels,
             draw_buffer
         );
     }

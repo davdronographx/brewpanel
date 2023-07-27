@@ -46,6 +46,24 @@ struct BrewPanelButtonStore {
     s8*                        button_id_matrix;
 };
 
+#define brewpanel_buttons_state(store,id)           store->states[id]
+#define brewpanel_buttons_draw_state(store,id)      store->draw_state[id]
+#define brewpanel_buttons_offsets(store,id)         store->offsets[id]
+#define brewpanel_buttons_image_idle(store,id)      store->images.idle[id]
+#define brewpanel_buttons_image_hover(store,id)     store->images.hover[id]
+#define brewpanel_buttons_image_clicked(store,id)   store->images.clicked[id]
+#define brewpanel_buttons_image_disabled(store,id)  store->images.disabled[id]
+#define brewpanel_buttons_click_callbacks(store,id) store->on_click_callbacks[id]
+#define brewpanel_buttons_click_payloads(store,id)  store->on_click_payloads[id]
 
+#define brewpanel_buttons_set_idle(store,id)     store->states[id]=BREWPANEL_BUTTON_STATE_IDLE
+#define brewpanel_buttons_set_hover(store,id)    store->states[id]=BREWPANEL_BUTTON_STATE_HOVER
+#define brewpanel_buttons_set_clicked(store,id)  store->states[id]=BREWPANEL_BUTTON_STATE_CLICKED
+#define brewpanel_buttons_set_disabled(store,id) store->states[id]=BREWPANEL_BUTTON_STATE_DISABLED
+
+#define brewpanel_buttons_is_idle(store,id)     store->states[id]==BREWPANEL_BUTTON_STATE_IDLE
+#define brewpanel_buttons_is_hover(store,id)    store->states[id]==BREWPANEL_BUTTON_STATE_HOVER
+#define brewpanel_buttons_is_clicked(store,id)  store->states[id]==BREWPANEL_BUTTON_STATE_CLICKED
+#define brewpanel_buttons_is_disabled(store,id) store->states[id]==BREWPANEL_BUTTON_STATE_DISABLED
 
 #endif //BREWPANEL_BUTTONS_HPP
