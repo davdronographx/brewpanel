@@ -132,7 +132,6 @@ brewpanel_buttons_update(
             last_button_click = BREW_PANEL_BUTTONS_NULL;
         }
     }
-
 }
 
 internal bool

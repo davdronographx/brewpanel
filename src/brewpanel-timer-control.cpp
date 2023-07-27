@@ -19,18 +19,27 @@ internal void
 brewpanel_timer_control_mlt_on_stop_button_click(
     mem_data payload) {
 
+    BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
+
+    brewpanel_nop();
 }
 
 internal void
 brewpanel_timer_control_mlt_on_pause_button_click(
     mem_data payload) {
 
+    BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
+
+    brewpanel_nop();
 }
 
 internal void
 brewpanel_timer_control_mlt_on_reset_button_click(
     mem_data payload) {
 
+    BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
+
+    brewpanel_nop();
 }
 
 internal void
@@ -46,88 +55,94 @@ internal void
 brewpanel_timer_control_boil_on_stop_button_click(
     mem_data payload) {
 
+    BrewPanelTimerControl* boil_timer = (BrewPanelTimerControl*)payload;
+
+    brewpanel_nop();
 }
 
 internal void
 brewpanel_timer_control_boil_on_pause_button_click(
     mem_data payload) {
 
+    BrewPanelTimerControl* boil_timer = (BrewPanelTimerControl*)payload;
+
+    brewpanel_nop();
 }
 
 internal void
 brewpanel_timer_control_boil_on_reset_button_click(
     mem_data payload) {
 
+    BrewPanelTimerControl* boil_timer = (BrewPanelTimerControl*)payload;
+
+    brewpanel_nop();
 }
 
-internal BrewPanelTimerControl
+internal void
 brewpanel_timer_control_create_boil_timer(
-    BrewPanelButtonStore* button_store,
-    BrewPanelImagesState* image_store
-) {
-
-    BrewPanelTimerControl timer_control = {0};
-
-    //buttons
-    timer_control.buttons.start_button_id = brewpanel_timer_control_create_boil_start_button(button_store,image_store,timer_control);
-    timer_control.buttons.stop_button_id  = brewpanel_timer_control_create_boil_stop_button(button_store,image_store, timer_control);
-    timer_control.buttons.pause_button_id = brewpanel_timer_control_create_boil_pause_button(button_store,image_store,timer_control);
-    timer_control.buttons.reset_button_id = brewpanel_timer_control_create_boil_reset_button(button_store,image_store,timer_control);
-
-    //panel
-    timer_control.panel.panel_image = BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL;
-    timer_control.panel.x_offset    = BREWPANEL_TIMER_PANEL_BOIL_X;
-    timer_control.panel.y_offset    = BREWPANEL_TIMER_PANEL_BOIL_Y;
-
-    //set the redraw so we render the panel on the next update
-    timer_control.redraw = true;
-
-    return(timer_control);
-}
-
-internal BrewPanelTimerControl
-brewpanel_timer_control_create_mash_lauter_timer(
-    BrewPanelButtonStore* button_store,
-    BrewPanelImagesState* image_store
-) {
-
-    BrewPanelTimerControl timer_control = {0};
-
-    //buttons
-    timer_control.buttons.start_button_id = brewpanel_timer_control_create_mlt_start_button(button_store,image_store,timer_control);
-    timer_control.buttons.stop_button_id  = brewpanel_timer_control_create_mlt_stop_button( button_store,image_store,timer_control);
-    timer_control.buttons.pause_button_id = brewpanel_timer_control_create_mlt_pause_button(button_store,image_store,timer_control);
-    timer_control.buttons.reset_button_id = brewpanel_timer_control_create_mlt_reset_button(button_store,image_store,timer_control);
-
-    //panel
-    timer_control.panel.panel_image = BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
-    timer_control.panel.x_offset = BREWPANEL_TIMER_PANEL_X;
-    timer_control.panel.y_offset = BREWPANEL_TIMER_PANEL_Y;
-
-    //set the redraw so we render the panel on the next update
-    timer_control.redraw = true;
-
-    return(timer_control);
-}
-
-internal BrewPanelTimers
-brewpanel_timer_control_create_timers(
+    BrewPanelTimerControl* timer_control,
     BrewPanelButtonStore* button_store,
     BrewPanelImagesState* image_store) {
 
-    BrewPanelTimers timers = {0};
-    timers.mash_lauter_timer =
-        brewpanel_timer_control_create_mash_lauter_timer(
-            button_store,
-            image_store
-    );
-    timers.boil_timer =
-        brewpanel_timer_control_create_boil_timer(
-            button_store,
-            image_store
+    *timer_control = {0};
+
+    //buttons
+    timer_control->buttons.start_button_id = brewpanel_timer_control_create_boil_start_button(button_store,image_store,(*timer_control));
+    timer_control->buttons.stop_button_id  = brewpanel_timer_control_create_boil_stop_button(button_store,image_store, (*timer_control));
+    timer_control->buttons.pause_button_id = brewpanel_timer_control_create_boil_pause_button(button_store,image_store,(*timer_control));
+    timer_control->buttons.reset_button_id = brewpanel_timer_control_create_boil_reset_button(button_store,image_store,(*timer_control));
+
+    //panel
+    timer_control->panel.panel_image = BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL;
+    timer_control->panel.x_offset    = BREWPANEL_TIMER_PANEL_BOIL_X;
+    timer_control->panel.y_offset    = BREWPANEL_TIMER_PANEL_BOIL_Y;
+
+    //set the redraw so we render the panel on the next update
+    timer_control->redraw = true;
+}
+
+internal void
+brewpanel_timer_control_create_mash_lauter_timer(
+    BrewPanelTimerControl* timer_control,
+    BrewPanelButtonStore*  button_store,
+    BrewPanelImagesState*  image_store) {
+
+    *timer_control = {0};
+
+    //buttons
+    timer_control->buttons.start_button_id = brewpanel_timer_control_create_mlt_start_button(button_store,image_store,(*timer_control));
+    timer_control->buttons.stop_button_id  = brewpanel_timer_control_create_mlt_stop_button( button_store,image_store,(*timer_control));
+    timer_control->buttons.pause_button_id = brewpanel_timer_control_create_mlt_pause_button(button_store,image_store,(*timer_control));
+    timer_control->buttons.reset_button_id = brewpanel_timer_control_create_mlt_reset_button(button_store,image_store,(*timer_control));
+
+    //panel
+    timer_control->panel.panel_image = BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
+    timer_control->panel.x_offset    = BREWPANEL_TIMER_PANEL_X;
+    timer_control->panel.y_offset    = BREWPANEL_TIMER_PANEL_Y;
+
+    //set the redraw so we render the panel on the next update
+    timer_control->redraw = true;
+}
+
+internal void
+brewpanel_timer_control_create_timers(
+    BrewPanelTimers*      timers,
+    BrewPanelButtonStore* button_store,
+    BrewPanelImagesState* image_store) {
+
+    *timers = {0};
+
+    brewpanel_timer_control_create_mash_lauter_timer(
+        &timers->mash_lauter_timer,
+        button_store,
+        image_store
     );
 
-    return(timers);
+    brewpanel_timer_control_create_boil_timer(
+        &timers->boil_timer,
+        button_store,
+        image_store
+    );
 }
 
 internal void

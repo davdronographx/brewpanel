@@ -23,7 +23,8 @@ brewpanel_core_init() {
     brewpanel_state->button_store = brewpanel_buttons_create_store(&memory);
 
     //timer controls
-    brewpanel_state->timers = brewpanel_timer_control_create_timers(
+    brewpanel_timer_control_create_timers(
+        &brewpanel_state->timers,
         &brewpanel_state->button_store,
         &brewpanel_state->images
     );
