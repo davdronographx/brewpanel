@@ -56,7 +56,18 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_CLOCK_COLON          = 31,
     BREWPANEL_IMAGES_ID_CLOCK_AM             = 32,
     BREWPANEL_IMAGES_ID_CLOCK_PM             = 33,
-    BREWPANEL_IMAGES_ID_COUNT                = 34
+    BREWPANEL_IMAGES_ID_TIMER_0              = 34,
+    BREWPANEL_IMAGES_ID_TIMER_1              = 35,
+    BREWPANEL_IMAGES_ID_TIMER_2              = 36,
+    BREWPANEL_IMAGES_ID_TIMER_3              = 37,
+    BREWPANEL_IMAGES_ID_TIMER_4              = 38,
+    BREWPANEL_IMAGES_ID_TIMER_5              = 39,
+    BREWPANEL_IMAGES_ID_TIMER_6              = 40,
+    BREWPANEL_IMAGES_ID_TIMER_7              = 41,
+    BREWPANEL_IMAGES_ID_TIMER_8              = 42,
+    BREWPANEL_IMAGES_ID_TIMER_9              = 43,
+    BREWPANEL_IMAGES_ID_TIMER_COLON          = 44,
+    BREWPANEL_IMAGES_ID_COUNT                = 45
 };
 
 typedef s16 image_id;
@@ -95,7 +106,18 @@ global str brewpanel_images_file_paths[] = {
     "clock-9.png",
     "clock-colon.png",
     "clock-am.png",
-    "clock-pm.png"
+    "clock-pm.png",
+    "timer-0.png",
+    "timer-1.png",
+    "timer-2.png",
+    "timer-3.png",
+    "timer-4.png",
+    "timer-5.png",
+    "timer-6.png",
+    "timer-7.png",
+    "timer-8.png",
+    "timer-9.png",
+    "timer-colon.png"
 };
 
 global str brewpanel_images_image_names[] = {
@@ -132,7 +154,18 @@ global str brewpanel_images_image_names[] = {
     "clock-9",
     "clock-colon",
     "clock-am",
-    "clock-pm"
+    "clock-pm",
+    "timer-0.png",
+    "timer-1.png",
+    "timer-2.png",
+    "timer-3.png",
+    "timer-4.png",
+    "timer-5.png",
+    "timer-6.png",
+    "timer-7.png",
+    "timer-8.png",
+    "timer-9.png",
+    "timer-colon.png"
 };
 
 struct BrewPanelImagesFileIndex {
