@@ -310,7 +310,7 @@ brewpanel_timer_control_calculate_and_draw_digits(
 
     u32 mlt_digits_offset = BREWPANEL_TIMER_CONTROL_MLT_DIGITS_OFFSET_X;
     BrewPanelImagesFileIndex digit_image_info = brewpanel_images_index(images_state,timers->mash_lauter_timer.digits.hours.tens_face);
-    u32 y_offset = BREW_PANEL_HEIGHT_PIXELS - (digit_image_info.image_height_pixels);
+    u32 y_offset = BREW_PANEL_HEIGHT_PIXELS - (digit_image_info.image_height_pixels + 147);
 
 
     //draw the hours
@@ -326,87 +326,87 @@ brewpanel_timer_control_calculate_and_draw_digits(
     }
     mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    // if (previous_faces.hours.ones_face != clock_state->faces.hours.ones_face) {
-    //     brewpanel_images_draw_image(
-    //         images_state,
-    //         clock_state->faces.hours.ones_face,
-    //         face_offset,
-    //         y_offset,
-    //         draw_buffer
-    //     );
-    //     redraw = true;
-    // }
-    // face_offset += digit_image_info.image_width_pixels;
+    if (previous_mlt_digits.hours.ones_face != timers->mash_lauter_timer.digits.hours.ones_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->mash_lauter_timer.digits.hours.ones_face,
+            mlt_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    // //semicolon
-    // brewpanel_images_draw_image(
-    //     images_state,
-    //     BREWPANEL_IMAGES_ID_CLOCK_COLON,
-    //     face_offset,
-    //     y_offset,
-    //     draw_buffer
-    // );
-    // face_offset += digit_image_info.image_width_pixels;
+    //semicolon
+    brewpanel_images_draw_image(
+        images_state,
+        BREWPANEL_IMAGES_ID_TIMER_COLON,
+        mlt_digits_offset,
+        y_offset,
+        draw_buffer
+    );
+    mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    // //draw the minutes
-    // if (previous_faces.minutes.tens_face != clock_state->faces.minutes.tens_face) {
-    //     brewpanel_images_draw_image(
-    //         images_state,
-    //         clock_state->faces.minutes.tens_face,
-    //         face_offset,
-    //         y_offset,
-    //         draw_buffer
-    //     );
-    //     redraw = true;
-    // }
-    // face_offset += digit_image_info.image_width_pixels;
+    //draw the minutes
+    if (previous_mlt_digits.minutes.tens_face != timers->mash_lauter_timer.digits.minutes.tens_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->mash_lauter_timer.digits.minutes.tens_face,
+            mlt_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    // if (previous_faces.minutes.tens_face != clock_state->faces.minutes.ones_face) {
-    //     brewpanel_images_draw_image(
-    //         images_state,
-    //         clock_state->faces.minutes.ones_face,
-    //         face_offset,
-    //         y_offset,
-    //         draw_buffer
-    //     );
-    //     redraw = true;
-    // }
-    // face_offset += digit_image_info.image_width_pixels;
+    if (previous_mlt_digits.minutes.ones_face != timers->mash_lauter_timer.digits.minutes.ones_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->mash_lauter_timer.digits.minutes.ones_face,
+            mlt_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    // //semicolon
-    // brewpanel_images_draw_image(
-    //     images_state,
-    //     BREWPANEL_IMAGES_ID_CLOCK_COLON,
-    //     face_offset,
-    //     y_offset,
-    //     draw_buffer
-    // );
-    // face_offset += digit_image_info.image_width_pixels;
+    //semicolon
+    brewpanel_images_draw_image(
+        images_state,
+        BREWPANEL_IMAGES_ID_TIMER_COLON,
+        mlt_digits_offset,
+        y_offset,
+        draw_buffer
+    );
+    mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    // //seconds
-    // if (previous_faces.seconds.tens_face != clock_state->faces.seconds.tens_face) {
-    //     brewpanel_images_draw_image(
-    //         images_state,
-    //         clock_state->faces.seconds.tens_face,
-    //         face_offset,
-    //         y_offset,
-    //         draw_buffer
-    //     );
-    //     redraw = true;
-    // }
-    // face_offset += digit_image_info.image_width_pixels;
+    //draw the seconds
+    if (previous_mlt_digits.seconds.tens_face != timers->mash_lauter_timer.digits.seconds.tens_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->mash_lauter_timer.digits.seconds.tens_face,
+            mlt_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    // if (previous_faces.seconds.tens_face != clock_state->faces.seconds.ones_face) {
-    //     brewpanel_images_draw_image(
-    //         images_state,
-    //         clock_state->faces.seconds.ones_face,
-    //         face_offset,
-    //         y_offset,
-    //         draw_buffer
-    //     );
-    //     redraw = true;
-    // }
-    // face_offset += digit_image_info.image_width_pixels;
+    if (previous_mlt_digits.seconds.ones_face != timers->mash_lauter_timer.digits.seconds.ones_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->mash_lauter_timer.digits.seconds.ones_face,
+            mlt_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    mlt_digits_offset += digit_image_info.image_width_pixels;
 
     return(redraw);
 }
