@@ -86,6 +86,10 @@ brewpanel_timer_control_create_boil_timer(
 
     *timer_control = {0};
 
+    //TODO: this is temporary to get the digits displayed
+    timer_control->set_time_seconds     = 5415;
+    timer_control->elapsed_time_seconds = 0;
+
     //buttons
     timer_control->buttons.start_button_id = brewpanel_timer_control_create_boil_start_button(button_store,image_store,(*timer_control));
     timer_control->buttons.stop_button_id  = brewpanel_timer_control_create_boil_stop_button(button_store,image_store, (*timer_control));
@@ -308,10 +312,13 @@ brewpanel_timer_control_calculate_and_draw_digits(
     timers->boil_timer.digits.seconds.tens_face = brewpanel_timer_glyph_table[boil_seconds_tens];
     timers->boil_timer.digits.seconds.ones_face = brewpanel_timer_glyph_table[boil_seconds_ones];
 
+    //-----------------------------
+    // MLT TIMER
+    //-----------------------------
+
     u32 mlt_digits_offset = BREWPANEL_TIMER_CONTROL_MLT_DIGITS_OFFSET_X;
     BrewPanelImagesFileIndex digit_image_info = brewpanel_images_index(images_state,timers->mash_lauter_timer.digits.hours.tens_face);
     u32 y_offset = BREW_PANEL_HEIGHT_PIXELS - (digit_image_info.image_height_pixels + 147);
-
 
     //draw the hours
     if (previous_mlt_digits.hours.tens_face != timers->mash_lauter_timer.digits.hours.tens_face) {
@@ -406,7 +413,106 @@ brewpanel_timer_control_calculate_and_draw_digits(
         );
         redraw = true;
     }
-    mlt_digits_offset += digit_image_info.image_width_pixels;
+    
+    //-----------------------------
+    // BOIL TIMER
+    //-----------------------------
+
+    u32 boil_digits_offset = BREWPANEL_TIMER_CONTROL_BOIL_DIGITS_OFFSET_X;
+
+    //draw the hours
+    if (previous_boil_digits.hours.tens_face != timers->boil_timer.digits.hours.tens_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->boil_timer.digits.hours.tens_face,
+            boil_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    boil_digits_offset += digit_image_info.image_width_pixels;
+
+    if (previous_boil_digits.hours.ones_face != timers->boil_timer.digits.hours.ones_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->boil_timer.digits.hours.ones_face,
+            boil_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    boil_digits_offset += digit_image_info.image_width_pixels;
+
+    //semicolon
+    brewpanel_images_draw_image(
+        images_state,
+        BREWPANEL_IMAGES_ID_TIMER_COLON,
+        boil_digits_offset,
+        y_offset,
+        draw_buffer
+    );
+    boil_digits_offset += digit_image_info.image_width_pixels;
+
+    //draw the minutes
+    if (previous_boil_digits.minutes.tens_face != timers->boil_timer.digits.minutes.tens_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->boil_timer.digits.minutes.tens_face,
+            boil_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    boil_digits_offset += digit_image_info.image_width_pixels;
+
+    if (previous_boil_digits.minutes.ones_face != timers->boil_timer.digits.minutes.ones_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->boil_timer.digits.minutes.ones_face,
+            boil_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    boil_digits_offset += digit_image_info.image_width_pixels;
+
+    //semicolon
+    brewpanel_images_draw_image(
+        images_state,
+        BREWPANEL_IMAGES_ID_TIMER_COLON,
+        boil_digits_offset,
+        y_offset,
+        draw_buffer
+    );
+    boil_digits_offset += digit_image_info.image_width_pixels;
+
+    //draw the seconds
+    if (previous_boil_digits.seconds.tens_face != timers->boil_timer.digits.seconds.tens_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->boil_timer.digits.seconds.tens_face,
+            boil_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    boil_digits_offset += digit_image_info.image_width_pixels;
+
+    if (previous_boil_digits.seconds.ones_face != timers->boil_timer.digits.seconds.ones_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->boil_timer.digits.seconds.ones_face,
+            boil_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
 
     return(redraw);
 }
