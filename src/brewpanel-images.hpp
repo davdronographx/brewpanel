@@ -67,7 +67,17 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_TIMER_8              = 42,
     BREWPANEL_IMAGES_ID_TIMER_9              = 43,
     BREWPANEL_IMAGES_ID_TIMER_COLON          = 44,
-    BREWPANEL_IMAGES_ID_COUNT                = 45
+    BREWPANEL_IMAGES_ID_KEYPAD_0             = 45,
+    BREWPANEL_IMAGES_ID_KEYPAD_1             = 46,
+    BREWPANEL_IMAGES_ID_KEYPAD_2             = 47,
+    BREWPANEL_IMAGES_ID_KEYPAD_3             = 48,
+    BREWPANEL_IMAGES_ID_KEYPAD_4             = 49,
+    BREWPANEL_IMAGES_ID_KEYPAD_5             = 50,
+    BREWPANEL_IMAGES_ID_KEYPAD_6             = 51,
+    BREWPANEL_IMAGES_ID_KEYPAD_7             = 52,
+    BREWPANEL_IMAGES_ID_KEYPAD_8             = 53,
+    BREWPANEL_IMAGES_ID_KEYPAD_9             = 54,
+    BREWPANEL_IMAGES_ID_COUNT                = 55
 };
 
 typedef s16 image_id;
@@ -117,7 +127,17 @@ global str brewpanel_images_file_paths[] = {
     "timer-7.png",
     "timer-8.png",
     "timer-9.png",
-    "timer-colon.png"
+    "timer-colon.png",
+    "0-button.png",
+    "1-button.png",
+    "2-button.png",
+    "3-button.png",
+    "4-button.png",
+    "5-button.png",
+    "6-button.png",
+    "7-button.png",
+    "8-button.png",
+    "9-button.png"
 };
 
 global str brewpanel_images_image_names[] = {
@@ -155,17 +175,27 @@ global str brewpanel_images_image_names[] = {
     "clock-colon",
     "clock-am",
     "clock-pm",
-    "timer-0.png",
-    "timer-1.png",
-    "timer-2.png",
-    "timer-3.png",
-    "timer-4.png",
-    "timer-5.png",
-    "timer-6.png",
-    "timer-7.png",
-    "timer-8.png",
-    "timer-9.png",
-    "timer-colon.png"
+    "timer-0",
+    "timer-1",
+    "timer-2",
+    "timer-3",
+    "timer-4",
+    "timer-5",
+    "timer-6",
+    "timer-7",
+    "timer-8",
+    "timer-9",
+    "timer-colon",
+    "0-button",
+    "1-button",
+    "2-button",
+    "3-button",
+    "4-button",
+    "5-button",
+    "6-button",
+    "7-button",
+    "8-button",
+    "9-button"
 };
 
 struct BrewPanelImagesFileIndex {
