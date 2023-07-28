@@ -265,11 +265,15 @@ brewpanel_timer_control_draw_timers(
     return(redraw);
 }
 
-internal void
-brewpanel_timer_control_calculate_digits(
-    BrewPanelTimers*  timers,
+internal bool
+brewpanel_timer_control_calculate_and_draw_digits(
+    BrewPanelTimers*        timers,
     BrewPanelTimerTimestamp mlt_timestamp,
-    BrewPanelTimerTimestamp boil_timestamp) {
+    BrewPanelTimerTimestamp boil_timestamp,
+    BrewPanelImagesState*   images_state,
+    mem_data                draw_buffer) {
+
+    bool redraw = false;
 
     local BrewPanelTimerDigits previous_mlt_digits  = timers->mash_lauter_timer.digits;
     local BrewPanelTimerDigits previous_boil_digits = timers->boil_timer.digits;
@@ -303,6 +307,108 @@ brewpanel_timer_control_calculate_digits(
     timers->boil_timer.digits.minutes.ones_face = brewpanel_timer_glyph_table[boil_minutes_ones];
     timers->boil_timer.digits.seconds.tens_face = brewpanel_timer_glyph_table[boil_seconds_tens];
     timers->boil_timer.digits.seconds.ones_face = brewpanel_timer_glyph_table[boil_seconds_ones];
+
+    u32 mlt_digits_offset = BREWPANEL_TIMER_CONTROL_MLT_DIGITS_OFFSET_X;
+    BrewPanelImagesFileIndex digit_image_info = brewpanel_images_index(images_state,timers->mash_lauter_timer.digits.hours.tens_face);
+    u32 y_offset = BREW_PANEL_HEIGHT_PIXELS - (digit_image_info.image_height_pixels);
+
+
+    //draw the hours
+    if (previous_mlt_digits.hours.tens_face != timers->mash_lauter_timer.digits.hours.tens_face) {
+        brewpanel_images_draw_image(
+            images_state,
+            timers->mash_lauter_timer.digits.hours.tens_face,
+            mlt_digits_offset,
+            y_offset,
+            draw_buffer
+        );
+        redraw = true;
+    }
+    mlt_digits_offset += digit_image_info.image_width_pixels;
+
+    // if (previous_faces.hours.ones_face != clock_state->faces.hours.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         clock_state->faces.hours.ones_face,
+    //         face_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // face_offset += digit_image_info.image_width_pixels;
+
+    // //semicolon
+    // brewpanel_images_draw_image(
+    //     images_state,
+    //     BREWPANEL_IMAGES_ID_CLOCK_COLON,
+    //     face_offset,
+    //     y_offset,
+    //     draw_buffer
+    // );
+    // face_offset += digit_image_info.image_width_pixels;
+
+    // //draw the minutes
+    // if (previous_faces.minutes.tens_face != clock_state->faces.minutes.tens_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         clock_state->faces.minutes.tens_face,
+    //         face_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // face_offset += digit_image_info.image_width_pixels;
+
+    // if (previous_faces.minutes.tens_face != clock_state->faces.minutes.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         clock_state->faces.minutes.ones_face,
+    //         face_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // face_offset += digit_image_info.image_width_pixels;
+
+    // //semicolon
+    // brewpanel_images_draw_image(
+    //     images_state,
+    //     BREWPANEL_IMAGES_ID_CLOCK_COLON,
+    //     face_offset,
+    //     y_offset,
+    //     draw_buffer
+    // );
+    // face_offset += digit_image_info.image_width_pixels;
+
+    // //seconds
+    // if (previous_faces.seconds.tens_face != clock_state->faces.seconds.tens_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         clock_state->faces.seconds.tens_face,
+    //         face_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // face_offset += digit_image_info.image_width_pixels;
+
+    // if (previous_faces.seconds.tens_face != clock_state->faces.seconds.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         clock_state->faces.seconds.ones_face,
+    //         face_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // face_offset += digit_image_info.image_width_pixels;
+
+    return(redraw);
 }
 
 internal bool
@@ -324,13 +430,6 @@ brewpanel_timer_control_update(
             timers->boil_timer.elapsed_time_seconds
     );
 
-    //get the timer images
-    brewpanel_timer_control_calculate_digits(
-        timers,
-        mlt_timestamp,
-        boil_timestamp
-    );
-
     //draw the timers
     bool redraw = brewpanel_timer_control_draw_timers(
         timers,
@@ -338,6 +437,16 @@ brewpanel_timer_control_update(
         button_store,
         draw_buffer
     );
+    
+    //get the timer images
+    redraw |= brewpanel_timer_control_calculate_and_draw_digits(
+        timers,
+        mlt_timestamp,
+        boil_timestamp,
+        images_state,
+        draw_buffer
+    );
+
     
     return(redraw);
 }

@@ -5,6 +5,8 @@
 #include "brewpanel-buttons.hpp"
 #include "brewpanel-images.hpp"
 
+#define BREWPANEL_TIMER_CONTROL_MLT_DIGITS_OFFSET_X 0
+
 #define BREWPANEL_TIMER_CONTROL_START_X 315
 #define BREWPANEL_TIMER_CONTROL_STOP_X  315
 #define BREWPANEL_TIMER_CONTROL_PAUSE_X 443
