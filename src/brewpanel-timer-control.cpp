@@ -85,10 +85,7 @@ brewpanel_timer_control_create_boil_timer(
     BrewPanelImagesState* image_store) {
 
     *timer_control = {0};
-
-    //TODO: this is temporary to get the digits displayed
-    timer_control->set_time_seconds     = 5415;
-    timer_control->elapsed_time_seconds = 0;
+    timer_control->state = BREWPANEL_TIMER_STATE_IDLE;
 
     //buttons
     timer_control->buttons.start_button_id = brewpanel_timer_control_create_boil_start_button(button_store,image_store,(*timer_control));
@@ -112,10 +109,7 @@ brewpanel_timer_control_create_mash_lauter_timer(
     BrewPanelImagesState*  image_store) {
 
     *timer_control = {0};
-
-    //TODO: this is temporary to get the digits displayed
-    timer_control->set_time_seconds     = 5415;
-    timer_control->elapsed_time_seconds = 0;
+    timer_control->state = BREWPANEL_TIMER_STATE_IDLE;
 
     //buttons
     timer_control->buttons.start_button_id = brewpanel_timer_control_create_mlt_start_button(button_store,image_store,(*timer_control));
@@ -517,12 +511,56 @@ brewpanel_timer_control_calculate_and_draw_digits(
     return(redraw);
 }
 
+
+internal void
+brewpanel_timer_control_update_buttons(
+    BrewPanelTimerControl* timer_control,
+    BrewPanelButtonStore*  button_store) {
+
+    switch (timer_control->state) {
+
+        case BREWPANEL_TIMER_STATE_IDLE: {
+
+            brewpanel_buttons_disable(button_store,timer_control->buttons.start_button_id);
+            brewpanel_buttons_disable(button_store,timer_control->buttons.stop_button_id);
+            brewpanel_buttons_disable(button_store,timer_control->buttons.pause_button_id);
+            brewpanel_buttons_enable(button_store,timer_control->buttons.reset_button_id);
+
+        } break;
+
+        case BREWPANEL_TIMER_STATE_SET: {
+
+        } break;
+
+        case BREWPANEL_TIMER_STATE_RUNNING: {
+
+        } break;
+
+        case BREWPANEL_TIMER_STATE_PAUSED: {
+
+        } break;
+
+        case BREWPANEL_TIMER_STATE_EXPIRED: {
+
+        } break;
+
+        default: {
+
+        } break;
+    }
+
+}
+
 internal bool
 brewpanel_timer_control_update(
     BrewPanelTimers*       timers,
     BrewPanelImagesState*  images_state,
     BrewPanelButtonStore*  button_store,
     mem_data               draw_buffer) {
+
+    //update the timer buttons
+    brewpanel_timer_control_update_buttons(&timers->mash_lauter_timer,button_store);
+    brewpanel_timer_control_update_buttons(&timers->boil_timer,button_store);
 
     //calculate the timestamps
     BrewPanelTimerTimestamp mlt_timestamp = 

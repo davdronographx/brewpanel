@@ -2,6 +2,22 @@
 
 #include "brewpanel-buttons.hpp"
 
+internal void
+brewpanel_buttons_disable(
+    BrewPanelButtonStore* button_store,
+    button_id button) {
+
+    button_store->states[button] = BREWPANEL_BUTTON_STATE_DISABLED;
+}
+
+internal void
+brewpanel_buttons_enable(
+    BrewPanelButtonStore* button_store,
+    button_id button) {
+
+    button_store->states[button] = BREWPANEL_BUTTON_STATE_IDLE;
+}
+
 internal BrewPanelButtonStore
 brewpanel_buttons_create_store(
     BrewPanelMemory* memory) {
@@ -107,7 +123,7 @@ brewpanel_buttons_update(
         }
     }
     //if we have a button id, the mouse is over a valid button
-    if (button_id != BREW_PANEL_BUTTONS_NULL) {
+    if (button_id != BREW_PANEL_BUTTONS_NULL && !brewpanel_buttons_is_disabled(button_store,button_id)) {
 
         //we have a click event, so change the button to its clicked state
         if (input->click) {
