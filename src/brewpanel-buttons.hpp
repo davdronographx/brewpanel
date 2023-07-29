@@ -46,6 +46,8 @@ struct BrewPanelButtonStore {
     s8*                        button_id_matrix;
 };
 
+typedef BrewPanelButtonStore button_store;
+
 #define brewpanel_buttons_state(store,id)           store->states[id]
 #define brewpanel_buttons_draw_state(store,id)      store->draw_state[id]
 #define brewpanel_buttons_offsets(store,id)         store->offsets[id]

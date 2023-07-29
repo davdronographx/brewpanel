@@ -9,6 +9,7 @@
 #include "brewpanel-timer-control.hpp"
 #include "brewpanel-clock.hpp"
 #include "brewpanel-communication.hpp"
+#include "brewpanel-temp-control.hpp"
 
 struct BrewPanelBackBuffer {
     RGBAPixel pixels[BREW_PANEL_PIXEL_COUNT];
@@ -18,10 +19,11 @@ struct BrewPanelState{
     BrewPanelMemory       memory;
     BrewPanelBackBuffer   back_buffer;
     BrewPanelImagesState  images;
-    BrewPanelButtonStore  button_store;
+    button_store          button_store;
     BrewPanelTimers       timers;
     BrewPanelClock        clock;
     comm_handler          comm_handler;
+    temp_control          temp_control;
 };
 
 global BrewPanelState* brewpanel_state;

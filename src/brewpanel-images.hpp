@@ -217,6 +217,7 @@ struct BrewPanelImagesFileIndex {
     u32  image_size_bytes;    
     char image_name[BREWPANEL_IMAGES_NAME_LENGTH];
 };
+typedef BrewPanelImagesFileIndex image_index;
 
 struct BrewPanelImagesFileHeader {
     char                     verifiction[3];
@@ -235,6 +236,7 @@ struct BrewPanelImagesFile {
 struct BrewPanelImagesState {
     BrewPanelImagesFile images_file;
 };
+typedef BrewPanelImagesState images_store;
 
 #define brewpanel_images_index(images_state,image_id)   images_state->images_file.file_header.image_indexes[image_id]
 #define brewpanel_images_address(images_state,image_id) (RGBAPixel*)(&images_state->images_file.image_data[brewpanel_images_index(images_state,image_id).image_offset]);
