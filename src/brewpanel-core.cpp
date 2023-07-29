@@ -6,6 +6,7 @@
 #include "brewpanel-buttons.cpp"
 #include "brewpanel-timer-control.cpp"
 #include "brewpanel-clock.cpp"
+#include "brewpanel-communication.cpp"
 
 
 internal void

@@ -8,6 +8,7 @@
 #include "brewpanel-buttons.hpp"
 #include "brewpanel-timer-control.hpp"
 #include "brewpanel-clock.hpp"
+#include "brewpanel-communication.hpp"
 
 struct BrewPanelBackBuffer {
     RGBAPixel pixels[BREW_PANEL_PIXEL_COUNT];
