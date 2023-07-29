@@ -17,6 +17,9 @@ brewpanel_core_init() {
     brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
     brewpanel_state->memory = memory;
 
+    //create the message handler
+    brewpanel_state->comm_handler = brewpanel_communication_create_handler();
+
     //get the images
     brewpanel_state->images = brewpanel_images_state_create(&memory);
 

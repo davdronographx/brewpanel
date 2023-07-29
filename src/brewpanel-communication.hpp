@@ -29,17 +29,17 @@ enum BrewPanelCommunicationMessageType : u8 {
 typedef BrewPanelCommunicationMessageType comm_message_type;
 
 struct BrewPanelCommunicationMessageHeader {
-    comm_message_sender sender;       //u8
-    comm_message_type   message_type; //u8
-    u32                 message_size; //u32
-    u64                 timestamp;    //u64
+    u8  sender;
+    u8  message_type;
+    u32 message_size;
+    u64 timestamp;
 };
 typedef BrewPanelCommunicationMessageHeader comm_message_header; 
 
 struct BrewPanelCommunicationMessage {
     comm_message_header header;
     u32                 payload_size_bytes;
-    mem_data            payload_data[BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE];
+    mem_byte            payload_data[BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE];
 };
 typedef BrewPanelCommunicationMessage comm_message;
 
@@ -64,25 +64,25 @@ enum BrewPanelCommunicationTimerStatus : u8 {
 typedef BrewPanelCommunicationTimerStatus comm_timer_status;
 
 struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
-    u8                hlt_element_temp;
-    u8                mlt_element_temp;
-    u8                boil_element_temp;
-    comm_panel_mode   panel_mode;
-    comm_pump_status  water_pump_status;
-    comm_pump_status  wort_pump_status;
-    comm_timer_status timer_status;
-    u64               timer_set_point_ms;
-    u64               timer_elapsed_ms;
+    u8  hlt_element_temp;
+    u8  mlt_element_temp;
+    u8  boil_element_temp;
+    u8  panel_mode;
+    u8  water_pump_status;
+    u8  wort_pump_status;
+    u8  timer_status;
+    u64 timer_set_point_ms;
+    u64 timer_elapsed_ms;
 };
 
 struct BrewPanelCommunicationMessageQueue {
     u8           sent_message_count;
-    mem_data     sent_messages[5]; 
+    comm_message sent_messages[BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES]; 
 };
 typedef BrewPanelCommunicationMessageQueue comm_message_queue;
 
 struct BrewPanelCommunicationHandler {
-    mem_data       incoming_message;
+    comm_message       incoming_message;
     comm_message_queue sent_message_queue;
 };
 typedef BrewPanelCommunicationHandler comm_handler;

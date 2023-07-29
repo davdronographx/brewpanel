@@ -10,6 +10,7 @@ struct BrewPanelMemory {
     s32 used;
     mem_data core_memory;
 };
+typedef BrewPanelMemory panel_memory;
 
 #define brewpanel_memory_allocate_struct(mem,new_struct) (new_struct*)brewpanel_memory_allocate(mem,sizeof(new_struct)) 
 

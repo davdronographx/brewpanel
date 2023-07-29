@@ -21,6 +21,7 @@ struct BrewPanelState{
     BrewPanelButtonStore  button_store;
     BrewPanelTimers       timers;
     BrewPanelClock        clock;
+    comm_handler          comm_handler;
 };
 
 global BrewPanelState* brewpanel_state;
