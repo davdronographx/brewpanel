@@ -342,7 +342,7 @@ brewpanel_timer_control_calculate_and_draw_digits(
     //semicolon
     brewpanel_images_draw_image(
         images_state,
-        BREWPANEL_IMAGES_ID_TIMER_COLON,
+        BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
         mlt_digits_offset,
         y_offset,
         draw_buffer
@@ -377,7 +377,7 @@ brewpanel_timer_control_calculate_and_draw_digits(
     //semicolon
     brewpanel_images_draw_image(
         images_state,
-        BREWPANEL_IMAGES_ID_TIMER_COLON,
+        BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
         mlt_digits_offset,
         y_offset,
         draw_buffer
@@ -442,7 +442,7 @@ brewpanel_timer_control_calculate_and_draw_digits(
     //semicolon
     brewpanel_images_draw_image(
         images_state,
-        BREWPANEL_IMAGES_ID_TIMER_COLON,
+        BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
         boil_digits_offset,
         y_offset,
         draw_buffer
@@ -477,7 +477,7 @@ brewpanel_timer_control_calculate_and_draw_digits(
     //semicolon
     brewpanel_images_draw_image(
         images_state,
-        BREWPANEL_IMAGES_ID_TIMER_COLON,
+        BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
         boil_digits_offset,
         y_offset,
         draw_buffer

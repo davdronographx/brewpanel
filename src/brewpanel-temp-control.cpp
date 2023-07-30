@@ -5,6 +5,96 @@
 #pragma once
 
 internal bool
+brewpanel_temp_control_update_temp_read(
+    temp_read*     temp_read,
+    images_store*  images,
+    mem_data       draw_buffer) {
+
+    bool redraw = false;
+
+    //calculate the new temp digits
+    image_id previous_temp_hundreds_digit = temp_read->temp_hundreds_digit;
+    image_id previous_temp_tens_digit     = temp_read->temp_tens_digit;
+    image_id previous_temp_ones_digit     = temp_read->temp_ones_digit;
+
+    u8 temp_hundreds = (temp_read->temp_fahrenheit / 100) % 100;
+    u8 temp_tens     = ((temp_read->temp_fahrenheit - (temp_hundreds *100)) / 10) % 10;
+    u8 temp_ones     = temp_read->temp_fahrenheit - (temp_hundreds * 100) - (temp_tens * 10);
+
+    temp_read->temp_hundreds_digit = brewpanel_temp_glyph_table[temp_hundreds]; 
+    temp_read->temp_tens_digit     = brewpanel_temp_glyph_table[temp_tens]; 
+    temp_read->temp_ones_digit     = brewpanel_temp_glyph_table[temp_ones]; 
+
+    temp_read->redraw |= 
+        temp_read->temp_hundreds_digit != previous_temp_hundreds_digit ||
+        temp_read->temp_tens_digit != previous_temp_tens_digit ||
+        temp_read->temp_ones_digit != previous_temp_ones_digit;
+    
+
+    if (temp_read->redraw) {
+        
+        brewpanel_images_draw_image(
+                images,
+                temp_read->panel_id,
+                BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
+                temp_read->y_offset_panel,
+                draw_buffer
+        );
+
+        image_index digit_index = brewpanel_images_index(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0);
+        u32 digit_width = digit_index.image_width_pixels;
+        u32 digit_x_offset = BREWPANEL_TEMP_READ_DIGIT_X_OFFSET;
+        u32 digit_y_offset = temp_read->y_offset_digit;
+
+        brewpanel_images_draw_image(
+                images,
+                temp_read->temp_hundreds_digit,
+                digit_x_offset,
+                digit_y_offset,
+                draw_buffer
+        );
+
+        brewpanel_images_draw_image(
+                images,
+                temp_read->temp_tens_digit,
+                digit_x_offset + digit_width,
+                digit_y_offset,
+                draw_buffer
+        );
+
+        brewpanel_images_draw_image(
+                images,
+                temp_read->temp_ones_digit,
+                digit_x_offset + (digit_width * 2),
+                digit_y_offset,
+                draw_buffer
+        );
+
+        brewpanel_images_draw_image(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_DEGREE,
+                digit_x_offset + (digit_width * 3),
+                digit_y_offset,
+                draw_buffer
+        );
+
+        brewpanel_images_draw_image(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_F,
+                digit_x_offset + (digit_width * 4),
+                digit_y_offset,
+                draw_buffer
+        );
+
+
+        redraw = true;
+        temp_read->redraw = false;
+    }
+
+    return(redraw);
+}
+
+internal bool
 brewpanel_temp_control_update(
     temp_control* control,
     images_store* images,
@@ -12,38 +102,9 @@ brewpanel_temp_control_update(
 
     bool redraw = false;
 
-    if (control->boil_temp_panel.redraw) {
-        brewpanel_images_draw_image(
-            images,control->boil_temp_panel.panel_id,
-            BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
-            control->boil_temp_panel.y_offset,
-            draw_buffer
-        );
-        redraw = true;
-        control->boil_temp_panel.redraw = false;
-    }
-
-    if (control->mlt_temp_panel.redraw) {
-        brewpanel_images_draw_image(
-            images,control->mlt_temp_panel.panel_id,
-            BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
-            control->mlt_temp_panel.y_offset,
-            draw_buffer
-        );
-        redraw = true;
-        control->mlt_temp_panel.redraw = false;
-    }
-
-    if (control->hlt_temp_panel.redraw) {
-        brewpanel_images_draw_image(
-            images,control->hlt_temp_panel.panel_id,
-            BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
-            control->hlt_temp_panel.y_offset,
-            draw_buffer
-        );
-        redraw = true;
-        control->hlt_temp_panel.redraw = false;
-    }
+    redraw |= brewpanel_temp_control_update_temp_read(&control->hlt_temp_panel,images,draw_buffer);
+    redraw |= brewpanel_temp_control_update_temp_read(&control->mlt_temp_panel,images,draw_buffer);
+    redraw |= brewpanel_temp_control_update_temp_read(&control->boil_temp_panel,images,draw_buffer);
 
     return(redraw);
 }
@@ -69,7 +130,14 @@ brewpanel_temp_control_create(
     control->mlt_temp_panel.panel_id  = BREWPANEL_IMAGES_ID_MLT_TEMP_PANEL;
     control->hlt_temp_panel.panel_id  = BREWPANEL_IMAGES_ID_HLT_TEMP_PANEL;
 
-    control->boil_temp_panel.y_offset = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE;
-    control->mlt_temp_panel.y_offset  = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + temp_panel_height + BREWPANEL_TEMP_READ_PANEL_Y_SPACING;
-    control->hlt_temp_panel.y_offset  = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + (temp_panel_height * 2) + (BREWPANEL_TEMP_READ_PANEL_Y_SPACING * 2);
+    control->boil_temp_panel.y_offset_panel = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE;
+    control->mlt_temp_panel.y_offset_panel  = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + temp_panel_height + BREWPANEL_TEMP_READ_PANEL_Y_SPACING;
+    control->hlt_temp_panel.y_offset_panel  = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + (temp_panel_height * 2) + (BREWPANEL_TEMP_READ_PANEL_Y_SPACING * 2);
+
+    image_index panel_index = brewpanel_images_index(images,BREWPANEL_IMAGES_ID_HLT_TEMP_PANEL);
+    u32 panel_height = panel_index.image_height_pixels;
+
+    control->boil_temp_panel.y_offset_digit = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;  
+    control->mlt_temp_panel.y_offset_digit  = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET + BREWPANEL_TEMP_READ_PANEL_Y_SPACING + panel_height; 
+    control->hlt_temp_panel.y_offset_digit  = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET + ((BREWPANEL_TEMP_READ_PANEL_Y_SPACING + panel_height) * 2); 
 }

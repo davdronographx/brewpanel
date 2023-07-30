@@ -9,11 +9,19 @@
 #define BREWPANEL_TEMP_READ_PANEL_X_OFFSET      25
 #define BREWPANEL_TEMP_READ_PANEL_Y_SPACING     25
 
+#define BREWPANEL_TEMP_READ_DIGIT_X_OFFSET 70
+#define BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET 45
+
+
 struct BrewPanelTempRead {
     bool     redraw;
-    image_id panel_id;
-    u32      y_offset;
+    u32      y_offset_panel;
+    u32      y_offset_digit;
     u8       temp_fahrenheit;
+    image_id panel_id;
+    image_id temp_hundreds_digit;
+    image_id temp_tens_digit;
+    image_id temp_ones_digit;
 };
 typedef BrewPanelTempRead temp_read;
 
@@ -25,5 +33,17 @@ struct BrewPanelTempControl {
 };
 typedef BrewPanelTempControl temp_control;
 
+const image_id brewpanel_temp_glyph_table[] = {
+    BREWPANEL_IMAGES_ID_RED_DIGIT_0,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_1,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_2,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_3,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_4,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_5,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_6,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_7,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_8,
+    BREWPANEL_IMAGES_ID_RED_DIGIT_9
+};
 
 #endif //BREWPANEL_TEMP_CONTROL_HPP
