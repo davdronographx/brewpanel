@@ -5,7 +5,7 @@
 #include "brewpanel-images.hpp"
 #include "brewpanel-platform-api.hpp"
 
-#define BREWPANEL_CLOCK_OFFSET_X 45
+#define BREWPANEL_CLOCK_OFFSET_X 60
 
 const image_id brewpanel_clock_glyph_table[] = {
     BREWPANEL_IMAGES_ID_CLOCK_0,

@@ -5,9 +5,9 @@
 #include "brewpanel-images.hpp"
 #include "brewpanel-buttons.hpp"
 
-#define BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE 0
-#define BREWPANEL_TEMP_READ_PANEL_X_OFFSET      0
-#define BREWPANEL_TEMP_READ_PANEL_Y_SPACING     10
+#define BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE 25
+#define BREWPANEL_TEMP_READ_PANEL_X_OFFSET      25
+#define BREWPANEL_TEMP_READ_PANEL_Y_SPACING     25
 
 struct BrewPanelTempRead {
     bool     redraw;
