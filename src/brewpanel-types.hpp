@@ -50,6 +50,11 @@ struct BrewPanelSystemTime {
     u8 seconds;
 };
 
+enum BrewPanelMode : u8 {
+    BREWPANEL_MODE_MASH = 0,
+    BREWPANEL_MODE_BOIL = 1
+};
+
 #define brewpanel_kilobytes(value) ((u64)value * 1024)
 #define brewpanel_megabytes(value) (brewpanel_kilobytes(value) * 1024)
 #define brewpanel_gigabytes(value) (brewpanel_megabytes(value) * 1024)

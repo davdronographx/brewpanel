@@ -5,6 +5,31 @@
 #pragma once
 
 internal bool
+brewpanel_temp_control_update_heating_element_control(
+        heating_element_control* heating_element,
+        images_store*  images,
+        mem_data       draw_buffer) {
+
+        bool redraw = false;
+
+        if (heating_element->redraw) {
+
+                heating_element->redraw = false;
+                brewpanel_images_draw_image(
+                        images,
+                        heating_element->panel_id,
+                        BREWPANEL_TEMP_HEATING_ELEMENT_X_OFFSET,
+                        BREWPANEL_TEMP_HEATING_ELEMENT_Y_OFFSET,
+                        draw_buffer
+                );
+
+                redraw = true;
+        }
+
+        return(redraw);
+}
+
+internal bool
 brewpanel_temp_control_update_temp_read(
     temp_read*     temp_read,
     images_store*  images,
@@ -96,12 +121,22 @@ brewpanel_temp_control_update_temp_read(
 
 internal bool
 brewpanel_temp_control_update(
+    BrewPanelMode mode,
     temp_control* control,
     images_store* images,
     mem_data      draw_buffer) {
 
     bool redraw = false;
 
+    //draw the heating element control
+    heating_element_control* heating_element = 
+        mode == BREWPANEL_MODE_MASH
+        ? &control->mlt_element
+        : &control->boil_element;
+
+    redraw |= brewpanel_temp_control_update_heating_element_control(heating_element,images,draw_buffer);
+
+    //temp read controls
     redraw |= brewpanel_temp_control_update_temp_read(&control->hlt_temp_panel,images,draw_buffer);
     redraw |= brewpanel_temp_control_update_temp_read(&control->mlt_temp_panel,images,draw_buffer);
     redraw |= brewpanel_temp_control_update_temp_read(&control->boil_temp_panel,images,draw_buffer);
@@ -139,5 +174,11 @@ brewpanel_temp_control_create(
 
     control->boil_temp_panel.y_offset_digit = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;  
     control->mlt_temp_panel.y_offset_digit  = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET + BREWPANEL_TEMP_READ_PANEL_Y_SPACING + panel_height; 
-    control->hlt_temp_panel.y_offset_digit  = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET + ((BREWPANEL_TEMP_READ_PANEL_Y_SPACING + panel_height) * 2); 
+    control->hlt_temp_panel.y_offset_digit  = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET + ((BREWPANEL_TEMP_READ_PANEL_Y_SPACING + panel_height) * 2);
+
+    control->mlt_element.panel_id = BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL; 
+    control->mlt_element.redraw   = true;
+
+    control->boil_element.panel_id = BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL; 
+    control->boil_element.redraw   = true;
 }

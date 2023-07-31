@@ -17,6 +17,7 @@ struct BrewPanelBackBuffer {
 
 struct BrewPanelState{
     BrewPanelMemory       memory;
+    BrewPanelMode         mode;
     BrewPanelBackBuffer   back_buffer;
     BrewPanelImagesState  images;
     button_store          button_store;

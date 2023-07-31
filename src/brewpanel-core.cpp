@@ -18,6 +18,9 @@ brewpanel_core_init() {
     brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
     brewpanel_state->memory = memory;
 
+    //by default we are in mash mode
+    brewpanel_state->mode = BREWPANEL_MODE_BOIL;
+
     //get the images
     brewpanel_state->images = brewpanel_images_state_create(&memory);
 
@@ -68,6 +71,7 @@ brewpanel_core_update_and_render(
     );
 
     redraw |= brewpanel_temp_control_update(
+        brewpanel_state->mode,
         &brewpanel_state->temp_control,
         &brewpanel_state->images,
         (mem_data)brewpanel_state->back_buffer.pixels

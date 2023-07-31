@@ -12,6 +12,8 @@
 #define BREWPANEL_TEMP_READ_DIGIT_X_OFFSET 70
 #define BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET 45
 
+#define BREWPANEL_TEMP_HEATING_ELEMENT_X_OFFSET 299
+#define BREWPANEL_TEMP_HEATING_ELEMENT_Y_OFFSET 190
 
 struct BrewPanelTempRead {
     bool     redraw;
@@ -25,13 +27,25 @@ struct BrewPanelTempRead {
 };
 typedef BrewPanelTempRead temp_read;
 
+struct BrewPanelTempHeatingElementControl {
+    bool      redraw;
+    image_id  panel_id;
+    u16       set_point;
+    button_id set_button_id;
+    button_id off_button_id;
+};
+typedef BrewPanelTempHeatingElementControl heating_element_control;
+
 struct BrewPanelTempControl {
     bool      redraw;
     temp_read hlt_temp_panel;
     temp_read mlt_temp_panel;
     temp_read boil_temp_panel;
+    heating_element_control mlt_element;
+    heating_element_control boil_element;
 };
 typedef BrewPanelTempControl temp_control;
+
 
 const image_id brewpanel_temp_glyph_table[] = {
     BREWPANEL_IMAGES_ID_RED_DIGIT_0,
