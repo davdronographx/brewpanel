@@ -54,6 +54,7 @@ enum BrewPanelMode : u8 {
     BREWPANEL_MODE_MASH = 0,
     BREWPANEL_MODE_BOIL = 1
 };
+typedef BrewPanelMode panel_mode;
 
 #define brewpanel_kilobytes(value) ((u64)value * 1024)
 #define brewpanel_megabytes(value) (brewpanel_kilobytes(value) * 1024)

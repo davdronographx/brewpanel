@@ -8,7 +8,7 @@
 #include "brewpanel-clock.cpp"
 #include "brewpanel-communication.cpp"
 #include "brewpanel-temp-control.cpp"
-
+#include "brewpanel-mode-control.cpp"
 
 internal void
 brewpanel_core_init() {
@@ -48,6 +48,11 @@ brewpanel_core_init() {
         &brewpanel_state->images
     );
 
+    //mode control
+    brewpanel_mode_control_create(
+        &brewpanel_state->mode_control
+    );
+
     //render the main background
     brewpanel_core_render_main_screen();
 }
@@ -77,7 +82,12 @@ brewpanel_core_update_and_render(
         (mem_data)brewpanel_state->back_buffer.pixels
     );
 
-
+    redraw |= brewpanel_mode_control_update(
+        brewpanel_state->mode,
+        &brewpanel_state->mode_control,
+        &brewpanel_state->images,
+        (mem_data)brewpanel_state->back_buffer.pixels
+    );
 
     //draw the buttons
     // redraw |= brewpanel_buttons_draw(

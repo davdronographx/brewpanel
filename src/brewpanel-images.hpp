@@ -84,7 +84,8 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_BOIL_TEMP_PANEL      = 59,
     BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL    = 60,
     BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL   = 61,
-    BREWPANEL_IMAGES_ID_COUNT                = 62
+    BREWPANEL_IMAGES_ID_MODE_PANEL           = 62,
+    BREWPANEL_IMAGES_ID_COUNT                = 63
 };
 
 typedef s16 image_id;
@@ -151,7 +152,8 @@ global str brewpanel_images_file_paths[] = {
     "mlt-temp-panel.png",
     "boil-temp-panel.png",
     "mlt-element-panel.png",
-    "boil-element-panel.png"
+    "boil-element-panel.png",
+    "mode-panel.png"
 };
 
 global str brewpanel_images_image_names[] = {
@@ -215,8 +217,9 @@ global str brewpanel_images_image_names[] = {
     "hlt-temp-panel",
     "mlt-temp-panel",
     "boil-temp-panel",
-    "mlt-element-panel.png",
-    "boil-element-panel.png"
+    "mlt-element-panel",
+    "boil-element-panel",
+    "mode-panel"
 };
 
 struct BrewPanelImagesFileIndex {
