@@ -160,11 +160,8 @@ brewpanel_temp_control_create(
     control->boil_temp_panel.redraw = true;
     control->mlt_temp_panel.redraw  = true;
     control->hlt_temp_panel.redraw  = true;
-
-    control->boil_temp_panel.panel_id = BREWPANEL_IMAGES_ID_BOIL_TEMP_PANEL;
-    control->mlt_temp_panel.panel_id  = BREWPANEL_IMAGES_ID_MLT_TEMP_PANEL;
-    control->hlt_temp_panel.panel_id  = BREWPANEL_IMAGES_ID_HLT_TEMP_PANEL;
-
+    
+    //boil panel
     control->boil_temp_panel.panel_id = 
         brewpanel_images_create_image_instance(
                 images,
@@ -172,13 +169,89 @@ brewpanel_temp_control_create(
                 BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
                 BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE;
         );
-    control->mlt_temp_panel.panel_id  = 
+    control->boil_temp_panel.temp_hundreds_digit = 
         brewpanel_images_create_image_instance(
                 images,
-                BREWPANEL_IMAGES_ID_MLT_TEMP_PANEL,
-                BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
-                BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + temp_panel_height + BREWPANEL_TEMP_READ_PANEL_Y_SPACING;
+                BREWPANEL_IMAGES_ID_RED_DIGIT_0,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET,
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
         );
+    control->boil_temp_panel.temp_tens_digit = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_0,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET + BREWPANEL_TEMP_READ_DIGIT_WIDTH,
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+    control->boil_temp_panel.temp_ones_digit = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_0,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET + (BREWPANEL_TEMP_READ_DIGIT_WIDTH * 2),
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+    control->boil_temp_panel.degree = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_DEGREE,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET + (BREWPANEL_TEMP_READ_DIGIT_WIDTH * 3),
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+    control->boil_temp_panel.farenheit = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_F,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET + (BREWPANEL_TEMP_READ_DIGIT_WIDTH * 4),
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+    
+    //mlt panel
+    //
+   control->mlt_temp_panel.panel_id = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_BOIL_TEMP_PANEL,
+                BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
+                BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE;
+        );
+    control->mlt_temp_panel.temp_hundreds_digit = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_0,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET,
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+    control->mlt_temp_panel.temp_tens_digit = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_0,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET + BREWPANEL_TEMP_READ_DIGIT_WIDTH,
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+    control->mlt_temp_panel.temp_ones_digit = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_0,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET + (BREWPANEL_TEMP_READ_DIGIT_WIDTH * 2),
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+    control->mlt_temp_panel.degree = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_DEGREE,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET + (BREWPANEL_TEMP_READ_DIGIT_WIDTH * 3),
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+    control->mlt_temp_panel.farenheit = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_RED_DIGIT_F,
+                BREWPANEL_TEMP_READ_DIGIT_X_OFFSET + (BREWPANEL_TEMP_READ_DIGIT_WIDTH * 4),
+                BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;
+        );
+
+    //hlt panel
+    //BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET + ((BREWPANEL_TEMP_READ_PANEL_Y_SPACING + panel_height) * 2);
     control->hlt_temp_panel.panel_id  = 
         brewpanel_images_create_image_instance(
                 images,
@@ -190,11 +263,7 @@ brewpanel_temp_control_create(
 
 
     image_index panel_index = brewpanel_images_index(images,BREWPANEL_IMAGES_ID_HLT_TEMP_PANEL);
-    u32 panel_height = panel_index.image_height_pixels;
-
-    control->boil_temp_panel.y_offset_digit = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET;  
-    control->mlt_temp_panel.y_offset_digit  = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET + BREWPANEL_TEMP_READ_PANEL_Y_SPACING + panel_height; 
-    control->hlt_temp_panel.y_offset_digit  = BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET + ((BREWPANEL_TEMP_READ_PANEL_Y_SPACING + panel_height) * 2);
+    u32 panel_height = panel_index.image_height_pixels; 
 
     control->mlt_element.panel_id = BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL; 
     control->mlt_element.redraw   = true;
