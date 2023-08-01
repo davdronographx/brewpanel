@@ -9,11 +9,11 @@
 #define BREWPANEL_MODE_PANEL_Y_OFFSET 25
 
 struct BrewPanelModeControl {
-    bool       redraw;
-    image_id   panel_id;
-    button_id  mash_mode_button;
-    button_id  boil_mode_button;
-    panel_mode mode;
+    bool                redraw;
+    image_instance_id   panel_id;
+    button_id           mash_mode_button;
+    button_id           boil_mode_button;
+    panel_mode          mode;
 };
 typedef BrewPanelModeControl mode_control;
 

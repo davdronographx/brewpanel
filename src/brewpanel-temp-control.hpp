@@ -20,16 +20,16 @@ struct BrewPanelTempRead {
     u32      y_offset_panel;
     u32      y_offset_digit;
     u8       temp_fahrenheit;
-    image_id panel_id;
-    image_id temp_hundreds_digit;
-    image_id temp_tens_digit;
-    image_id temp_ones_digit;
+    image_instance_id panel_id;
+    image_instance_id temp_hundreds_digit;
+    image_instance_id temp_tens_digit;
+    image_instance_id temp_ones_digit;
 };
 typedef BrewPanelTempRead temp_read;
 
 struct BrewPanelTempHeatingElementControl {
     bool      redraw;
-    image_id  panel_id;
+    image_instance_id  panel_id;
     u16       set_point;
     button_id set_button_id;
     button_id off_button_id;

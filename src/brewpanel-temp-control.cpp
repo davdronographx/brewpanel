@@ -165,9 +165,29 @@ brewpanel_temp_control_create(
     control->mlt_temp_panel.panel_id  = BREWPANEL_IMAGES_ID_MLT_TEMP_PANEL;
     control->hlt_temp_panel.panel_id  = BREWPANEL_IMAGES_ID_HLT_TEMP_PANEL;
 
-    control->boil_temp_panel.y_offset_panel = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE;
-    control->mlt_temp_panel.y_offset_panel  = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + temp_panel_height + BREWPANEL_TEMP_READ_PANEL_Y_SPACING;
-    control->hlt_temp_panel.y_offset_panel  = BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + (temp_panel_height * 2) + (BREWPANEL_TEMP_READ_PANEL_Y_SPACING * 2);
+    control->boil_temp_panel.panel_id = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_BOIL_TEMP_PANEL,
+                BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
+                BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE;
+        );
+    control->mlt_temp_panel.panel_id  = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_MLT_TEMP_PANEL,
+                BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
+                BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + temp_panel_height + BREWPANEL_TEMP_READ_PANEL_Y_SPACING;
+        );
+    control->hlt_temp_panel.panel_id  = 
+        brewpanel_images_create_image_instance(
+                images,
+                BREWPANEL_IMAGES_ID_HLT_TEMP_PANEL,
+                BREWPANEL_TEMP_READ_PANEL_X_OFFSET,
+                BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE + (temp_panel_height * 2) + (BREWPANEL_TEMP_READ_PANEL_Y_SPACING * 2);
+        );
+
+
 
     image_index panel_index = brewpanel_images_index(images,BREWPANEL_IMAGES_ID_HLT_TEMP_PANEL);
     u32 panel_height = panel_index.image_height_pixels;

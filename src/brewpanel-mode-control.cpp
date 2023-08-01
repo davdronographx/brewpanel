@@ -6,11 +6,19 @@
 
 internal void
 brewpanel_mode_control_create(
-    mode_control* mode) {
+    mode_control* mode,
+    images_store* images) {
 
     *mode = {0};
 
-    mode->panel_id = BREWPANEL_IMAGES_ID_MODE_PANEL;
+    mode->panel_id =
+        brewpanel_images_create_image_instance(
+            images,
+            BREWPANEL_IMAGES_ID_MODE_PANEL,
+            BREWPANEL_MODE_PANEL_X_OFFSET,
+            BREWPANEL_MODE_PANEL_Y_OFFSET        
+    );
+ 
     mode->redraw   = true;
 }
 
@@ -25,13 +33,7 @@ brewpanel_mode_control_update(
 
     if (mode_control->redraw) {
 
-        brewpanel_images_draw_image(
-            images,
-            mode_control->panel_id,
-            BREWPANEL_MODE_PANEL_X_OFFSET,
-            BREWPANEL_MODE_PANEL_Y_OFFSET,
-            draw_buffer
-        );
+        brewpanel_images_draw_image_(images,mode_control->panel_id,draw_buffer);
 
         redraw = true;
         mode_control->redraw = false;

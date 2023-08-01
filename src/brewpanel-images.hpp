@@ -248,12 +248,24 @@ struct BrewPanelImagesFile {
     mem_data                  image_data;
 };
 
+
+struct BrewPanelImageInstance {
+    image_id image_id;
+    u32      x_offset;
+    u32      y_offset;  
+};
+typedef BrewPanelImageInstance image_instance;
+
+typedef u8 image_instance_id;
+
 struct BrewPanelImagesState {
-    BrewPanelImagesFile images_file;
+    BrewPanelImagesFile                    images_file;
+    image_instance image_instances[BREWPANEL_IMAGES_COUNT];
+    image_instance_id                      image_instance_count;
 };
 typedef BrewPanelImagesState images_store;
 
 #define brewpanel_images_index(images_state,image_id)   images_state->images_file.file_header.image_indexes[image_id]
-#define brewpanel_images_address(images_state,image_id) (RGBAPixel*)(&images_state->images_file.image_data[brewpanel_images_index(images_state,image_id).image_offset]);
+#define brewpanel_images_address(images_state,image_id) (RGBAPixel*)(&images_state->images_file.image_data[brewpanel_images_index(images_state,image_id).image_offset])
 
 #endif //BREWPANEL_IMAGES_HPP

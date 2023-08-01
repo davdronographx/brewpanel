@@ -50,7 +50,8 @@ brewpanel_core_init() {
 
     //mode control
     brewpanel_mode_control_create(
-        &brewpanel_state->mode_control
+        &brewpanel_state->mode_control,
+        &brewpanel_state->images
     );
 
     //render the main background

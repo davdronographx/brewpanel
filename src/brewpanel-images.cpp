@@ -106,6 +106,7 @@ brewpanel_images_state_create(
     BrewPanelMemory* memory) {
 
     BrewPanelImagesState images_state = {0};
+    images_state.image_instance_count = -1;
 
     //allocate space for temporarily storing image data
     //there will never be an image bigger than the resolution of 1024x600
@@ -168,6 +169,44 @@ brewpanel_images_state_create(
 }
 
 internal void
+brewpanel_images_draw_image_(
+    images_store*     images_state,
+    image_instance_id image_instance_id,
+    mem_data          draw_buffer) {
+
+    //get image data
+    image_instance instance = images_state->image_instances[image_instance_id];
+    
+    BrewPanelImagesFileIndex image_index = brewpanel_images_index(images_state,instance.image_id);
+    RGBAPixel* image_address = brewpanel_images_address(images_state,instance.image_id);
+
+    //set the pixel offset
+    u32 draw_buffer_row_offset = (instance.x_offset * sizeof(RGBAPixel)) + (instance.y_offset * BREW_PANEL_ROW_BYTES);
+
+    for (
+        u32 image_pixel_row = 0;
+        image_pixel_row < image_index.image_height_pixels;
+        ++image_pixel_row
+    ) {
+        
+        //calculate the offsets
+        u32 image_byte_offset = image_pixel_row * image_index.image_row_size_bytes;
+        u32 draw_byte_offset  = (image_pixel_row * BREW_PANEL_ROW_BYTES) + draw_buffer_row_offset;
+
+        //get the source and destination rows
+        mem_data image_pixels = ((mem_data)image_address) + image_byte_offset; 
+        mem_data draw_pixels  = draw_buffer + draw_byte_offset;
+
+        memmove(
+            draw_pixels,
+            image_pixels,
+            image_index.image_row_size_bytes
+        );
+    }
+
+}
+
+internal void
 brewpanel_images_draw_image(
     BrewPanelImagesState* images_state,
     u16                   image_id,
@@ -177,7 +216,7 @@ brewpanel_images_draw_image(
 
     //get image data
     BrewPanelImagesFileIndex image_index = brewpanel_images_index(images_state,image_id);
-    RGBAPixel* image_address = brewpanel_images_address(images_state,image_id)
+    RGBAPixel* image_address = brewpanel_images_address(images_state,image_id);
 
     //set the pixel offset
     u32 draw_buffer_row_offset = (x_offset * sizeof(RGBAPixel)) + (y_offset * BREW_PANEL_ROW_BYTES);
@@ -202,4 +241,25 @@ brewpanel_images_draw_image(
             image_index.image_row_size_bytes
         );
     }
+}
+
+internal image_instance_id
+brewpanel_images_create_image_instance(
+    images_store* images,
+    image_id      image_id,
+    u32           x_offset,
+    u32           y_offset) {
+
+    //make sure we can create an image
+    brewpanel_assert(images->image_instance_count != BREWPANEL_IMAGES_COUNT);
+    ++images->image_instance_count;
+
+    image_instance instance = {0};
+    instance.image_id = image_id;
+    instance.x_offset = x_offset;
+    instance.y_offset = y_offset;
+
+    images->image_instances[images->image_instance_count] = instance;
+
+    return(images->image_instance_count);
 }
