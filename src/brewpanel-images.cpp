@@ -263,3 +263,12 @@ brewpanel_images_create_image_instance(
 
     return(images->image_instance_count);
 }
+
+internal void
+brewpanel_images_update_instance_image(
+    images_store*     images,
+    image_instance_id instance_id,
+    image_id          image_id) {
+
+    images->image_instances[instance_id].image_id = image_id;
+}
