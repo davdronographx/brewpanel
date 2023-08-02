@@ -65,23 +65,32 @@ brewpanel_temp_control_update_temp_read(
 
 internal bool
 brewpanel_temp_control_update(
-    BrewPanelMode mode,
+    panel_mode     mode,
     temp_control* control,
     images_store* images) {
 
     bool redraw = false;
 
-    //draw the heating element control
-    heating_element_control* heating_element = 
-        mode == BREWPANEL_MODE_MASH
-        ? &control->mlt_element
-        : &control->boil_element;
+    local panel_mode previous_mode = BREWPANEL_MODE_NULL;
+
+        //draw the heating element control
+        heating_element_control* heating_element = 
+            mode == BREWPANEL_MODE_MASH
+            ? &control->mlt_element
+            : &control->boil_element;
+
+    if (previous_mode != mode) {
+        redraw = true;
+        heating_element->redraw = true;
+    }
 
     //draw controls
     redraw |= brewpanel_temp_control_update_heating_element_control(heating_element,images);
     redraw |= brewpanel_temp_control_update_temp_read(&control->boil_temp_panel,images);
     redraw |= brewpanel_temp_control_update_temp_read(&control->mlt_temp_panel,images);
     redraw |= brewpanel_temp_control_update_temp_read(&control->hlt_temp_panel,images);
+
+    previous_mode = mode;
 
     return(redraw);
 }
@@ -121,7 +130,7 @@ brewpanel_temp_control_create(
     control->boil_temp_panel.farenheit           = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_F,farenhet_offset,BREWPANEL_TEMP_READ_DIGIT_Y_OFFSET);
     
     //mlt panel
-    control->mlt_temp_panel.panel_id            = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_BOIL_TEMP_PANEL,BREWPANEL_TEMP_READ_PANEL_X_OFFSET,mlt_panel_y_offset);
+    control->mlt_temp_panel.panel_id            = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_MLT_TEMP_PANEL,BREWPANEL_TEMP_READ_PANEL_X_OFFSET,mlt_panel_y_offset);
     control->mlt_temp_panel.temp_hundreds_digit = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,hundreds_digit_offset,mlt_digit_y_offset);
     control->mlt_temp_panel.temp_tens_digit     = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,tents_digit_offset,mlt_digit_y_offset);
     control->mlt_temp_panel.temp_ones_digit     = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,ones_digit_offset,mlt_digit_y_offset);
