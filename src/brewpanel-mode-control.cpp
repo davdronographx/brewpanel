@@ -8,12 +8,16 @@ internal void
 brewpanel_mode_control_mash_button_click(
     mem_data payload) {
 
+    mode_control* control = (mode_control*)payload;
+    control->mode = BREWPANEL_MODE_MASH;
 }
 
 internal void
 brewpanel_mode_control_boil_button_click(
     mem_data payload) {
 
+    mode_control* control = (mode_control*)payload;
+    control->mode = BREWPANEL_MODE_BOIL;
 }
 
 internal void
@@ -49,7 +53,7 @@ brewpanel_mode_control_create(
     mode->boil_mode_button = brewpanel_buttons_create_button(
         buttons,
         images,
-        brewpanel_mode_control_mash_button_click,
+        brewpanel_mode_control_boil_button_click,
         (mem_data)mode,
         BREWPANEL_IMAGES_ID_MODE_BUTTON_BOIL_IDLE,
         BREWPANEL_IMAGES_ID_MODE_BUTTON_BOIL_HOVER,
