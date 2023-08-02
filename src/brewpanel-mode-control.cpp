@@ -23,6 +23,7 @@ brewpanel_mode_control_create(
     button_store* buttons) {
 
     *mode = {0};
+    mode->mode = BREWPANEL_MODE_MASH;
 
     mode->panel_id =
         brewpanel_images_create_image_instance(
@@ -63,11 +64,30 @@ brewpanel_mode_control_create(
 
 internal bool
 brewpanel_mode_control_update(
-    panel_mode    panel_mode,
     mode_control* mode_control,
-    images_store* images) {
+    images_store* images,
+    button_store* buttons) {
 
     bool redraw = false;
+
+    switch (mode_control->mode) {
+        
+        case BREWPANEL_MODE_MASH: {
+            brewpanel_buttons_disable(buttons,mode_control->mash_mode_button);
+            brewpanel_buttons_enable(buttons,mode_control->boil_mode_button);
+        } break;
+        
+        case BREWPANEL_MODE_BOIL: {
+            brewpanel_buttons_disable(buttons,mode_control->boil_mode_button);
+            brewpanel_buttons_enable(buttons,mode_control->mash_mode_button);
+        } break;
+
+        default: {
+            //by default we are in mash mode
+            brewpanel_buttons_disable(buttons,mode_control->mash_mode_button);
+            brewpanel_buttons_enable(buttons,mode_control->boil_mode_button);
+        } break;
+    }
 
     if (mode_control->redraw) {
 
@@ -76,7 +96,6 @@ brewpanel_mode_control_update(
         redraw = true;
         mode_control->redraw = false;
     }
-
 
     return(redraw);
 }
