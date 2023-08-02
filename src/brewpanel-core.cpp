@@ -22,7 +22,10 @@ brewpanel_core_init() {
     brewpanel_state->mode = BREWPANEL_MODE_BOIL;
 
     //get the images
-    brewpanel_state->images = brewpanel_images_state_create(&memory);
+    brewpanel_images_state_create(
+        &brewpanel_state->images,
+        &memory,
+        (mem_data)brewpanel_state->back_buffer.pixels);
 
     //create the message handler
     brewpanel_state->comm_handler = brewpanel_communication_create_handler();
@@ -81,15 +84,13 @@ brewpanel_core_update_and_render(
     redraw |= brewpanel_temp_control_update(
         brewpanel_state->mode,
         &brewpanel_state->temp_control,
-        &brewpanel_state->images,
-        (mem_data)brewpanel_state->back_buffer.pixels
+        &brewpanel_state->images
     );
 
     redraw |= brewpanel_mode_control_update(
         brewpanel_state->mode,
         &brewpanel_state->mode_control,
-        &brewpanel_state->images,
-        (mem_data)brewpanel_state->back_buffer.pixels
+        &brewpanel_state->images
     );
 
     //draw the buttons

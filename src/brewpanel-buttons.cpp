@@ -209,8 +209,7 @@ brewpanel_buttons_draw(
             images_state,
             button_image,
             button_offsets.x_pixels,
-            button_offsets.y_pixels,
-            draw_buffer
+            button_offsets.y_pixels
         );
     }
 
@@ -221,8 +220,7 @@ internal void
 brewpanel_buttons_draw_button(
     BrewPanelButtonStore* button_store,
     BrewPanelImagesState* images_state,
-    button_id             button_id,
-    mem_data              draw_buffer) {
+    button_id             button_id) {
 
     BrewPanelButtonState current_button_state  = button_store->states[button_id];
     button_store->draw_state[button_id] = current_button_state;
@@ -259,8 +257,7 @@ brewpanel_buttons_draw_button(
         images_state,
         button_image,
         x_offset,
-        y_offset,
-        draw_buffer
+        y_offset
     );
 }
 

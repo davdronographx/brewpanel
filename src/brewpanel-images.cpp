@@ -101,78 +101,77 @@ brewpanel_images_build_file(
     );
 }
 
-internal BrewPanelImagesState
+internal void
 brewpanel_images_state_create(
-    BrewPanelMemory* memory) {
+    images_store*    images_state,
+    BrewPanelMemory* memory,
+    mem_data         draw_buffer) {
 
-    BrewPanelImagesState images_state = {0};
-    images_state.image_instance_count = -1;
+    *images_state = {0};
+    images_state->image_instance_count = -1;
+    images_state->draw_buffer = draw_buffer;
 
     //allocate space for temporarily storing image data
     //there will never be an image bigger than the resolution of 1024x600
-    images_state.images_file.temp_image.pixels = (RGBAPixel*)brewpanel_memory_allocate(memory,BREWPANEL_IMAGES_ALLOCATION_SIZE);
+    images_state->images_file.temp_image.pixels = (RGBAPixel*)brewpanel_memory_allocate(memory,BREWPANEL_IMAGES_ALLOCATION_SIZE);
     
     //this allocation is for the actual file
     //to be safe, we will allocate twice that size to give us more than enough memory
-    images_state.images_file.temp_image.temp_image_file_data = brewpanel_memory_allocate(memory,BREWPANEL_IMAGES_ALLOCATION_SIZE * 2);
+    images_state->images_file.temp_image.temp_image_file_data = brewpanel_memory_allocate(memory,BREWPANEL_IMAGES_ALLOCATION_SIZE * 2);
 
     //open the file or create it if it doesn't exist
-    images_state.images_file.file_handle = 
+    images_state->images_file.file_handle = 
         brewpanel_platform_file_open(
             BREWPANEL_IMAGES_FILE
     );
 
-    if (images_state.images_file.file_handle == NULL) {
+    if (images_state->images_file.file_handle == NULL) {
     
         //the file doesn't exist, so we need to create it
-        images_state.images_file.file_handle = 
+        images_state->images_file.file_handle = 
             brewpanel_platform_file_create(
                 BREWPANEL_IMAGES_FILE
         );
-        brewpanel_assert(images_state.images_file.file_handle != NULL);
+        brewpanel_assert(images_state->images_file.file_handle != NULL);
     
         //now, build the file contents from the individual images
-        brewpanel_images_build_file(&images_state.images_file);
+        brewpanel_images_build_file(&images_state->images_file);
     }
     else {
 
         brewpanel_platform_file_read(
-            images_state.images_file.file_handle,
-            (mem_data)(&images_state.images_file.file_header),
+            images_state->images_file.file_handle,
+            (mem_data)(&images_state->images_file.file_header),
             sizeof(BrewPanelImagesFileHeader),
             0
         );
 
-        images_state.images_file.image_data = 
+        images_state->images_file.image_data = 
             brewpanel_memory_allocate(
                 memory,
-                images_state.images_file.file_header.image_data_size
+                images_state->images_file.file_header.image_data_size
         );
     }
 
     //with the file header parsed, we can read the image data
-    images_state.images_file.image_data = 
+    images_state->images_file.image_data = 
         brewpanel_memory_allocate(
             memory,
-            images_state.images_file.file_header.image_data_size
+            images_state->images_file.file_header.image_data_size
     );
 
     brewpanel_platform_file_read(
-        images_state.images_file.file_handle,
-        images_state.images_file.image_data,
-        images_state.images_file.file_header.image_data_size,
+        images_state->images_file.file_handle,
+        images_state->images_file.image_data,
+        images_state->images_file.file_header.image_data_size,
         sizeof(BrewPanelImagesFileHeader)
     );
-
-
-    return(images_state);
 }
 
 internal void
 brewpanel_images_draw_image_(
     images_store*     images_state,
-    image_instance_id image_instance_id,
-    mem_data          draw_buffer) {
+    image_instance_id image_instance_id) {
 
     //get image data
     image_instance instance = images_state->image_instances[image_instance_id];
@@ -195,7 +194,7 @@ brewpanel_images_draw_image_(
 
         //get the source and destination rows
         mem_data image_pixels = ((mem_data)image_address) + image_byte_offset; 
-        mem_data draw_pixels  = draw_buffer + draw_byte_offset;
+        mem_data draw_pixels  = images_state->draw_buffer + draw_byte_offset;
 
         memmove(
             draw_pixels,
@@ -203,7 +202,6 @@ brewpanel_images_draw_image_(
             image_index.image_row_size_bytes
         );
     }
-
 }
 
 internal void
@@ -211,8 +209,7 @@ brewpanel_images_draw_image(
     BrewPanelImagesState* images_state,
     u16                   image_id,
     u32                   x_offset,
-    u32                   y_offset,
-    mem_data              draw_buffer) {
+    u32                   y_offset) {
 
     //get image data
     BrewPanelImagesFileIndex image_index = brewpanel_images_index(images_state,image_id);
@@ -233,7 +230,7 @@ brewpanel_images_draw_image(
 
         //get the source and destination rows
         mem_data image_pixels = ((mem_data)image_address) + image_byte_offset; 
-        mem_data draw_pixels  = draw_buffer + draw_byte_offset;
+        mem_data draw_pixels  = images_state->draw_buffer + draw_byte_offset;
 
         memmove(
             draw_pixels,

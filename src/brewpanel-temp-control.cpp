@@ -7,14 +7,13 @@
 internal bool
 brewpanel_temp_control_update_heating_element_control(
         heating_element_control* heating_element,
-        images_store*  images,
-        mem_data       draw_buffer) {
+        images_store*  images) {
 
         bool redraw = false;
 
         if (heating_element->redraw) {
 
-                brewpanel_images_draw_image_(images,heating_element->panel_id,draw_buffer);
+                brewpanel_images_draw_image_(images,heating_element->panel_id);
 
                 heating_element->redraw = false;
                 redraw = true;
@@ -26,8 +25,7 @@ brewpanel_temp_control_update_heating_element_control(
 internal bool
 brewpanel_temp_control_update_temp_read(
     temp_read*     temp_read,
-    images_store*  images,
-    mem_data       draw_buffer) {
+    images_store*  images) {
 
     bool redraw = false;
 
@@ -51,12 +49,12 @@ brewpanel_temp_control_update_temp_read(
 
     if (temp_read->redraw) {
         
-        brewpanel_images_draw_image_(images,temp_read->panel_id,draw_buffer);
-        brewpanel_images_draw_image_(images,temp_read->temp_hundreds_digit,draw_buffer);
-        brewpanel_images_draw_image_(images,temp_read->temp_tens_digit,draw_buffer);
-        brewpanel_images_draw_image_(images,temp_read->temp_ones_digit,draw_buffer);
-        brewpanel_images_draw_image_(images,temp_read->degree,draw_buffer);
-        brewpanel_images_draw_image_(images,temp_read->farenheit,draw_buffer);
+        brewpanel_images_draw_image_(images,temp_read->panel_id);
+        brewpanel_images_draw_image_(images,temp_read->temp_hundreds_digit);
+        brewpanel_images_draw_image_(images,temp_read->temp_tens_digit);
+        brewpanel_images_draw_image_(images,temp_read->temp_ones_digit);
+        brewpanel_images_draw_image_(images,temp_read->degree);
+        brewpanel_images_draw_image_(images,temp_read->farenheit);
 
         redraw = true;
         temp_read->redraw = false;
@@ -69,8 +67,7 @@ internal bool
 brewpanel_temp_control_update(
     BrewPanelMode mode,
     temp_control* control,
-    images_store* images,
-    mem_data      draw_buffer) {
+    images_store* images) {
 
     bool redraw = false;
 
@@ -81,10 +78,10 @@ brewpanel_temp_control_update(
         : &control->boil_element;
 
     //draw controls
-    redraw |= brewpanel_temp_control_update_heating_element_control(heating_element,images,draw_buffer);
-    redraw |= brewpanel_temp_control_update_temp_read(&control->boil_temp_panel,images,draw_buffer);
-    redraw |= brewpanel_temp_control_update_temp_read(&control->mlt_temp_panel,images,draw_buffer);
-    redraw |= brewpanel_temp_control_update_temp_read(&control->hlt_temp_panel,images,draw_buffer);
+    redraw |= brewpanel_temp_control_update_heating_element_control(heating_element,images);
+    redraw |= brewpanel_temp_control_update_temp_read(&control->boil_temp_panel,images);
+    redraw |= brewpanel_temp_control_update_temp_read(&control->mlt_temp_panel,images);
+    redraw |= brewpanel_temp_control_update_temp_read(&control->hlt_temp_panel,images);
 
     return(redraw);
 }

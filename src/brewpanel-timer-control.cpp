@@ -183,36 +183,31 @@ brewpanel_timer_control_draw_timers(
             images_state,
             timers->mash_lauter_timer.panel.panel_image,
             timers->mash_lauter_timer.panel.x_offset,
-            timers->mash_lauter_timer.panel.y_offset,
-            draw_buffer
+            timers->mash_lauter_timer.panel.y_offset
         );
 
         brewpanel_buttons_draw_button(
             button_store,
             images_state,
-            timers->mash_lauter_timer.buttons.start_button_id,
-            draw_buffer
+            timers->mash_lauter_timer.buttons.start_button_id
         );
 
         brewpanel_buttons_draw_button(
             button_store,
             images_state,
-            timers->mash_lauter_timer.buttons.stop_button_id,
-            draw_buffer
+            timers->mash_lauter_timer.buttons.stop_button_id
         );
 
         brewpanel_buttons_draw_button(
             button_store,
             images_state,
-            timers->mash_lauter_timer.buttons.pause_button_id,
-            draw_buffer
+            timers->mash_lauter_timer.buttons.pause_button_id
         );
 
         brewpanel_buttons_draw_button(
             button_store,
             images_state,
-            timers->mash_lauter_timer.buttons.reset_button_id,
-            draw_buffer
+            timers->mash_lauter_timer.buttons.reset_button_id
         );
 
         timers->mash_lauter_timer.redraw = false;
@@ -224,36 +219,31 @@ brewpanel_timer_control_draw_timers(
             images_state,
             timers->boil_timer.panel.panel_image,
             timers->boil_timer.panel.x_offset,
-            timers->boil_timer.panel.y_offset,
-            draw_buffer
+            timers->boil_timer.panel.y_offset
         );
 
         brewpanel_buttons_draw_button(
             button_store,
             images_state,
-            timers->boil_timer.buttons.start_button_id,
-            draw_buffer
+            timers->boil_timer.buttons.start_button_id
         );
 
         brewpanel_buttons_draw_button(
             button_store,
             images_state,
-            timers->boil_timer.buttons.stop_button_id,
-            draw_buffer
+            timers->boil_timer.buttons.stop_button_id
         );
 
         brewpanel_buttons_draw_button(
             button_store,
             images_state,
-            timers->boil_timer.buttons.pause_button_id,
-            draw_buffer
+            timers->boil_timer.buttons.pause_button_id
         );
 
         brewpanel_buttons_draw_button(
             button_store,
             images_state,
-            timers->boil_timer.buttons.reset_button_id,
-            draw_buffer
+            timers->boil_timer.buttons.reset_button_id
         );
 
         timers->boil_timer.redraw = false;
@@ -268,8 +258,7 @@ brewpanel_timer_control_calculate_and_draw_digits(
     BrewPanelTimers*        timers,
     BrewPanelTimerTimestamp mlt_timestamp,
     BrewPanelTimerTimestamp boil_timestamp,
-    BrewPanelImagesState*   images_state,
-    mem_data                draw_buffer) {
+    BrewPanelImagesState*   images_state) {
 
     bool redraw = false;
 
@@ -315,198 +304,198 @@ brewpanel_timer_control_calculate_and_draw_digits(
     u32 y_offset = BREW_PANEL_HEIGHT_PIXELS - (digit_image_info.image_height_pixels + 147);
 
     //draw the hours
-    if (previous_mlt_digits.hours.tens_face != timers->mash_lauter_timer.digits.hours.tens_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->mash_lauter_timer.digits.hours.tens_face,
-            mlt_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    mlt_digits_offset += digit_image_info.image_width_pixels;
+    // if (previous_mlt_digits.hours.tens_face != timers->mash_lauter_timer.digits.hours.tens_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->mash_lauter_timer.digits.hours.tens_face,
+    //         mlt_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    if (previous_mlt_digits.hours.ones_face != timers->mash_lauter_timer.digits.hours.ones_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->mash_lauter_timer.digits.hours.ones_face,
-            mlt_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    mlt_digits_offset += digit_image_info.image_width_pixels;
+    // if (previous_mlt_digits.hours.ones_face != timers->mash_lauter_timer.digits.hours.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->mash_lauter_timer.digits.hours.ones_face,
+    //         mlt_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    //semicolon
-    brewpanel_images_draw_image(
-        images_state,
-        BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
-        mlt_digits_offset,
-        y_offset,
-        draw_buffer
-    );
-    mlt_digits_offset += digit_image_info.image_width_pixels;
+    // //semicolon
+    // brewpanel_images_draw_image(
+    //     images_state,
+    //     BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
+    //     mlt_digits_offset,
+    //     y_offset,
+    //     draw_buffer
+    // );
+    // mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    //draw the minutes
-    if (previous_mlt_digits.minutes.tens_face != timers->mash_lauter_timer.digits.minutes.tens_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->mash_lauter_timer.digits.minutes.tens_face,
-            mlt_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    mlt_digits_offset += digit_image_info.image_width_pixels;
+    // //draw the minutes
+    // if (previous_mlt_digits.minutes.tens_face != timers->mash_lauter_timer.digits.minutes.tens_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->mash_lauter_timer.digits.minutes.tens_face,
+    //         mlt_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    if (previous_mlt_digits.minutes.ones_face != timers->mash_lauter_timer.digits.minutes.ones_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->mash_lauter_timer.digits.minutes.ones_face,
-            mlt_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    mlt_digits_offset += digit_image_info.image_width_pixels;
+    // if (previous_mlt_digits.minutes.ones_face != timers->mash_lauter_timer.digits.minutes.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->mash_lauter_timer.digits.minutes.ones_face,
+    //         mlt_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    //semicolon
-    brewpanel_images_draw_image(
-        images_state,
-        BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
-        mlt_digits_offset,
-        y_offset,
-        draw_buffer
-    );
-    mlt_digits_offset += digit_image_info.image_width_pixels;
+    // //semicolon
+    // brewpanel_images_draw_image(
+    //     images_state,
+    //     BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
+    //     mlt_digits_offset,
+    //     y_offset,
+    //     draw_buffer
+    // );
+    // mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    //draw the seconds
-    if (previous_mlt_digits.seconds.tens_face != timers->mash_lauter_timer.digits.seconds.tens_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->mash_lauter_timer.digits.seconds.tens_face,
-            mlt_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    mlt_digits_offset += digit_image_info.image_width_pixels;
+    // //draw the seconds
+    // if (previous_mlt_digits.seconds.tens_face != timers->mash_lauter_timer.digits.seconds.tens_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->mash_lauter_timer.digits.seconds.tens_face,
+    //         mlt_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // mlt_digits_offset += digit_image_info.image_width_pixels;
 
-    if (previous_mlt_digits.seconds.ones_face != timers->mash_lauter_timer.digits.seconds.ones_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->mash_lauter_timer.digits.seconds.ones_face,
-            mlt_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
+    // if (previous_mlt_digits.seconds.ones_face != timers->mash_lauter_timer.digits.seconds.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->mash_lauter_timer.digits.seconds.ones_face,
+    //         mlt_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
     
-    //-----------------------------
-    // BOIL TIMER
-    //-----------------------------
+    // //-----------------------------
+    // // BOIL TIMER
+    // //-----------------------------
 
-    u32 boil_digits_offset = BREWPANEL_TIMER_CONTROL_BOIL_DIGITS_OFFSET_X;
+    // u32 boil_digits_offset = BREWPANEL_TIMER_CONTROL_BOIL_DIGITS_OFFSET_X;
 
-    //draw the hours
-    if (previous_boil_digits.hours.tens_face != timers->boil_timer.digits.hours.tens_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->boil_timer.digits.hours.tens_face,
-            boil_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    boil_digits_offset += digit_image_info.image_width_pixels;
+    // //draw the hours
+    // if (previous_boil_digits.hours.tens_face != timers->boil_timer.digits.hours.tens_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->boil_timer.digits.hours.tens_face,
+    //         boil_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // boil_digits_offset += digit_image_info.image_width_pixels;
 
-    if (previous_boil_digits.hours.ones_face != timers->boil_timer.digits.hours.ones_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->boil_timer.digits.hours.ones_face,
-            boil_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    boil_digits_offset += digit_image_info.image_width_pixels;
+    // if (previous_boil_digits.hours.ones_face != timers->boil_timer.digits.hours.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->boil_timer.digits.hours.ones_face,
+    //         boil_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // boil_digits_offset += digit_image_info.image_width_pixels;
 
-    //semicolon
-    brewpanel_images_draw_image(
-        images_state,
-        BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
-        boil_digits_offset,
-        y_offset,
-        draw_buffer
-    );
-    boil_digits_offset += digit_image_info.image_width_pixels;
+    // //semicolon
+    // brewpanel_images_draw_image(
+    //     images_state,
+    //     BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
+    //     boil_digits_offset,
+    //     y_offset,
+    //     draw_buffer
+    // );
+    // boil_digits_offset += digit_image_info.image_width_pixels;
 
-    //draw the minutes
-    if (previous_boil_digits.minutes.tens_face != timers->boil_timer.digits.minutes.tens_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->boil_timer.digits.minutes.tens_face,
-            boil_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    boil_digits_offset += digit_image_info.image_width_pixels;
+    // //draw the minutes
+    // if (previous_boil_digits.minutes.tens_face != timers->boil_timer.digits.minutes.tens_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->boil_timer.digits.minutes.tens_face,
+    //         boil_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // boil_digits_offset += digit_image_info.image_width_pixels;
 
-    if (previous_boil_digits.minutes.ones_face != timers->boil_timer.digits.minutes.ones_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->boil_timer.digits.minutes.ones_face,
-            boil_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    boil_digits_offset += digit_image_info.image_width_pixels;
+    // if (previous_boil_digits.minutes.ones_face != timers->boil_timer.digits.minutes.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->boil_timer.digits.minutes.ones_face,
+    //         boil_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // boil_digits_offset += digit_image_info.image_width_pixels;
 
-    //semicolon
-    brewpanel_images_draw_image(
-        images_state,
-        BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
-        boil_digits_offset,
-        y_offset,
-        draw_buffer
-    );
-    boil_digits_offset += digit_image_info.image_width_pixels;
+    // //semicolon
+    // brewpanel_images_draw_image(
+    //     images_state,
+    //     BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,
+    //     boil_digits_offset,
+    //     y_offset,
+    //     draw_buffer
+    // );
+    // boil_digits_offset += digit_image_info.image_width_pixels;
 
-    //draw the seconds
-    if (previous_boil_digits.seconds.tens_face != timers->boil_timer.digits.seconds.tens_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->boil_timer.digits.seconds.tens_face,
-            boil_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
-    boil_digits_offset += digit_image_info.image_width_pixels;
+    // //draw the seconds
+    // if (previous_boil_digits.seconds.tens_face != timers->boil_timer.digits.seconds.tens_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->boil_timer.digits.seconds.tens_face,
+    //         boil_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
+    // boil_digits_offset += digit_image_info.image_width_pixels;
 
-    if (previous_boil_digits.seconds.ones_face != timers->boil_timer.digits.seconds.ones_face) {
-        brewpanel_images_draw_image(
-            images_state,
-            timers->boil_timer.digits.seconds.ones_face,
-            boil_digits_offset,
-            y_offset,
-            draw_buffer
-        );
-        redraw = true;
-    }
+    // if (previous_boil_digits.seconds.ones_face != timers->boil_timer.digits.seconds.ones_face) {
+    //     brewpanel_images_draw_image(
+    //         images_state,
+    //         timers->boil_timer.digits.seconds.ones_face,
+    //         boil_digits_offset,
+    //         y_offset,
+    //         draw_buffer
+    //     );
+    //     redraw = true;
+    // }
 
     return(redraw);
 }
@@ -587,8 +576,7 @@ brewpanel_timer_control_update(
         timers,
         mlt_timestamp,
         boil_timestamp,
-        images_state,
-        draw_buffer
+        images_state
     );
 
     

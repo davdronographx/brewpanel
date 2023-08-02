@@ -248,7 +248,6 @@ struct BrewPanelImagesFile {
     mem_data                  image_data;
 };
 
-
 struct BrewPanelImageInstance {
     image_id image_id;
     u32      x_offset;
@@ -259,9 +258,10 @@ typedef BrewPanelImageInstance image_instance;
 typedef u8 image_instance_id;
 
 struct BrewPanelImagesState {
-    BrewPanelImagesFile                    images_file;
-    image_instance image_instances[BREWPANEL_IMAGES_COUNT];
-    image_instance_id                      image_instance_count;
+    BrewPanelImagesFile images_file;
+    image_instance      image_instances[BREWPANEL_IMAGES_COUNT];
+    image_instance_id   image_instance_count;
+    mem_data            draw_buffer;
 };
 typedef BrewPanelImagesState images_store;
 

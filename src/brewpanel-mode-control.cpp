@@ -26,14 +26,13 @@ internal bool
 brewpanel_mode_control_update(
     panel_mode    panel_mode,
     mode_control* mode_control,
-    images_store* images,
-    mem_data      draw_buffer) {
+    images_store* images) {
 
     bool redraw = false;
 
     if (mode_control->redraw) {
 
-        brewpanel_images_draw_image_(images,mode_control->panel_id,draw_buffer);
+        brewpanel_images_draw_image_(images,mode_control->panel_id);
 
         redraw = true;
         mode_control->redraw = false;
