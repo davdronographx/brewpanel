@@ -21,8 +21,8 @@ const image_id brewpanel_clock_glyph_table[] = {
 };
 
 struct BrewPanelClockFaceDigits {
-    image_id tens_face;
-    image_id ones_face;
+    image_instance_id tens_face;
+    image_instance_id ones_face;
 };
 
 struct BrewPanelClockFaces {
@@ -32,9 +32,11 @@ struct BrewPanelClockFaces {
 };
 
 struct BrewPanelClock {
-    BrewPanelClockFaces      faces;
-    image_id                 am_pm_face;    
-    BrewPanelSystemTime      system_time;
+    BrewPanelClockFaces  faces;
+    image_instance_id    am_pm_face;    
+    image_instance_id    colon_1;    
+    image_instance_id    colon_2;    
+    BrewPanelSystemTime  system_time;
 };
 
 #endif //BREWPANEL_CLOCK_HPP

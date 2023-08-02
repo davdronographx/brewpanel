@@ -28,7 +28,9 @@ brewpanel_core_init() {
     brewpanel_state->comm_handler = brewpanel_communication_create_handler();
     
     //initialize the clock
-    brewpanel_state->clock = brewpanel_clock_create();
+    brewpanel_clock_create(
+        &brewpanel_state->clock,
+        &brewpanel_state->images);
 
 
     //get the button store
