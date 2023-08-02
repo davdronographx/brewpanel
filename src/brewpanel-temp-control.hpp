@@ -18,37 +18,40 @@
 #define BREWPANEL_TEMP_HEATING_ELEMENT_X_OFFSET 299
 #define BREWPANEL_TEMP_HEATING_ELEMENT_Y_OFFSET 190
 
-struct BrewPanelTempRead {
-    bool     redraw;
-    u32      y_offset_panel;
-    u32      y_offset_digit;
-    u8       temp_fahrenheit;
-    image_instance_id panel_id;
+struct BrewPanelTempReading {
+    u16 value;
     image_instance_id temp_hundreds_digit;
     image_instance_id temp_tens_digit;
     image_instance_id temp_ones_digit;
-    image_instance_id degree;
-    image_instance_id farenheit;
+};
+typedef BrewPanelTempReading temp_reading_values;
+
+struct BrewPanelTempRead {
+    bool                redraw;
+    temp_reading_values values;
+    image_instance_id   panel_id;
+    image_instance_id   degree;
+    image_instance_id   farenheit;
 };
 typedef BrewPanelTempRead temp_read;
 
 struct BrewPanelTempHeatingElementControl {
-    bool      redraw;
+    bool               redraw;
     image_instance_id  panel_id;
-    u16       set_point;
-    button_id set_button_id;
-    button_id off_button_id;
+    u16                set_point;
+    button_id          set_button_id;
+    button_id          off_button_id;
 };
 typedef BrewPanelTempHeatingElementControl heating_element_control;
 
 struct BrewPanelTempControl {
-    bool      redraw;
-    temp_read hlt_temp_panel;
-    temp_read mlt_temp_panel;
-    temp_read boil_temp_panel;
+    bool                    redraw;
+    temp_read               hlt_temp_panel;
+    temp_read               mlt_temp_panel;
+    temp_read               boil_temp_panel;
     heating_element_control mlt_element;
     heating_element_control boil_element;
-    image_instance_id digit_glyph_table;
+    image_instance_id       digit_glyph_table;
 };
 typedef BrewPanelTempControl temp_control;
 
