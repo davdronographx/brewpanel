@@ -504,7 +504,8 @@ brewpanel_timer_control_calculate_and_draw_digits(
 internal void
 brewpanel_timer_control_update_buttons(
     BrewPanelTimerControl* timer_control,
-    BrewPanelButtonStore*  button_store) {
+    BrewPanelButtonStore*  button_store,
+    images_store*          images) {
 
     switch (timer_control->state) {
 
@@ -513,7 +514,7 @@ brewpanel_timer_control_update_buttons(
             brewpanel_buttons_disable(button_store,timer_control->buttons.start_button_id);
             brewpanel_buttons_disable(button_store,timer_control->buttons.stop_button_id);
             brewpanel_buttons_disable(button_store,timer_control->buttons.pause_button_id);
-            brewpanel_buttons_enable(button_store,timer_control->buttons.reset_button_id);
+            brewpanel_buttons_enable(button_store,timer_control->buttons.reset_button_id,images);
 
         } break;
 
@@ -548,8 +549,8 @@ brewpanel_timer_control_update(
     mem_data               draw_buffer) {
 
     //update the timer buttons
-    brewpanel_timer_control_update_buttons(&timers->mash_lauter_timer,button_store);
-    brewpanel_timer_control_update_buttons(&timers->boil_timer,button_store);
+    brewpanel_timer_control_update_buttons(&timers->mash_lauter_timer,button_store,images_state);
+    brewpanel_timer_control_update_buttons(&timers->boil_timer,button_store,images_state);
 
     //calculate the timestamps
     BrewPanelTimerTimestamp mlt_timestamp = 

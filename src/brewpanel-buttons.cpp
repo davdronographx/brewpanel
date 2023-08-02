@@ -13,9 +13,33 @@ brewpanel_buttons_disable(
 internal void
 brewpanel_buttons_enable(
     BrewPanelButtonStore* button_store,
-    button_id button) {
+    button_id button_id,
+    images_store* images_state) {
 
-    button_store->states[button] = BREWPANEL_BUTTON_STATE_IDLE;
+    button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
+    BrewPanelButtonOffsets offsets = button_store->offsets[button_id];
+
+    image_id button_image_id_idle = button_store->images.idle[button_id];
+
+    BrewPanelImagesFileIndex image_index = brewpanel_images_index(images_state, button_image_id_idle);
+    u32 button_height = image_index.image_height_pixels;
+    u32 button_width  = image_index.image_width_pixels;
+    
+    u32 button_matrix_offset = offsets.x_pixels + (offsets.y_pixels * BREW_PANEL_WIDTH_PIXELS);
+    mem_data button_matrix_address = (mem_data)(&button_store->button_id_matrix[button_matrix_offset]);
+
+    for (
+        u32 button_matrix_row = 0;
+        button_matrix_row < button_height;
+        ++button_matrix_row
+    ) {
+        memset(
+            button_matrix_address,
+            button_id,
+            button_width
+        );
+        button_matrix_address +=  BREW_PANEL_WIDTH_PIXELS;
+    }
 }
 
 internal BrewPanelButtonStore

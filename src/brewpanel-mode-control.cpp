@@ -74,18 +74,18 @@ brewpanel_mode_control_update(
         
         case BREWPANEL_MODE_MASH: {
             brewpanel_buttons_disable(buttons,mode_control->mash_mode_button);
-            brewpanel_buttons_enable(buttons,mode_control->boil_mode_button);
+            brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
         } break;
         
         case BREWPANEL_MODE_BOIL: {
             brewpanel_buttons_disable(buttons,mode_control->boil_mode_button);
-            brewpanel_buttons_enable(buttons,mode_control->mash_mode_button);
+            brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
         } break;
 
         default: {
             //by default we are in mash mode
             brewpanel_buttons_disable(buttons,mode_control->mash_mode_button);
-            brewpanel_buttons_enable(buttons,mode_control->boil_mode_button);
+            brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
         } break;
     }
 
