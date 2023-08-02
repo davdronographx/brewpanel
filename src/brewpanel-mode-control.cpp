@@ -74,23 +74,27 @@ brewpanel_mode_control_update(
 
     bool redraw = false;
 
-    switch (mode_control->mode) {
-        
-        case BREWPANEL_MODE_MASH: {
-            brewpanel_buttons_disable(buttons,mode_control->mash_mode_button);
-            brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
-        } break;
-        
-        case BREWPANEL_MODE_BOIL: {
-            brewpanel_buttons_disable(buttons,mode_control->boil_mode_button);
-            brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
-        } break;
+    local panel_mode previous_mode = BREWPANEL_MODE_NULL;
 
-        default: {
-            //by default we are in mash mode
-            brewpanel_buttons_disable(buttons,mode_control->mash_mode_button);
-            brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
-        } break;
+    if (previous_mode != mode_control->mode) {
+        switch (mode_control->mode) {
+        
+            case BREWPANEL_MODE_MASH: {
+                brewpanel_buttons_disable(buttons,mode_control->mash_mode_button);
+                brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
+            } break;
+
+            case BREWPANEL_MODE_BOIL: {
+                brewpanel_buttons_disable(buttons,mode_control->boil_mode_button);
+                brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
+            } break;
+
+            default: {
+                //by default we are in mash mode
+                brewpanel_buttons_disable(buttons,mode_control->mash_mode_button);
+                brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
+            } break;
+        }
     }
 
     if (mode_control->redraw) {
@@ -100,6 +104,8 @@ brewpanel_mode_control_update(
         redraw = true;
         mode_control->redraw = false;
     }
+
+    previous_mode = mode_control->mode;
 
     return(redraw);
 }

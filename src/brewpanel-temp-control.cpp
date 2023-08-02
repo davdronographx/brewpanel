@@ -73,19 +73,18 @@ brewpanel_temp_control_update(
 
     local panel_mode previous_mode = BREWPANEL_MODE_NULL;
 
-        //draw the heating element control
-        heating_element_control* heating_element = 
-            mode == BREWPANEL_MODE_MASH
-            ? &control->mlt_element
-            : &control->boil_element;
+    //draw the heating element control
+    heating_element_control* heating_element = 
+        mode == BREWPANEL_MODE_MASH
+        ? &control->mlt_element
+        : &control->boil_element;
 
     if (previous_mode != mode) {
-        redraw = true;
         heating_element->redraw = true;
+        redraw |= brewpanel_temp_control_update_heating_element_control(heating_element,images);
     }
 
     //draw controls
-    redraw |= brewpanel_temp_control_update_heating_element_control(heating_element,images);
     redraw |= brewpanel_temp_control_update_temp_read(&control->boil_temp_panel,images);
     redraw |= brewpanel_temp_control_update_temp_read(&control->mlt_temp_panel,images);
     redraw |= brewpanel_temp_control_update_temp_read(&control->hlt_temp_panel,images);
