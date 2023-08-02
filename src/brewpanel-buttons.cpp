@@ -39,7 +39,7 @@ brewpanel_buttons_create_store(
 internal s8
 brewpanel_buttons_create_button(
     BrewPanelButtonStore*      button_store,
-    BrewPanelImagesState*      images_state,
+    BrewPanelImagesStore*      images_state,
     func_button_click_callback click_callback,
     mem_data                   payload,
     BrewPanelImagesId          button_image_id_idle,
@@ -153,7 +153,7 @@ brewpanel_buttons_update(
 internal bool
 brewpanel_buttons_draw(
     BrewPanelButtonStore* button_store,
-    BrewPanelImagesState* images_state,
+    BrewPanelImagesStore* images_state,
     mem_data              draw_buffer) {
 
     bool render_screen = false;
@@ -219,7 +219,7 @@ brewpanel_buttons_draw(
 internal void
 brewpanel_buttons_draw_button(
     BrewPanelButtonStore* button_store,
-    BrewPanelImagesState* images_state,
+    BrewPanelImagesStore* images_state,
     button_id             button_id) {
 
     BrewPanelButtonState current_button_state  = button_store->states[button_id];

@@ -82,7 +82,7 @@ internal void
 brewpanel_timer_control_create_boil_timer(
     BrewPanelTimerControl* timer_control,
     BrewPanelButtonStore* button_store,
-    BrewPanelImagesState* image_store) {
+    BrewPanelImagesStore* image_store) {
 
     *timer_control = {0};
     timer_control->state = BREWPANEL_TIMER_STATE_IDLE;
@@ -106,7 +106,7 @@ internal void
 brewpanel_timer_control_create_mash_lauter_timer(
     BrewPanelTimerControl* timer_control,
     BrewPanelButtonStore*  button_store,
-    BrewPanelImagesState*  image_store) {
+    BrewPanelImagesStore*  image_store) {
 
     *timer_control = {0};
     timer_control->state = BREWPANEL_TIMER_STATE_IDLE;
@@ -130,7 +130,7 @@ internal void
 brewpanel_timer_control_create_timers(
     BrewPanelTimers*      timers,
     BrewPanelButtonStore* button_store,
-    BrewPanelImagesState* image_store) {
+    BrewPanelImagesStore* image_store) {
 
     *timers = {0};
 
@@ -172,7 +172,7 @@ brewpanel_timer_control_calculate_timestamp(
 internal bool
 brewpanel_timer_control_draw_timers(
     BrewPanelTimers*       timers,
-    BrewPanelImagesState*  images_state,
+    BrewPanelImagesStore*  images_state,
     BrewPanelButtonStore*  button_store,
     mem_data               draw_buffer) {
 
@@ -258,7 +258,7 @@ brewpanel_timer_control_calculate_and_draw_digits(
     BrewPanelTimers*        timers,
     BrewPanelTimerTimestamp mlt_timestamp,
     BrewPanelTimerTimestamp boil_timestamp,
-    BrewPanelImagesState*   images_state) {
+    BrewPanelImagesStore*   images_state) {
 
     bool redraw = false;
 
@@ -543,7 +543,7 @@ brewpanel_timer_control_update_buttons(
 internal bool
 brewpanel_timer_control_update(
     BrewPanelTimers*       timers,
-    BrewPanelImagesState*  images_state,
+    BrewPanelImagesStore*  images_state,
     BrewPanelButtonStore*  button_store,
     mem_data               draw_buffer) {
 

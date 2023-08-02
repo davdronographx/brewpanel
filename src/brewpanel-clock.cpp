@@ -39,7 +39,7 @@ brewpanel_clock_create(
 internal bool
 brewpanel_clock_update(
     BrewPanelClock*       clock_state,
-    BrewPanelImagesState* images,
+    BrewPanelImagesStore* images,
     mem_data              draw_buffer) {
 
     bool redraw = false;

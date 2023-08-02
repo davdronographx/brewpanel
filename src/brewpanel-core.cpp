@@ -19,7 +19,7 @@ brewpanel_core_init() {
     brewpanel_state->memory = memory;
 
     //by default we are in mash mode
-    brewpanel_state->mode = BREWPANEL_MODE_BOIL;
+    brewpanel_state->mode = BREWPANEL_MODE_MASH;
 
     //get the images
     brewpanel_images_state_create(
