@@ -40,11 +40,11 @@ brewpanel_core_init() {
     brewpanel_state->button_store = brewpanel_buttons_create_store(&memory);
 
     //timer controls
-    brewpanel_timer_control_create_timers(
-        &brewpanel_state->timers,
-        &brewpanel_state->button_store,
-        &brewpanel_state->images
-    );
+    // brewpanel_timer_control_create_timers(
+    //     &brewpanel_state->timers,
+    //     &brewpanel_state->button_store,
+    //     &brewpanel_state->images
+    // );
 
     //temperature controls
     brewpanel_temp_control_create(
@@ -56,7 +56,8 @@ brewpanel_core_init() {
     //mode control
     brewpanel_mode_control_create(
         &brewpanel_state->mode_control,
-        &brewpanel_state->images
+        &brewpanel_state->images,
+        &brewpanel_state->button_store
     );
 
     //render the main background
@@ -94,11 +95,11 @@ brewpanel_core_update_and_render(
     );
 
     //draw the buttons
-    // redraw |= brewpanel_buttons_draw(
-    //     &brewpanel_state->button_store,
-    //     &brewpanel_state->images,
-    //     (mem_data)brewpanel_state->back_buffer.pixels
-    // );
+    redraw |= brewpanel_buttons_draw(
+        &brewpanel_state->button_store,
+        &brewpanel_state->images,
+        (mem_data)brewpanel_state->back_buffer.pixels
+    );
 
 // redraw |= brewpanel_timer_control_update(
 //     &brewpanel_state->timers,

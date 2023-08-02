@@ -5,9 +5,22 @@
 #pragma once
 
 internal void
+brewpanel_mode_control_mash_button_click(
+    mem_data payload) {
+
+}
+
+internal void
+brewpanel_mode_control_boil_button_click(
+    mem_data payload) {
+
+}
+
+internal void
 brewpanel_mode_control_create(
     mode_control* mode,
-    images_store* images) {
+    images_store* images,
+    button_store* buttons) {
 
     *mode = {0};
 
@@ -17,6 +30,32 @@ brewpanel_mode_control_create(
             BREWPANEL_IMAGES_ID_MODE_PANEL,
             BREWPANEL_MODE_PANEL_X_OFFSET,
             BREWPANEL_MODE_PANEL_Y_OFFSET        
+    );
+
+    mode->mash_mode_button = brewpanel_buttons_create_button(
+        buttons,
+        images,
+        brewpanel_mode_control_mash_button_click,
+        (mem_data)mode,
+        BREWPANEL_IMAGES_ID_MODE_BUTTON_MASH_IDLE,
+        BREWPANEL_IMAGES_ID_MODE_BUTTON_MASH_HOVER,
+        BREWPANEL_IMAGES_ID_MODE_BUTTON_MASH_CLICKED,
+        BREWPANEL_IMAGES_ID_MODE_BUTTON_MASH_DISABLED,
+        BREWPANEL_MODE_BUTTONS_X_OFFSET,
+        BREWPANEL_MODE_MASH_BUTTON_Y_OFFSET
+    );
+
+    mode->boil_mode_button = brewpanel_buttons_create_button(
+        buttons,
+        images,
+        brewpanel_mode_control_mash_button_click,
+        (mem_data)mode,
+        BREWPANEL_IMAGES_ID_MODE_BUTTON_BOIL_IDLE,
+        BREWPANEL_IMAGES_ID_MODE_BUTTON_BOIL_HOVER,
+        BREWPANEL_IMAGES_ID_MODE_BUTTON_BOIL_CLICKED,
+        BREWPANEL_IMAGES_ID_MODE_BUTTON_BOIL_DISABLED,
+        BREWPANEL_MODE_BUTTONS_X_OFFSET,
+        BREWPANEL_MODE_BOIL_BUTTON_Y_OFFSET
     );
  
     mode->redraw   = true;
