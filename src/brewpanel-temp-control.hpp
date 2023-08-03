@@ -43,6 +43,9 @@ struct BrewPanelTempHeatingElementControl {
     button_id           set_button_id;
     button_id           off_button_id;
     temp_reading_values temp_values;
+    image_instance_id   degree;
+    image_instance_id   farenheit;
+    image_instance_id   percent;
 };
 typedef BrewPanelTempHeatingElementControl heating_element_control;
 
