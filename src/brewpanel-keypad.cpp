@@ -25,6 +25,82 @@ brewpanel_keypad_update(
     return(false);
 }
 
+internal void
+brewpanel_keypad_button_click_del(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_0(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_1(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_2(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_3(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_4(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_5(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_6(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_7(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_8(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_9(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
 
 internal void
 brewpanel_keypad_create(
@@ -39,5 +115,137 @@ brewpanel_keypad_create(
         BREWPANEL_IMAGES_ID_KEYPAD_PANEL,
         BREWPANEL_KEYPAD_OFFSET_X,
         BREWPANEL_KEYPAD_OFFSET_Y
+    );
+
+    keypad->button_0 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_0,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_0_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_0_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_0_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_0_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_0,
+        BREWPANEL_KEYPAD_OFFSET_ROW_0
+    );
+
+    keypad->button_del = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_del,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_DELETE_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_DELETE_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_DELETE_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_DELETE_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_2,
+        BREWPANEL_KEYPAD_OFFSET_ROW_0
+    );
+
+    keypad->button_1 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_1,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_1_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_1_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_1_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_1_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_0,
+        BREWPANEL_KEYPAD_OFFSET_ROW_1
+    );
+
+    keypad->button_2 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_2,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_2_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_2_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_2_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_2_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_1,
+        BREWPANEL_KEYPAD_OFFSET_ROW_1
+    );
+
+    keypad->button_3 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_3,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_3_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_3_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_3_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_3_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_2,
+        BREWPANEL_KEYPAD_OFFSET_ROW_1
+    );
+
+    keypad->button_4 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_4,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_4_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_4_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_4_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_4_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_0,
+        BREWPANEL_KEYPAD_OFFSET_ROW_2
+    );
+
+    keypad->button_5 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_5,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_5_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_5_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_5_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_5_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_1,
+        BREWPANEL_KEYPAD_OFFSET_ROW_2
+    );
+
+    keypad->button_6 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_6,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_6_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_6_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_6_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_6_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_2,
+        BREWPANEL_KEYPAD_OFFSET_ROW_2
+    );
+
+    keypad->button_7 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_7,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_7_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_7_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_7_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_7_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_0,
+        BREWPANEL_KEYPAD_OFFSET_ROW_3
+    );
+
+    keypad->button_8 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_8,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_8_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_8_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_8_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_8_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_1,
+        BREWPANEL_KEYPAD_OFFSET_ROW_3
+    );
+
+    keypad->button_9 = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_9,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_9_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_9_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_9_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_9_DISABLED,
+        BREWPANEL_KEYPAD_OFFSET_COLUMN_2,
+        BREWPANEL_KEYPAD_OFFSET_ROW_3
     );
 }

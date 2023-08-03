@@ -99,18 +99,18 @@ brewpanel_core_update_and_render(
         &brewpanel_state->button_store
     );
 
-    //draw the buttons
-    redraw |= brewpanel_buttons_draw(
-        &brewpanel_state->button_store,
-        &brewpanel_state->images,
-        (mem_data)brewpanel_state->back_buffer.pixels
-    );
-
     //draw the keypad
     redraw |= brewpanel_keypad_update(
         &brewpanel_state->keypad,
         &brewpanel_state->images,
         &brewpanel_state->button_store
+    );
+
+    //draw the buttons
+    redraw |= brewpanel_buttons_draw(
+        &brewpanel_state->button_store,
+        &brewpanel_state->images,
+        (mem_data)brewpanel_state->back_buffer.pixels
     );
 
 // redraw |= brewpanel_timer_control_update(
