@@ -103,6 +103,20 @@ brewpanel_keypad_button_click_9(
 }
 
 internal void
+brewpanel_keypad_button_click_set(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
+brewpanel_keypad_button_click_cancel(
+    mem_data payload) {
+
+    keypad* kp = (keypad*)payload;
+}
+
+internal void
 brewpanel_keypad_create(
     keypad*       keypad,
     images_store* images,
@@ -247,5 +261,29 @@ brewpanel_keypad_create(
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_9_DISABLED,
         BREWPANEL_KEYPAD_OFFSET_COLUMN_2,
         BREWPANEL_KEYPAD_OFFSET_ROW_3
+    );
+
+    keypad->button_set = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_set,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_SET_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_SET_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_SET_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_SET_DISABLED,
+        BREWPANEL_KEYPAD_CONTROL_OFFSET_X,
+        BREWPANEL_KEYPAD_CONTROL_OFFSET_Y
+    );
+    
+    keypad->button_cancel = brewpanel_buttons_create_button(
+        buttons,images,
+        brewpanel_keypad_button_click_cancel,
+        (mem_data)keypad,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_CANCEL_IDLE,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_CANCEL_HOVER,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_CANCEL_CLICKED,
+        BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_CANCEL_DISABLED,
+        BREWPANEL_KEYPAD_CONTROL_OFFSET_X + 125,
+        BREWPANEL_KEYPAD_CONTROL_OFFSET_Y
     );
 }
