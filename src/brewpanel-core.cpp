@@ -9,6 +9,7 @@
 #include "brewpanel-communication.cpp"
 #include "brewpanel-temp-control.cpp"
 #include "brewpanel-mode-control.cpp"
+#include "brewpanel-keypad.cpp"
 
 internal void
 brewpanel_core_init() {
@@ -57,6 +58,13 @@ brewpanel_core_init() {
         &brewpanel_state->button_store
     );
 
+    //keypad
+    brewpanel_keypad_create(
+        &brewpanel_state->keypad,
+        &brewpanel_state->images,
+        &brewpanel_state->button_store
+    );
+
     //render the main background
     brewpanel_core_render_main_screen();
 }
@@ -96,6 +104,13 @@ brewpanel_core_update_and_render(
         &brewpanel_state->button_store,
         &brewpanel_state->images,
         (mem_data)brewpanel_state->back_buffer.pixels
+    );
+
+    //draw the keypad
+    redraw |= brewpanel_keypad_update(
+        &brewpanel_state->keypad,
+        &brewpanel_state->images,
+        &brewpanel_state->button_store
     );
 
 // redraw |= brewpanel_timer_control_update(
