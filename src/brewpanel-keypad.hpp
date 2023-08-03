@@ -18,6 +18,24 @@
 #define BREWPANEL_KEYPAD_CONTROL_OFFSET_X 755
 #define BREWPANEL_KEYPAD_CONTROL_OFFSET_Y 35
 
+#define BREWPANEL_KEYPAD_INPUT_MAX_VALUES 6
+
+enum BrewPanelKeypadInputState : u8 {
+    BREWPANEL_KEYPAD_INPUT_STATE_IDLE   = 0,
+    BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE = 1,
+    BREWPANEL_KEYPAD_INPUT_STATE_SET    = 2,
+    BREWPANEL_KEYPAD_INPUT_STATE_CANCEL = 3,
+};
+typedef BrewPanelKeypadInputState keypad_input_state;
+
+struct BrewPanelKeypadInput {
+    u8                 values[BREWPANEL_KEYPAD_INPUT_MAX_VALUES];
+    u8                 num_digits;
+    u8                 current_digit_count;
+    keypad_input_state input_state;
+};
+typedef BrewPanelKeypadInput keypad_input;
+
 struct BrewPanelKeypad {
     bool              redraw;
     image_instance_id panel_id;
@@ -34,6 +52,7 @@ struct BrewPanelKeypad {
     button_id         button_9;
     button_id         button_set;
     button_id         button_cancel;
+    keypad_input*     input;
 };
 typedef BrewPanelKeypad keypad;
 
