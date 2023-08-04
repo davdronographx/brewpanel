@@ -4,6 +4,7 @@
 #include "brewpanel-types.hpp"
 #include "brewpanel-images.hpp"
 #include "brewpanel-buttons.hpp"
+#include "brewpanel-keypad.hpp"
 
 #define BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE 25
 #define BREWPANEL_TEMP_READ_PANEL_X_OFFSET      25
@@ -43,15 +44,23 @@ struct BrewPanelTempRead {
 };
 typedef BrewPanelTempRead temp_read;
 
+enum BrewPanelTempHeatingElementState {
+    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF     = 0,
+    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET     = 1,
+    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING = 2
+};
+typedef BrewPanelTempHeatingElementState heating_element_state;
+
 struct BrewPanelTempHeatingElementControl {
-    bool                redraw;
-    image_instance_id   panel_id;
-    button_id           set_button_id;
-    button_id           off_button_id;
-    temp_reading_values temp_values;
-    image_instance_id   degree;
-    image_instance_id   farenheit;
-    image_instance_id   percent;
+    bool                  redraw;
+    image_instance_id     panel_id;
+    button_id             set_button_id;
+    button_id             off_button_id;
+    temp_reading_values   temp_values;
+    image_instance_id     degree;
+    image_instance_id     farenheit;
+    image_instance_id     percent;
+    heating_element_state state;
 };
 typedef BrewPanelTempHeatingElementControl heating_element_control;
 

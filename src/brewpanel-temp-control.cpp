@@ -1,6 +1,7 @@
 #include "brewpanel-temp-control.hpp"
 #include "brewpanel-images.cpp"
 #include "brewpanel-buttons.cpp"
+#include "brewpanel-keypad.cpp"
 
 #pragma once
 
@@ -32,13 +33,67 @@ brewpanel_temp_control_update_temp_values(
     return(false);
 }
 
+internal void
+brewpanel_temp_control_heating_element_set(
+    mem_data payload
+) {
+
+    heating_element_control* heating_element = (heating_element_control*)payload;
+    heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET;
+    heating_element->redraw = true;
+
+}
+
+internal void
+brewpanel_temp_control_heating_element_cancel(
+    mem_data payload) {
+
+    heating_element_control* heating_element = (heating_element_control*)payload;
+    heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
+    heating_element->redraw = true;
+}
+
 internal bool
 brewpanel_temp_control_update_heating_element_control(
     heating_element_control* heating_element,
     images_store*            images,
+    button_store*            buttons,
+    keypad*                  keypad,
     panel_mode               mode) {
 
     bool redraw = false;
+
+    brewpanel_buttons_show(buttons,heating_element->set_button_id,images);
+    brewpanel_buttons_show(buttons,heating_element->off_button_id,images);
+
+    switch (heating_element->state) {
+
+        case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF: {
+            brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
+            brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
+        } break;
+
+        case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET: {
+            brewpanel_buttons_set_disabled(buttons,heating_element->set_button_id);
+            brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
+
+            brewpanel_keypad_active_input(
+                keypad,3,
+                brewpanel_temp_control_heating_element_set,
+                brewpanel_temp_control_heating_element_cancel,
+                (mem_data)heating_element);
+
+        } break;
+
+        case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING: {
+
+        } break;
+
+        default: {
+            brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
+            brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
+        } break;
+    }
 
     if (heating_element->redraw) {
 
@@ -98,9 +153,11 @@ brewpanel_temp_control_update_temp_read(
 
 internal bool
 brewpanel_temp_control_update(
-    panel_mode     mode,
+    panel_mode    mode,
     temp_control* control,
-    images_store* images) {
+    images_store* images,
+    button_store* buttons,
+    keypad*       keypad) {
 
     bool redraw = false;
 
@@ -112,9 +169,31 @@ brewpanel_temp_control_update(
         ? &control->mlt_element
         : &control->boil_element;
 
-    if (previous_mode != mode) {
+    if (previous_mode != mode || heating_element->redraw) {
         heating_element->redraw = true;
-        redraw |= brewpanel_temp_control_update_heating_element_control(heating_element,images,mode);
+
+        switch (mode) {
+            
+            case BREWPANEL_MODE_MASH: {
+                brewpanel_buttons_show(buttons,control->mlt_element.set_button_id,images);
+                brewpanel_buttons_show(buttons,control->mlt_element.off_button_id,images);
+                brewpanel_buttons_hide(buttons,control->boil_element.set_button_id,images);
+                brewpanel_buttons_hide(buttons,control->boil_element.off_button_id,images);
+            } break;
+            
+            case BREWPANEL_MODE_BOIL: {
+                brewpanel_buttons_hide(buttons,control->mlt_element.set_button_id,images);
+                brewpanel_buttons_hide(buttons,control->mlt_element.off_button_id,images);
+                brewpanel_buttons_show(buttons,control->boil_element.set_button_id,images);
+                brewpanel_buttons_show(buttons,control->boil_element.off_button_id,images);
+            } break;
+
+            default: {
+
+            } break;
+        }
+
+        redraw |= brewpanel_temp_control_update_heating_element_control(heating_element,images,buttons,keypad,mode);
     }
 
     //draw controls
@@ -132,7 +211,8 @@ brewpanel_temp_control_mlt_element_set_click(
     mem_data payload) {
 
     heating_element_control* mlt_element = (heating_element_control*)payload;
-
+    mlt_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET;
+    mlt_element->redraw = true;
 }
 
 internal void
@@ -148,6 +228,8 @@ brewpanel_temp_control_boil_element_set_click(
     mem_data payload) {
 
     heating_element_control* boil_element = (heating_element_control*)payload;
+    boil_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET;
+    boil_element->redraw = true;
 
 }
 
@@ -215,6 +297,7 @@ brewpanel_temp_control_create(
     control->hlt_temp_panel.farenheit                  = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_F,farenhet_offset,hlt_digit_y_offset);
 
     //mlt heating element panels
+    control->mlt_element.state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
     control->mlt_element.panel_id                        = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL,BREWPANEL_TEMP_HEATING_ELEMENT_X_OFFSET,BREWPANEL_TEMP_HEATING_ELEMENT_Y_OFFSET);
     control->mlt_element.temp_values.temp_hundreds_digit = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,element_hundreds_digit_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
     control->mlt_element.temp_values.temp_tens_digit     = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,element_tens_digit_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
@@ -225,6 +308,7 @@ brewpanel_temp_control_create(
     control->mlt_element.temp_values.value = 111;
 
     //boil heating element panels
+    control->boil_element.state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
     control->boil_element.panel_id                        = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL,BREWPANEL_TEMP_HEATING_ELEMENT_X_OFFSET,BREWPANEL_TEMP_HEATING_ELEMENT_Y_OFFSET);
     control->boil_element.temp_values.temp_hundreds_digit = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,element_hundreds_digit_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
     control->boil_element.temp_values.temp_tens_digit     = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,element_tens_digit_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
@@ -232,7 +316,6 @@ brewpanel_temp_control_create(
     control->boil_element.percent                         = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_PERCENT,element_percent_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
     //TODO: temporary
     control->boil_element.temp_values.value = 222;
-
     control->mlt_element.set_button_id = 
         brewpanel_buttons_create_button(
             buttons,
@@ -252,6 +335,33 @@ brewpanel_temp_control_create(
             images,
             brewpanel_temp_control_mlt_element_off_click,
             (mem_data)&control->mlt_element,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_IDLE,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_HOVER,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_CLICKED,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_DISABLED,
+            BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_OFF_X_OFFSET,
+            BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_OFF_Y_OFFSET
+    );
+
+    control->boil_element.set_button_id = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_temp_control_boil_element_set_click,
+            (mem_data)&control->boil_element,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_IDLE,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_HOVER,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_CLICKED,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_DISABLED,
+            BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_SET_X_OFFSET,
+            BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_SET_Y_OFFSET
+    );
+    control->boil_element.off_button_id = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_temp_control_boil_element_off_click,
+            (mem_data)&control->boil_element,
             BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_IDLE,
             BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_HOVER,
             BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_CLICKED,
