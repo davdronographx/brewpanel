@@ -511,9 +511,9 @@ brewpanel_timer_control_update_buttons(
 
         case BREWPANEL_TIMER_STATE_IDLE: {
 
-            brewpanel_buttons_disable(button_store,timer_control->buttons.start_button_id);
-            brewpanel_buttons_disable(button_store,timer_control->buttons.stop_button_id);
-            brewpanel_buttons_disable(button_store,timer_control->buttons.pause_button_id);
+            brewpanel_buttons_disable(button_store,timer_control->buttons.start_button_id,images);
+            brewpanel_buttons_disable(button_store,timer_control->buttons.stop_button_id,images);
+            brewpanel_buttons_disable(button_store,timer_control->buttons.pause_button_id,images);
             brewpanel_buttons_enable(button_store,timer_control->buttons.reset_button_id,images);
 
         } break;

@@ -4,10 +4,35 @@
 
 internal void
 brewpanel_buttons_disable(
-    BrewPanelButtonStore* button_store,
-    button_id button) {
+    button_store* button_store,
+    button_id     button_id,
+    images_store* images_state) {
 
-    button_store->states[button] = BREWPANEL_BUTTON_STATE_DISABLED;
+    button_store->states[button_id] = BREWPANEL_BUTTON_STATE_DISABLED;
+
+    BrewPanelButtonOffsets offsets = button_store->offsets[button_id];
+
+    image_id button_image_id_idle = button_store->images.idle[button_id];
+
+    BrewPanelImagesFileIndex image_index = brewpanel_images_index(images_state, button_image_id_idle);
+    u32 button_height = image_index.image_height_pixels;
+    u32 button_width  = image_index.image_width_pixels;
+    
+    u32 button_matrix_offset = offsets.x_pixels + (offsets.y_pixels * BREW_PANEL_WIDTH_PIXELS);
+    mem_data button_matrix_address = (mem_data)(&button_store->button_id_matrix[button_matrix_offset]);
+
+    for (
+        u32 button_matrix_row = 0;
+        button_matrix_row < button_height;
+        ++button_matrix_row
+    ) {
+        memset(
+            button_matrix_address,
+            BREW_PANEL_BUTTONS_NULL,
+            button_width
+        );
+        button_matrix_address +=  BREW_PANEL_WIDTH_PIXELS;
+    }
 }
 
 internal void
@@ -17,6 +42,7 @@ brewpanel_buttons_enable(
     images_store* images_state) {
 
     button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
+
     BrewPanelButtonOffsets offsets = button_store->offsets[button_id];
 
     image_id button_image_id_idle = button_store->images.idle[button_id];
@@ -40,6 +66,26 @@ brewpanel_buttons_enable(
         );
         button_matrix_address +=  BREW_PANEL_WIDTH_PIXELS;
     }
+}
+
+internal void
+brewpanel_buttons_hide(
+    button_store* button_store,
+    button_id button_id,
+    images_store* images) {
+
+    button_store->visibility[button_id] = BREWPANEL_BUTTON_VISIBILITY_HIDDEN;
+    brewpanel_buttons_disable(button_store,button_id,images);
+}
+
+internal void
+brewpanel_buttons_show(
+    button_store* button_store,
+    button_id button_id,
+    images_store* images) {
+        
+    button_store->visibility[button_id] = BREWPANEL_BUTTON_VISIBILITY_SHOWN;
+    brewpanel_buttons_enable(button_store,button_id,images);
 }
 
 internal BrewPanelButtonStore
@@ -84,7 +130,8 @@ brewpanel_buttons_create_button(
     ++button_store->button_count;
     button_id = button_store->button_count - 1;
 
-    button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
+    button_store->states[button_id]     = BREWPANEL_BUTTON_STATE_IDLE;
+    button_store->visibility[button_id] = BREWPANEL_BUTTON_VISIBILITY_SHOWN;
 
     //set the image ids
     button_store->images.idle[button_id]     = button_image_id_idle; 
@@ -191,8 +238,10 @@ brewpanel_buttons_draw(
         BrewPanelButtonState current_button_state  = brewpanel_buttons_state(button_store,button_index);
         BrewPanelButtonState state_currently_drawn = brewpanel_buttons_draw_state(button_store,button_index); 
 
-        //we only want to draw if the state is different
+        //we only want to draw if the state is different and the button is visible
         if (current_button_state == state_currently_drawn) {
+
+            render_screen |= button_store->visibility[button_index] == BREWPANEL_BUTTON_VISIBILITY_HIDDEN;
             continue;
         }
 

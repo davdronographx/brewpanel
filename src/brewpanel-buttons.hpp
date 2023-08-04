@@ -10,6 +10,11 @@
 
 typedef s8 button_id;
 
+enum BrewPanelButtonVisibility : u8 {
+    BREWPANEL_BUTTON_VISIBILITY_SHOWN = 0,
+    BREWPANEL_BUTTON_VISIBILITY_HIDDEN = 1
+};
+
 enum BrewPanelButtonState : u8
 {
     BREWPANEL_BUTTON_STATE_NULL     = 0,
@@ -41,6 +46,7 @@ struct BrewPanelButtonStore {
     BrewPanelButtonState       states[BREW_PANEL_BUTTONS_MAX];
     BrewPanelButtonState       draw_state[BREW_PANEL_BUTTONS_MAX];
     BrewPanelButtonOffsets     offsets[BREW_PANEL_BUTTONS_MAX];
+    BrewPanelButtonVisibility  visibility[BREW_PANEL_BUTTONS_MAX];
     func_button_click_callback on_click_callbacks[BREW_PANEL_BUTTONS_MAX];
     mem_data                   on_click_payloads[BREW_PANEL_BUTTONS_MAX];
     s8*                        button_id_matrix;

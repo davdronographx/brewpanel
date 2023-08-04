@@ -246,7 +246,7 @@ brewpanel_temp_control_create(
             BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_SET_X_OFFSET,
             BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_SET_Y_OFFSET
     );
-    control->mlt_element.set_button_id = 
+    control->mlt_element.off_button_id = 
         brewpanel_buttons_create_button(
             buttons,
             images,

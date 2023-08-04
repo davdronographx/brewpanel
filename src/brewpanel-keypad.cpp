@@ -31,19 +31,19 @@ brewpanel_keypad_disable(
     button_store* buttons,
     images_store* images) {
 
-    brewpanel_buttons_disable(buttons,keypad->button_0);
-    brewpanel_buttons_disable(buttons,keypad->button_1);
-    brewpanel_buttons_disable(buttons,keypad->button_2);
-    brewpanel_buttons_disable(buttons,keypad->button_3);
-    brewpanel_buttons_disable(buttons,keypad->button_4);
-    brewpanel_buttons_disable(buttons,keypad->button_5);
-    brewpanel_buttons_disable(buttons,keypad->button_6);
-    brewpanel_buttons_disable(buttons,keypad->button_7);
-    brewpanel_buttons_disable(buttons,keypad->button_8);
-    brewpanel_buttons_disable(buttons,keypad->button_9);
-    brewpanel_buttons_disable(buttons,keypad->button_del);
-    brewpanel_buttons_disable(buttons,keypad->button_set);
-    brewpanel_buttons_disable(buttons,keypad->button_cancel);
+    brewpanel_buttons_disable(buttons,keypad->button_0,images);
+    brewpanel_buttons_disable(buttons,keypad->button_1,images);
+    brewpanel_buttons_disable(buttons,keypad->button_2,images);
+    brewpanel_buttons_disable(buttons,keypad->button_3,images);
+    brewpanel_buttons_disable(buttons,keypad->button_4,images);
+    brewpanel_buttons_disable(buttons,keypad->button_5,images);
+    brewpanel_buttons_disable(buttons,keypad->button_6,images);
+    brewpanel_buttons_disable(buttons,keypad->button_7,images);
+    brewpanel_buttons_disable(buttons,keypad->button_8,images);
+    brewpanel_buttons_disable(buttons,keypad->button_9,images);
+    brewpanel_buttons_disable(buttons,keypad->button_del,images);
+    brewpanel_buttons_disable(buttons,keypad->button_set,images);
+    brewpanel_buttons_disable(buttons,keypad->button_cancel,images);
 }
 
 internal bool
