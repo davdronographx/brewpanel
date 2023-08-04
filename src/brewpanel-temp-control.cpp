@@ -128,6 +128,37 @@ brewpanel_temp_control_update(
 }
 
 internal void
+brewpanel_temp_control_mlt_element_set_click(
+    mem_data payload) {
+
+    heating_element_control* mlt_element = (heating_element_control*)payload;
+
+}
+
+internal void
+brewpanel_temp_control_mlt_element_off_click(
+    mem_data payload) {
+
+    heating_element_control* mlt_element = (heating_element_control*)payload;
+
+}
+
+internal void
+brewpanel_temp_control_boil_element_set_click(
+    mem_data payload) {
+
+    heating_element_control* boil_element = (heating_element_control*)payload;
+
+}
+
+internal void
+brewpanel_temp_control_boil_element_off_click(
+    mem_data payload) {
+
+    heating_element_control* boil_element = (heating_element_control*)payload;
+}
+
+internal void
 brewpanel_temp_control_create(
     temp_control* control,
     button_store* buttons,
@@ -201,4 +232,31 @@ brewpanel_temp_control_create(
     control->boil_element.percent                         = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_PERCENT,element_percent_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
     //TODO: temporary
     control->boil_element.temp_values.value = 222;
+
+    control->mlt_element.set_button_id = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_temp_control_mlt_element_set_click,
+            (mem_data)&control->mlt_element,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_IDLE,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_HOVER,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_CLICKED,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_DISABLED,
+            BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_SET_X_OFFSET,
+            BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_SET_Y_OFFSET
+    );
+    control->mlt_element.set_button_id = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_temp_control_mlt_element_off_click,
+            (mem_data)&control->mlt_element,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_IDLE,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_HOVER,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_CLICKED,
+            BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_DISABLED,
+            BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_OFF_X_OFFSET,
+            BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_OFF_Y_OFFSET
+    );
 }
