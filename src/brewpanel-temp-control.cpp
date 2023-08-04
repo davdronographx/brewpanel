@@ -39,7 +39,7 @@ brewpanel_temp_control_heating_element_set(
 ) {
 
     heating_element_control* heating_element = (heating_element_control*)payload;
-    heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET;
+    heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING;
     heating_element->redraw = true;
 
 }
@@ -86,6 +86,8 @@ brewpanel_temp_control_update_heating_element_control(
         } break;
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING: {
+            brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
+            brewpanel_buttons_set_idle(buttons,heating_element->off_button_id);
 
         } break;
 

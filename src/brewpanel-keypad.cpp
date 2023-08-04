@@ -210,7 +210,7 @@ brewpanel_keypad_button_click_set(
     mem_data payload) {
 
     keypad_input* input = (keypad_input*)payload;
-    input->cancel_callback(input->callback_payload);
+    input->set_callback(input->callback_payload);
     input->input_state = BREWPANEL_KEYPAD_INPUT_STATE_IDLE;
 }
 
