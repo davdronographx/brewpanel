@@ -83,6 +83,12 @@ brewpanel_temp_control_update_heating_element_control(
                 brewpanel_temp_control_heating_element_cancel,
                 (mem_data)heating_element);
 
+            heating_element->temp_values.value  = keypad->input.values[2] * 100;
+            heating_element->temp_values.value += keypad->input.values[1] * 10;
+            heating_element->temp_values.value += keypad->input.values[0];
+
+            redraw = true;
+
         } break;
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING: {
@@ -306,8 +312,6 @@ brewpanel_temp_control_create(
     control->mlt_element.temp_values.temp_ones_digit     = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,element_ones_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
     control->mlt_element.degree                          = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_DEGREE,element_degree_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
     control->mlt_element.farenheit                       = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_F,element_farenheit_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
-    //TODO: temporary
-    control->mlt_element.temp_values.value = 111;
 
     //boil heating element panels
     control->boil_element.state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
@@ -316,8 +320,6 @@ brewpanel_temp_control_create(
     control->boil_element.temp_values.temp_tens_digit     = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,element_tens_digit_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
     control->boil_element.temp_values.temp_ones_digit     = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_0,element_ones_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
     control->boil_element.percent                         = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_PERCENT,element_percent_offset,BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_Y_OFFSET);
-    //TODO: temporary
-    control->boil_element.temp_values.value = 222;
     control->mlt_element.set_button_id = 
         brewpanel_buttons_create_button(
             buttons,

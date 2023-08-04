@@ -71,12 +71,41 @@ brewpanel_keypad_update(
 
     local keypad_input_state previous_state = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
 
+
+
     if (previous_state != keypad->input.input_state) {
         if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_IDLE) {
            brewpanel_keypad_disable(keypad,buttons,images);
         }
         else {
             brewpanel_keypad_enable(keypad,buttons,images);
+        }
+    }
+
+    if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
+        if (keypad->input.num_digits > 0 && keypad->input.current_digit_count == keypad->input.num_digits) {
+            brewpanel_buttons_disable(buttons,keypad->button_0,images);
+            brewpanel_buttons_disable(buttons,keypad->button_1,images);
+            brewpanel_buttons_disable(buttons,keypad->button_2,images);
+            brewpanel_buttons_disable(buttons,keypad->button_3,images);
+            brewpanel_buttons_disable(buttons,keypad->button_4,images);
+            brewpanel_buttons_disable(buttons,keypad->button_5,images);
+            brewpanel_buttons_disable(buttons,keypad->button_6,images);
+            brewpanel_buttons_disable(buttons,keypad->button_7,images);
+            brewpanel_buttons_disable(buttons,keypad->button_8,images);
+            brewpanel_buttons_disable(buttons,keypad->button_9,images);
+        } 
+        else {
+            brewpanel_buttons_enable(buttons,keypad->button_0,images);
+            brewpanel_buttons_enable(buttons,keypad->button_1,images);
+            brewpanel_buttons_enable(buttons,keypad->button_2,images);
+            brewpanel_buttons_enable(buttons,keypad->button_3,images);
+            brewpanel_buttons_enable(buttons,keypad->button_4,images);
+            brewpanel_buttons_enable(buttons,keypad->button_5,images);
+            brewpanel_buttons_enable(buttons,keypad->button_6,images);
+            brewpanel_buttons_enable(buttons,keypad->button_7,images);
+            brewpanel_buttons_enable(buttons,keypad->button_8,images);
+            brewpanel_buttons_enable(buttons,keypad->button_9,images);    
         }
     }
 
@@ -121,7 +150,15 @@ brewpanel_keypad_button_click_1(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 1;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 1;
     ++input->current_digit_count;
 }
 
@@ -131,7 +168,15 @@ brewpanel_keypad_button_click_2(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 2;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 2;
     ++input->current_digit_count;
 }
 
@@ -141,7 +186,15 @@ brewpanel_keypad_button_click_3(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 3;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 3;
     ++input->current_digit_count;
 }
 
@@ -151,7 +204,15 @@ brewpanel_keypad_button_click_4(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 4;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 4;
     ++input->current_digit_count;
 }
 
@@ -161,7 +222,15 @@ brewpanel_keypad_button_click_5(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 5;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 5;
     ++input->current_digit_count;
 }
 
@@ -171,7 +240,15 @@ brewpanel_keypad_button_click_6(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 6;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 6;
     ++input->current_digit_count;
 }
 
@@ -181,7 +258,15 @@ brewpanel_keypad_button_click_7(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 7;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 7;
     ++input->current_digit_count;
 }
 
@@ -191,7 +276,15 @@ brewpanel_keypad_button_click_8(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 8;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 8;
     ++input->current_digit_count;
 }
 
@@ -201,7 +294,15 @@ brewpanel_keypad_button_click_9(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 9;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 9;
     ++input->current_digit_count;
 }
 
