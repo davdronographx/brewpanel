@@ -96,15 +96,15 @@ brewpanel_clock_update(
     );
 
     if (redraw) {
-        brewpanel_images_draw_image_(images,clock_state->faces.hours.tens_face);
-        brewpanel_images_draw_image_(images,clock_state->faces.hours.ones_face);
-        brewpanel_images_draw_image_(images,clock_state->colon_1);
-        brewpanel_images_draw_image_(images,clock_state->faces.minutes.tens_face);
-        brewpanel_images_draw_image_(images,clock_state->faces.minutes.ones_face);
-        brewpanel_images_draw_image_(images,clock_state->colon_2);
-        brewpanel_images_draw_image_(images,clock_state->faces.seconds.tens_face);
-        brewpanel_images_draw_image_(images,clock_state->faces.seconds.ones_face);
-        brewpanel_images_draw_image_(images,clock_state->am_pm_face);
+        brewpanel_images_draw_image_instance(images,clock_state->faces.hours.tens_face);
+        brewpanel_images_draw_image_instance(images,clock_state->faces.hours.ones_face);
+        brewpanel_images_draw_image_instance(images,clock_state->colon_1);
+        brewpanel_images_draw_image_instance(images,clock_state->faces.minutes.tens_face);
+        brewpanel_images_draw_image_instance(images,clock_state->faces.minutes.ones_face);
+        brewpanel_images_draw_image_instance(images,clock_state->colon_2);
+        brewpanel_images_draw_image_instance(images,clock_state->faces.seconds.tens_face);
+        brewpanel_images_draw_image_instance(images,clock_state->faces.seconds.ones_face);
+        brewpanel_images_draw_image_instance(images,clock_state->am_pm_face);
     }
 
     return(redraw);

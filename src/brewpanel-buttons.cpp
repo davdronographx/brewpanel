@@ -196,7 +196,7 @@ brewpanel_buttons_draw(
 
         BrewPanelButtonOffsets button_offsets = brewpanel_buttons_offsets(button_store,button_index);
 
-        brewpanel_images_draw_image(
+        brewpanel_images_draw_image_immediate(
             images_state,
             button_image,
             button_offsets.x_pixels,
@@ -243,7 +243,7 @@ brewpanel_buttons_draw_button(
     u32 x_offset = button_store->offsets[button_id].x_pixels;
     u32 y_offset = button_store->offsets[button_id].y_pixels;
 
-    brewpanel_images_draw_image(
+    brewpanel_images_draw_image_immediate(
         images_state,
         button_image,
         x_offset,

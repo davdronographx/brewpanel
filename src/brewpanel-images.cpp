@@ -169,7 +169,7 @@ brewpanel_images_state_create(
 }
 
 internal void
-brewpanel_images_draw_image_(
+brewpanel_images_draw_image_instance(
     images_store*     images_state,
     image_instance_id image_instance_id) {
 
@@ -205,7 +205,7 @@ brewpanel_images_draw_image_(
 }
 
 internal void
-brewpanel_images_draw_image(
+brewpanel_images_draw_image_immediate(
     BrewPanelImagesStore* images_state,
     u16                   image_id,
     u32                   x_offset,

@@ -25,6 +25,12 @@ brewpanel_core_init() {
         &memory,
         (mem_data)brewpanel_state->back_buffer.pixels);
 
+    brewpanel_state->main_screen = brewpanel_images_create_image_instance(
+        &brewpanel_state->images,
+        BREWPANEL_IMAGES_ID_MAIN_SCREEN,
+        0,0
+    );
+
     //create the message handler
     brewpanel_state->comm_handler = brewpanel_communication_create_handler();
     
@@ -66,7 +72,7 @@ brewpanel_core_init() {
     );
 
     //render the main background
-    brewpanel_core_render_main_screen();
+    brewpanel_images_draw_image_instance(&brewpanel_state->images,brewpanel_state->main_screen);
 }
 
 internal bool

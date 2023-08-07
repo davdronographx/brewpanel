@@ -107,26 +107,26 @@ brewpanel_temp_control_update_heating_element_control(
 
         heating_element->redraw = brewpanel_temp_control_update_temp_values(&heating_element->temp_values,images);
 
-        brewpanel_images_draw_image_(images,heating_element->panel_id);
-        brewpanel_images_draw_image_(images,heating_element->temp_values.temp_hundreds_digit);
-        brewpanel_images_draw_image_(images,heating_element->temp_values.temp_tens_digit);
-        brewpanel_images_draw_image_(images,heating_element->temp_values.temp_ones_digit);
+        brewpanel_images_draw_image_instance(images,heating_element->panel_id);
+        brewpanel_images_draw_image_instance(images,heating_element->temp_values.temp_hundreds_digit);
+        brewpanel_images_draw_image_instance(images,heating_element->temp_values.temp_tens_digit);
+        brewpanel_images_draw_image_instance(images,heating_element->temp_values.temp_ones_digit);
 
         switch (mode) {
 
             case BREWPANEL_MODE_MASH: {
-                brewpanel_images_draw_image_(images,heating_element->degree);
-                brewpanel_images_draw_image_(images,heating_element->farenheit);
+                brewpanel_images_draw_image_instance(images,heating_element->degree);
+                brewpanel_images_draw_image_instance(images,heating_element->farenheit);
             } break;
 
             case BREWPANEL_MODE_BOIL: {
-                brewpanel_images_draw_image_(images,heating_element->percent);
+                brewpanel_images_draw_image_instance(images,heating_element->percent);
             } break;
 
             default: {
                 //default is mash mode
-                brewpanel_images_draw_image_(images,heating_element->degree);
-                brewpanel_images_draw_image_(images,heating_element->farenheit);
+                brewpanel_images_draw_image_instance(images,heating_element->degree);
+                brewpanel_images_draw_image_instance(images,heating_element->farenheit);
             } break;
         }
 
@@ -146,12 +146,12 @@ brewpanel_temp_control_update_temp_read(
     if (temp_read->redraw) {
         temp_read->redraw = brewpanel_temp_control_update_temp_values(&temp_read->values,images);
         
-        brewpanel_images_draw_image_(images,temp_read->panel_id);
-        brewpanel_images_draw_image_(images,temp_read->values.temp_hundreds_digit);
-        brewpanel_images_draw_image_(images,temp_read->values.temp_tens_digit);
-        brewpanel_images_draw_image_(images,temp_read->values.temp_ones_digit);
-        brewpanel_images_draw_image_(images,temp_read->degree);
-        brewpanel_images_draw_image_(images,temp_read->farenheit);
+        brewpanel_images_draw_image_instance(images,temp_read->panel_id);
+        brewpanel_images_draw_image_instance(images,temp_read->values.temp_hundreds_digit);
+        brewpanel_images_draw_image_instance(images,temp_read->values.temp_tens_digit);
+        brewpanel_images_draw_image_instance(images,temp_read->values.temp_ones_digit);
+        brewpanel_images_draw_image_instance(images,temp_read->degree);
+        brewpanel_images_draw_image_instance(images,temp_read->farenheit);
 
         redraw = true;
     }

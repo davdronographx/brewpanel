@@ -115,7 +115,7 @@ brewpanel_keypad_update(
 
         keypad->redraw = false;
 
-        brewpanel_images_draw_image_(
+        brewpanel_images_draw_image_instance(
             images,
             keypad->panel_id
         );

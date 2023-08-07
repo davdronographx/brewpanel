@@ -101,7 +101,7 @@ brewpanel_mode_control_update(
 
     if (mode_control->redraw) {
 
-        brewpanel_images_draw_image_(images,mode_control->panel_id);
+        brewpanel_images_draw_image_instance(images,mode_control->panel_id);
 
         redraw = true;
         mode_control->redraw = false;
