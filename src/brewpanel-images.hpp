@@ -145,7 +145,10 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_CLICKED  = 120,
     BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_SET_DISABLED = 121,
     BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_ELEMENT_OFF_DISABLED = 122,
-    BREWPANEL_IMAGES_ID_COUNT                              = 123 
+    BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_INPUT            = 123,
+    BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_INPUT           = 124,
+    BREWPANEL_IMAGES_ID_KEYPAD_PANEL_ACTIVE                = 125,
+    BREWPANEL_IMAGES_ID_COUNT                              = 126 
 };
 
 typedef s16 image_id;
@@ -273,7 +276,10 @@ global str brewpanel_images_file_paths[] = {
     "element-set-clicked.png",
     "element-off-clicked.png",
     "element-set-disabled.png",
-    "element-off-disabled.png"
+    "element-off-disabled.png",
+    "mlt-element-panel-input.png",
+    "boil-element-panel-input.png",
+    "keypad-active.png"    
 };
 
 global str brewpanel_images_image_names[] = {
@@ -399,7 +405,10 @@ global str brewpanel_images_image_names[] = {
     "element-set-clicked",
     "element-off-clicked",
     "element-set-disabled",
-    "element-off-disabled"
+    "element-off-disabled",
+    "mlt-element-panel-input",
+    "boil-element-panel-input",
+    "keypad-active"   
 };
 
 struct BrewPanelImagesFileIndex {

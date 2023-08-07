@@ -66,11 +66,18 @@ brewpanel_temp_control_update_heating_element_control(
     brewpanel_buttons_show(buttons,heating_element->set_button_id,images);
     brewpanel_buttons_show(buttons,heating_element->off_button_id,images);
 
+    image_id input_panel = BREWPANEL_IMAGES_ID_NULL;
+
     switch (heating_element->state) {
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF: {
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
+
+            input_panel = mode == BREWPANEL_MODE_MASH
+                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
+                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
+
         } break;
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET: {
@@ -87,6 +94,10 @@ brewpanel_temp_control_update_heating_element_control(
             heating_element->temp_values.value += keypad->input.values[1] * 10;
             heating_element->temp_values.value += keypad->input.values[0];
 
+            input_panel = mode == BREWPANEL_MODE_MASH
+                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_INPUT
+                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_INPUT;
+
             redraw = true;
 
         } break;
@@ -95,17 +106,26 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_idle(buttons,heating_element->off_button_id);
 
+            input_panel = mode == BREWPANEL_MODE_MASH
+                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
+                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
         } break;
 
         default: {
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
+            input_panel = mode == BREWPANEL_MODE_MASH
+                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
+                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
         } break;
     }
 
     if (heating_element->redraw) {
 
         heating_element->redraw = brewpanel_temp_control_update_temp_values(&heating_element->temp_values,images);
+
+        images->image_instances[heating_element->panel_id].image_id = input_panel;
+
 
         brewpanel_images_draw_image_instance(images,heating_element->panel_id);
         brewpanel_images_draw_image_instance(images,heating_element->temp_values.temp_hundreds_digit);

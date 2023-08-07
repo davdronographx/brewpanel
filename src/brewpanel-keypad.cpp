@@ -40,6 +40,8 @@ brewpanel_keypad_enable(
     brewpanel_buttons_enable(buttons,keypad->button_del,images);
     brewpanel_buttons_enable(buttons,keypad->button_set,images);
     brewpanel_buttons_enable(buttons,keypad->button_cancel,images);
+    images->image_instances[keypad->panel_id].image_id = BREWPANEL_IMAGES_ID_KEYPAD_PANEL_ACTIVE;
+    keypad->redraw = true;
 }
 
 internal void
@@ -61,6 +63,8 @@ brewpanel_keypad_disable(
     brewpanel_buttons_disable(buttons,keypad->button_del,images);
     brewpanel_buttons_disable(buttons,keypad->button_set,images);
     brewpanel_buttons_disable(buttons,keypad->button_cancel,images);
+    images->image_instances[keypad->panel_id].image_id = BREWPANEL_IMAGES_ID_KEYPAD_PANEL;
+    keypad->redraw = true;
 }
 
 internal bool
@@ -70,8 +74,6 @@ brewpanel_keypad_update(
     button_store* buttons) {
 
     local keypad_input_state previous_state = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
-
-
 
     if (previous_state != keypad->input.input_state) {
         if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_IDLE) {
