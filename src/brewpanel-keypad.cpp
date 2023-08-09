@@ -132,6 +132,19 @@ brewpanel_keypad_button_click_del(
 
     keypad_input* input = (keypad_input*)payload;
 
+    input->values[0] = 0;
+
+    for (
+        u8 index = 0;
+        index < input->current_digit_count;
+        ++index
+    ) {
+        input->values[index] = input->values[index+1];
+    }
+
+    --input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
+
 }
 
 internal void

@@ -34,25 +34,6 @@ brewpanel_temp_control_update_temp_values(
 }
 
 internal void
-brewpanel_temp_control_heating_element_set(
-    mem_data payload
-) {
-
-    heating_element_control* heating_element = (heating_element_control*)payload;
-    heating_element->redraw = true;
-
-}
-
-internal void
-brewpanel_temp_control_heating_element_cancel(
-    mem_data payload) {
-
-    heating_element_control* heating_element = (heating_element_control*)payload;
-    heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
-    heating_element->redraw = true;
-}
-
-internal void
 brewpanel_temp_control_heating_element_keypad_callback(
     keypad_click_type button_type,
     mem_data          payload) {
@@ -67,6 +48,7 @@ brewpanel_temp_control_heating_element_keypad_callback(
 
         case BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL: {
             heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
+            heating_element->temp_values.value = 0;
         } break;
 
         case BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER: {
@@ -106,6 +88,8 @@ brewpanel_temp_control_update_heating_element_control(
                 ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
                 : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
 
+            keypad->input = {0};
+
         } break;
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET: {
@@ -136,6 +120,8 @@ brewpanel_temp_control_update_heating_element_control(
             input_panel = mode == BREWPANEL_MODE_MASH
                 ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
                 : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
+            
+            keypad->input = {0};
         } break;
 
         default: {

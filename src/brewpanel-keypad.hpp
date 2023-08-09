@@ -28,11 +28,12 @@ enum BrewPanelKeypadInputState : u8 {
 };
 typedef BrewPanelKeypadInputState keypad_input_state;
 
-enum BrewPanelKepadButtonClickType {
-    BREWPANEL_KEYPAD_BUTTON_TYPE_NULL,
-    BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER,
-    BREWPANEL_KEYPAD_BUTTON_TYPE_SET,
-    BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL,
+enum BrewPanelKepadButtonClickType : u8 {
+    BREWPANEL_KEYPAD_BUTTON_TYPE_NULL   = 0,
+    BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER = 1,
+    BREWPANEL_KEYPAD_BUTTON_TYPE_DELETE = 2,
+    BREWPANEL_KEYPAD_BUTTON_TYPE_SET    = 3,
+    BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL = 4,
 };
 typedef BrewPanelKepadButtonClickType keypad_click_type; 
 
