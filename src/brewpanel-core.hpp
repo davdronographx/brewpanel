@@ -18,17 +18,17 @@ struct BrewPanelBackBuffer {
 };
 
 struct BrewPanelState{
-    BrewPanelMemory     memory;
-    BrewPanelBackBuffer back_buffer;
-    images_store        images;
-    button_store        button_store;
-    BrewPanelTimers     timers;
-    BrewPanelClock      clock;
-    comm_handler        comm_handler;
-    temp_control        temp_control;
-    mode_control        mode_control;
-    keypad              keypad;
-    image_instance_id   main_screen;
+    BrewPanelMemory       memory;
+    BrewPanelBackBuffer   back_buffer;
+    images_store          images;
+    button_store          button_store;
+    BrewPanelTimerControl timer_control;
+    BrewPanelClock        clock;
+    comm_handler          comm_handler;
+    temp_control          temp_control;
+    mode_control          mode_control;
+    keypad                keypad;
+    image_instance_id     main_screen;
 };
 
 global BrewPanelState* brewpanel_state;

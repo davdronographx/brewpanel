@@ -142,8 +142,6 @@ brewpanel_temp_control_update_heating_element_control(
                 ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_INPUT
                 : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_INPUT;
 
-            redraw = true;
-
         } break;
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING: {
