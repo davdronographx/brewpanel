@@ -23,8 +23,6 @@
 enum BrewPanelKeypadInputState : u8 {
     BREWPANEL_KEYPAD_INPUT_STATE_IDLE   = 0,
     BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE = 1,
-    BREWPANEL_KEYPAD_INPUT_STATE_SET    = 2,
-    BREWPANEL_KEYPAD_INPUT_STATE_CANCEL = 3,
 };
 typedef BrewPanelKeypadInputState keypad_input_state;
 
@@ -49,6 +47,7 @@ typedef void
 (*func_keypad_button_callback)
 (
     keypad_click_type button_type,
+    mem_data          keypad_input,
     mem_data          payload
 );
 
@@ -56,10 +55,12 @@ struct BrewPanelKeypadInput {
     u8                          values[BREWPANEL_KEYPAD_INPUT_MAX_VALUES];
     u8                          num_digits;
     u8                          current_digit_count;
+    u32                         starting_value;
     keypad_input_state          input_state;
     func_keypad_button_callback button_callback;
     mem_data                    callback_payload;
 };
+
 typedef BrewPanelKeypadInput keypad_input;
 
 struct BrewPanelKeypad {

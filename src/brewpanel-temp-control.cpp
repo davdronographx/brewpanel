@@ -5,6 +5,15 @@
 
 #pragma once
 
+internal void
+brewpanel_temp_control_change_element_state(
+    heating_element_control* heating_element,
+    heating_element_state    new_state
+) {
+    heating_element->previous_state = heating_element->state;
+    heating_element->state          = new_state;
+}
+
 internal bool
 brewpanel_temp_control_update_temp_values(
     temp_reading_values* temp_values,
@@ -36,23 +45,21 @@ brewpanel_temp_control_update_temp_values(
 internal void
 brewpanel_temp_control_heating_element_keypad_callback(
     keypad_click_type button_type,
+    mem_data          keypad_input_reference,
     mem_data          payload) {
 
     heating_element_control* heating_element = (heating_element_control*)payload;
-    
+    keypad_input* input = (keypad_input*)keypad_input_reference;
+
     switch (button_type) {
         
         case BREWPANEL_KEYPAD_BUTTON_TYPE_SET: {
-            heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING;
+            brewpanel_temp_control_change_element_state(heating_element,BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING);
         } break;
 
         case BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL: {
-            heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
-            heating_element->temp_values.value = 0;
-        } break;
-
-        case BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER: {
-
+            heating_element->temp_values.value = input->starting_value;
+            brewpanel_temp_control_change_element_state(heating_element,heating_element->previous_state);
         } break;
 
         default: {
@@ -97,13 +104,39 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
 
             brewpanel_keypad_active_input(
-                keypad,3,
+                keypad,3,heating_element->temp_values.value,
                 brewpanel_temp_control_heating_element_keypad_callback,
                 (mem_data)heating_element);
 
             heating_element->temp_values.value  = keypad->input.values[2] * 100;
             heating_element->temp_values.value += keypad->input.values[1] * 10;
             heating_element->temp_values.value += keypad->input.values[0];
+
+            switch(mode) {
+
+                case BREWPANEL_MODE_MASH: {
+                    
+                    if (heating_element->temp_values.value > 212) {
+                        heating_element->temp_values.value = 212;
+                        keypad->input.values[2] = 2;
+                        keypad->input.values[1] = 1;
+                        keypad->input.values[0] = 2;
+                    }
+                
+                } break;
+
+                case BREWPANEL_MODE_BOIL: {
+                    
+                    if (heating_element->temp_values.value > 100) {
+                        heating_element->temp_values.value = 100;
+                        keypad->input.values[2] = 1;
+                        keypad->input.values[1] = 0;
+                        keypad->input.values[0] = 0;
+                    }
+
+                } break;
+
+            }
 
             input_panel = mode == BREWPANEL_MODE_MASH
                 ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_INPUT
@@ -118,8 +151,8 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_idle(buttons,heating_element->off_button_id);
 
             input_panel = mode == BREWPANEL_MODE_MASH
-                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
-                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
+                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_ON
+                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_ON;
             
             keypad->input = {0};
         } break;
@@ -251,7 +284,7 @@ brewpanel_temp_control_mlt_element_set_click(
     mem_data payload) {
 
     heating_element_control* mlt_element = (heating_element_control*)payload;
-    mlt_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET;
+    brewpanel_temp_control_change_element_state(mlt_element,BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET);
     mlt_element->redraw = true;
 }
 
@@ -260,7 +293,9 @@ brewpanel_temp_control_mlt_element_off_click(
     mem_data payload) {
 
     heating_element_control* mlt_element = (heating_element_control*)payload;
-
+    mlt_element->temp_values.value = 0;
+    brewpanel_temp_control_change_element_state(mlt_element,BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF);
+    mlt_element->redraw = true;
 }
 
 internal void
@@ -268,7 +303,7 @@ brewpanel_temp_control_boil_element_set_click(
     mem_data payload) {
 
     heating_element_control* boil_element = (heating_element_control*)payload;
-    boil_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET;
+    brewpanel_temp_control_change_element_state(boil_element,BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET);
     boil_element->redraw = true;
 
 }
@@ -278,6 +313,9 @@ brewpanel_temp_control_boil_element_off_click(
     mem_data payload) {
 
     heating_element_control* boil_element = (heating_element_control*)payload;
+    boil_element->temp_values.value = 0;
+    brewpanel_temp_control_change_element_state(boil_element,BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF);
+    boil_element->redraw = true;
 }
 
 internal void
