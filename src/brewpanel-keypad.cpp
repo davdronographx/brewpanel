@@ -6,19 +6,17 @@
 
 internal void
 brewpanel_keypad_active_input(
-    keypad*       keypad,
-    u8            num_digits,
-    func_keypad_set_callback    set_callback, 
-    func_keypad_cancel_callback cancel_callback, 
-    mem_data      payload) {
+    keypad*                     keypad,
+    u8                          num_digits,
+    func_keypad_button_callback button_callback, 
+    mem_data                    payload) {
 
-    brewpanel_assert(set_callback && cancel_callback);
+    brewpanel_assert(button_callback && payload);
 
     keypad->input.num_digits       = num_digits;
     keypad->input.input_state      = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
     keypad->input.callback_payload = payload;
-    keypad->input.set_callback     = set_callback;
-    keypad->input.cancel_callback  = cancel_callback;
+    keypad->input.button_callback      = button_callback;
 }
 
 internal void
@@ -82,32 +80,32 @@ brewpanel_keypad_update(
         else {
             brewpanel_keypad_enable(keypad,buttons,images);
         }
-    }
 
-    if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
-        if (keypad->input.num_digits > 0 && keypad->input.current_digit_count == keypad->input.num_digits) {
-            brewpanel_buttons_disable(buttons,keypad->button_0,images);
-            brewpanel_buttons_disable(buttons,keypad->button_1,images);
-            brewpanel_buttons_disable(buttons,keypad->button_2,images);
-            brewpanel_buttons_disable(buttons,keypad->button_3,images);
-            brewpanel_buttons_disable(buttons,keypad->button_4,images);
-            brewpanel_buttons_disable(buttons,keypad->button_5,images);
-            brewpanel_buttons_disable(buttons,keypad->button_6,images);
-            brewpanel_buttons_disable(buttons,keypad->button_7,images);
-            brewpanel_buttons_disable(buttons,keypad->button_8,images);
-            brewpanel_buttons_disable(buttons,keypad->button_9,images);
-        } 
-        else {
-            brewpanel_buttons_enable(buttons,keypad->button_0,images);
-            brewpanel_buttons_enable(buttons,keypad->button_1,images);
-            brewpanel_buttons_enable(buttons,keypad->button_2,images);
-            brewpanel_buttons_enable(buttons,keypad->button_3,images);
-            brewpanel_buttons_enable(buttons,keypad->button_4,images);
-            brewpanel_buttons_enable(buttons,keypad->button_5,images);
-            brewpanel_buttons_enable(buttons,keypad->button_6,images);
-            brewpanel_buttons_enable(buttons,keypad->button_7,images);
-            brewpanel_buttons_enable(buttons,keypad->button_8,images);
-            brewpanel_buttons_enable(buttons,keypad->button_9,images);    
+        if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
+            if (keypad->input.num_digits > 0 && keypad->input.current_digit_count == keypad->input.num_digits) {
+                brewpanel_buttons_disable(buttons,keypad->button_0,images);
+                brewpanel_buttons_disable(buttons,keypad->button_1,images);
+                brewpanel_buttons_disable(buttons,keypad->button_2,images);
+                brewpanel_buttons_disable(buttons,keypad->button_3,images);
+                brewpanel_buttons_disable(buttons,keypad->button_4,images);
+                brewpanel_buttons_disable(buttons,keypad->button_5,images);
+                brewpanel_buttons_disable(buttons,keypad->button_6,images);
+                brewpanel_buttons_disable(buttons,keypad->button_7,images);
+                brewpanel_buttons_disable(buttons,keypad->button_8,images);
+                brewpanel_buttons_disable(buttons,keypad->button_9,images);
+            } 
+            else {
+                brewpanel_buttons_enable(buttons,keypad->button_0,images);
+                brewpanel_buttons_enable(buttons,keypad->button_1,images);
+                brewpanel_buttons_enable(buttons,keypad->button_2,images);
+                brewpanel_buttons_enable(buttons,keypad->button_3,images);
+                brewpanel_buttons_enable(buttons,keypad->button_4,images);
+                brewpanel_buttons_enable(buttons,keypad->button_5,images);
+                brewpanel_buttons_enable(buttons,keypad->button_6,images);
+                brewpanel_buttons_enable(buttons,keypad->button_7,images);
+                brewpanel_buttons_enable(buttons,keypad->button_8,images);
+                brewpanel_buttons_enable(buttons,keypad->button_9,images);    
+            }
         }
     }
 
@@ -142,8 +140,18 @@ brewpanel_keypad_button_click_0(
 
     keypad_input* input = (keypad_input*)payload;
 
-    input->values[input->current_digit_count] = 0;
+    for (
+        u8 index = input->current_digit_count;
+        index > 0;
+        --index) {
+
+        input->values[index] = input->values[index-1];
+    }
+
+    input->values[0] = 0;
+
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -162,6 +170,7 @@ brewpanel_keypad_button_click_1(
 
     input->values[0] = 1;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -180,6 +189,7 @@ brewpanel_keypad_button_click_2(
 
     input->values[0] = 2;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -198,6 +208,7 @@ brewpanel_keypad_button_click_3(
 
     input->values[0] = 3;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -216,6 +227,7 @@ brewpanel_keypad_button_click_4(
 
     input->values[0] = 4;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -234,6 +246,7 @@ brewpanel_keypad_button_click_5(
 
     input->values[0] = 5;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -252,6 +265,7 @@ brewpanel_keypad_button_click_6(
 
     input->values[0] = 6;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -270,6 +284,7 @@ brewpanel_keypad_button_click_7(
 
     input->values[0] = 7;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -288,6 +303,7 @@ brewpanel_keypad_button_click_8(
 
     input->values[0] = 8;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -306,6 +322,7 @@ brewpanel_keypad_button_click_9(
 
     input->values[0] = 9;
     ++input->current_digit_count;
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER, input->callback_payload);
 }
 
 internal void
@@ -313,7 +330,7 @@ brewpanel_keypad_button_click_set(
     mem_data payload) {
 
     keypad_input* input = (keypad_input*)payload;
-    input->set_callback(input->callback_payload);
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_SET, input->callback_payload);
     input->input_state = BREWPANEL_KEYPAD_INPUT_STATE_IDLE;
 }
 
@@ -324,7 +341,7 @@ brewpanel_keypad_button_click_cancel(
     keypad_input* input = (keypad_input*)payload;
     input->current_digit_count = 0;
     input->input_state = BREWPANEL_KEYPAD_INPUT_STATE_IDLE;
-    input->cancel_callback(input->callback_payload);
+    input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL, input->callback_payload);
 }
 
 internal void

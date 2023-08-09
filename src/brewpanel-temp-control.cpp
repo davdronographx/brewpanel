@@ -39,7 +39,6 @@ brewpanel_temp_control_heating_element_set(
 ) {
 
     heating_element_control* heating_element = (heating_element_control*)payload;
-    heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING;
     heating_element->redraw = true;
 
 }
@@ -50,6 +49,35 @@ brewpanel_temp_control_heating_element_cancel(
 
     heating_element_control* heating_element = (heating_element_control*)payload;
     heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
+    heating_element->redraw = true;
+}
+
+internal void
+brewpanel_temp_control_heating_element_keypad_callback(
+    keypad_click_type button_type,
+    mem_data          payload) {
+
+    heating_element_control* heating_element = (heating_element_control*)payload;
+    
+    switch (button_type) {
+        
+        case BREWPANEL_KEYPAD_BUTTON_TYPE_SET: {
+            heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING;
+        } break;
+
+        case BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL: {
+            heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
+        } break;
+
+        case BREWPANEL_KEYPAD_BUTTON_TYPE_NUMBER: {
+
+        } break;
+
+        default: {
+
+        } break;
+    }
+
     heating_element->redraw = true;
 }
 
@@ -86,8 +114,7 @@ brewpanel_temp_control_update_heating_element_control(
 
             brewpanel_keypad_active_input(
                 keypad,3,
-                brewpanel_temp_control_heating_element_set,
-                brewpanel_temp_control_heating_element_cancel,
+                brewpanel_temp_control_heating_element_keypad_callback,
                 (mem_data)heating_element);
 
             heating_element->temp_values.value  = keypad->input.values[2] * 100;
@@ -125,7 +152,6 @@ brewpanel_temp_control_update_heating_element_control(
         heating_element->redraw = brewpanel_temp_control_update_temp_values(&heating_element->temp_values,images);
 
         images->image_instances[heating_element->panel_id].image_id = input_panel;
-
 
         brewpanel_images_draw_image_instance(images,heating_element->panel_id);
         brewpanel_images_draw_image_instance(images,heating_element->temp_values.temp_hundreds_digit);
