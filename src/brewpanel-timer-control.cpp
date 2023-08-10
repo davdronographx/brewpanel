@@ -156,32 +156,20 @@ brewpanel_timer_control_calculate_timestamp(
 
 internal bool
 brewpanel_timer_control_draw_timers(
-    BrewPanelTimerControl* timer_control,
-    BrewPanelImagesStore*  images_state,
-    BrewPanelButtonStore*  button_store,
-    mem_data               draw_buffer) {
+    timer*         timer,
+    images_store*  images_state,
+    button_store*  button_store,
+    mem_data       draw_buffer) {
 
     bool redraw = false;
 
-    if (timer_control->mash_timer.redraw) {
-
-        brewpanel_images_draw_image_instance(images_state, timer_control->mash_timer.panel_image);
-        brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.start_button_id);
-        brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.stop_button_id);
-        brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.pause_button_id);
-        brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.reset_button_id);
-        timer_control->mash_timer.redraw = false;
-        redraw = true;
-    }
-
-    if (timer_control->boil_timer.redraw) {
-
-        brewpanel_images_draw_image_instance( images_state, timer_control->boil_timer.panel_image);
-        brewpanel_buttons_draw_button(button_store, images_state, timer_control->boil_timer.buttons.start_button_id);
-        brewpanel_buttons_draw_button(button_store, images_state, timer_control->boil_timer.buttons.stop_button_id);
-        brewpanel_buttons_draw_button(button_store, images_state, timer_control->boil_timer.buttons.pause_button_id);
-        brewpanel_buttons_draw_button(button_store, images_state, timer_control->boil_timer.buttons.reset_button_id);
-        timer_control->boil_timer.redraw = false;
+    if (timer->redraw) {
+        brewpanel_images_draw_image_instance(images_state, timer->panel_image);
+        // brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.start_button_id);
+        // brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.stop_button_id);
+        // brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.pause_button_id);
+        // brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.reset_button_id);
+        timer->redraw = false;
         redraw = true;
     }
 
@@ -322,7 +310,7 @@ brewpanel_timer_control_update(
 
     //draw the timers
     redraw |= brewpanel_timer_control_draw_timers(
-        timer_control,
+        timer,
         images_state,
         button_store,
         draw_buffer
