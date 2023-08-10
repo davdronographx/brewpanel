@@ -307,7 +307,7 @@ global str brewpanel_images_image_names[] = {
     "pause-disabled",
     "reset-disabled",
     "mlt-timer-panel",
-    "boils-timer-panel",
+    "boil-timer-panel",
     "clock-0",
     "clock-1",
     "clock-2",

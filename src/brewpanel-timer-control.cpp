@@ -7,7 +7,7 @@
 
 
 internal void
-brewpanel_timer_control_mlt_on_start_button_click(
+brewpanel_timer_control_on_start_button_click(
     mem_data payload) {
 
     BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
@@ -16,7 +16,7 @@ brewpanel_timer_control_mlt_on_start_button_click(
 }
 
 internal void
-brewpanel_timer_control_mlt_on_stop_button_click(
+brewpanel_timer_control_on_stop_button_click(
     mem_data payload) {
 
     BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
@@ -25,7 +25,7 @@ brewpanel_timer_control_mlt_on_stop_button_click(
 }
 
 internal void
-brewpanel_timer_control_mlt_on_pause_button_click(
+brewpanel_timer_control_on_pause_button_click(
     mem_data payload) {
 
     BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
@@ -34,46 +34,10 @@ brewpanel_timer_control_mlt_on_pause_button_click(
 }
 
 internal void
-brewpanel_timer_control_mlt_on_reset_button_click(
+brewpanel_timer_control_on_reset_button_click(
     mem_data payload) {
 
     BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
-
-    brewpanel_nop();
-}
-
-internal void
-brewpanel_timer_control_boil_on_start_button_click(
-    mem_data payload) {
-
-    BrewPanelTimerControl* boil_timer = (BrewPanelTimerControl*)payload;
-
-    brewpanel_nop();
-}
-
-internal void
-brewpanel_timer_control_boil_on_stop_button_click(
-    mem_data payload) {
-
-    BrewPanelTimerControl* boil_timer = (BrewPanelTimerControl*)payload;
-
-    brewpanel_nop();
-}
-
-internal void
-brewpanel_timer_control_boil_on_pause_button_click(
-    mem_data payload) {
-
-    BrewPanelTimerControl* boil_timer = (BrewPanelTimerControl*)payload;
-
-    brewpanel_nop();
-}
-
-internal void
-brewpanel_timer_control_boil_on_reset_button_click(
-    mem_data payload) {
-
-    BrewPanelTimerControl* boil_timer = (BrewPanelTimerControl*)payload;
 
     brewpanel_nop();
 }
@@ -107,16 +71,15 @@ brewpanel_timer_control_create(
     timer_control->mash_timer.colon_2                  = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_2_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
     timer_control->mash_timer.digits.seconds.tens_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,seconds_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
     timer_control->mash_timer.digits.seconds.ones_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,seconds_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
+    timer_control->mash_timer.buttons.reset_button_id  = brewpanel_timer_control_create_reset_button(button_store,image_store,timer_control->mash_timer);
+    timer_control->mash_timer.buttons.stop_button_id   = brewpanel_timer_control_create_stop_button(button_store,image_store,timer_control->mash_timer);
     // timer_control->buttons.start_button_id = brewpanel_timer_control_create_mlt_start_button(button_store,image_store,(*timer_control));
-    // timer_control->buttons.stop_button_id  = brewpanel_timer_control_create_mlt_stop_button( button_store,image_store,(*timer_control));
     // timer_control->buttons.pause_button_id = brewpanel_timer_control_create_mlt_pause_button(button_store,image_store,(*timer_control));
-    // timer_control->buttons.reset_button_id = brewpanel_timer_control_create_mlt_reset_button(button_store,image_store,(*timer_control));
 
     //boil timer
     timer_control->boil_timer.redraw                   = true;
     timer_control->boil_timer.state                    = BREWPANEL_TIMER_STATE_IDLE;
     timer_control->boil_timer.panel_image              = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL, BREWPANEL_TIMER_PANEL_X, BREWPANEL_TIMER_PANEL_Y);
-    timer_control->boil_timer.panel_image              = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT, BREWPANEL_TIMER_PANEL_X, BREWPANEL_TIMER_PANEL_Y);
     timer_control->boil_timer.digits.hours.tens_face   = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,hours_tens_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
     timer_control->boil_timer.digits.hours.ones_face   = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,hours_ones_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
     timer_control->boil_timer.colon_1                  = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_1_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
@@ -125,11 +88,11 @@ brewpanel_timer_control_create(
     timer_control->boil_timer.colon_2                  = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_2_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
     timer_control->boil_timer.digits.seconds.tens_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,seconds_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
     timer_control->boil_timer.digits.seconds.ones_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,seconds_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    // timer_control->buttons.start_button_id = brewpanel_timer_control_create_mlt_start_button(button_store,image_store,(*timer_control));
+    timer_control->boil_timer.buttons.reset_button_id  = brewpanel_timer_control_create_reset_button(button_store,image_store,timer_control->boil_timer);
+    timer_control->boil_timer.buttons.stop_button_id   = brewpanel_timer_control_create_stop_button(button_store,image_store,timer_control->mash_timer);
+    
     // timer_control->buttons.start_button_id = brewpanel_timer_control_create_boil_start_button(button_store,image_store,(*timer_control));
-    // timer_control->buttons.stop_button_id  = brewpanel_timer_control_create_boil_stop_button(button_store,image_store, (*timer_control));
     // timer_control->buttons.pause_button_id = brewpanel_timer_control_create_boil_pause_button(button_store,image_store,(*timer_control));
-    // timer_control->buttons.reset_button_id = brewpanel_timer_control_create_boil_reset_button(button_store,image_store,(*timer_control));
 }
 
 internal BrewPanelTimerTimestamp
@@ -154,37 +117,32 @@ brewpanel_timer_control_calculate_timestamp(
     return(timestamp);
 }
 
-internal bool
-brewpanel_timer_control_draw_timers(
-    timer*         timer,
-    images_store*  images_state,
-    button_store*  button_store,
-    mem_data       draw_buffer) {
-
-    bool redraw = false;
-
-    if (timer->redraw) {
-        brewpanel_images_draw_image_instance(images_state, timer->panel_image);
-        // brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.start_button_id);
-        // brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.stop_button_id);
-        // brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.pause_button_id);
-        // brewpanel_buttons_draw_button(button_store, images_state, timer_control->mash_timer.buttons.reset_button_id);
-        timer->redraw = false;
-        redraw = true;
-    }
-
-    return(redraw);
-}
 
 internal bool
-brewpanel_timer_control_calculate_and_draw_digits(
+brewpanel_timer_control_update_and_render(
+    bool*           redraw,
     timer*          timer,
     timer_timestamp timestamp,
-    images_store*   images_state) {
+    images_store*   images_state,
+    button_store*   buttons) {
 
-    bool redraw = false;
+    if (*redraw) {
 
-    local BrewPanelTimerDigits previous_digits  = timer->digits;
+        switch(timer->state) {
+
+            case BREWPANEL_TIMER_STATE_IDLE: {
+                brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
+                brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+
+            } break;
+            
+            default: {
+                timer->state = BREWPANEL_TIMER_STATE_IDLE;
+                brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
+                brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+            } break;
+        }
+    }
 
     //get the tens and ones digits of the timers
     u8 hours_tens   = (timestamp.hours / 10) % 10;
@@ -193,49 +151,47 @@ brewpanel_timer_control_calculate_and_draw_digits(
     u8 minutes_ones = timestamp.minutes - (minutes_tens * 10);
     u8 seconds_tens = (timestamp.seconds / 10) % 10;
     u8 seconds_ones = timestamp.seconds - (seconds_tens * 10);
-    
-    //get the timer images
-    images_state->image_instances[timer->digits.hours.tens_face].image_id   = brewpanel_timer_glyph_table[hours_tens];
-    images_state->image_instances[timer->digits.hours.ones_face].image_id   = brewpanel_timer_glyph_table[hours_ones];
-    images_state->image_instances[timer->digits.minutes.tens_face].image_id = brewpanel_timer_glyph_table[minutes_tens];
-    images_state->image_instances[timer->digits.minutes.ones_face].image_id = brewpanel_timer_glyph_table[minutes_ones];
-    images_state->image_instances[timer->digits.seconds.tens_face].image_id = brewpanel_timer_glyph_table[seconds_tens];
-    images_state->image_instances[timer->digits.seconds.ones_face].image_id = brewpanel_timer_glyph_table[seconds_ones];
 
-    //draw the hours
-    if (previous_digits.hours.tens_face != timer->digits.hours.tens_face) {
+    image_instance* hours_tens_instance   = &images_state->image_instances[timer->digits.hours.tens_face];        
+    image_instance* hours_ones_instance   = &images_state->image_instances[timer->digits.hours.ones_face];    
+    image_instance* minutes_tens_instance = &images_state->image_instances[timer->digits.minutes.tens_face];    
+    image_instance* minutes_ones_instance = &images_state->image_instances[timer->digits.minutes.ones_face];    
+    image_instance* seconds_tens_instance = &images_state->image_instances[timer->digits.seconds.tens_face];    
+    image_instance* seconds_ones_instance = &images_state->image_instances[timer->digits.seconds.ones_face];    
+
+    image_id  previous_hours_tens_image   = hours_tens_instance->image_id;
+    image_id  previous_hours_ones_image   = hours_ones_instance->image_id;
+    image_id  previous_minutes_tens_image = minutes_tens_instance->image_id;
+    image_id  previous_minutes_ones_image = minutes_ones_instance->image_id;
+    image_id  previous_seconds_tens_image = seconds_tens_instance->image_id;
+    image_id  previous_seconds_ones_image = seconds_ones_instance->image_id;
+
+    hours_tens_instance->image_id   = brewpanel_timer_glyph_table[hours_tens];
+    hours_ones_instance->image_id   = brewpanel_timer_glyph_table[hours_ones];
+    minutes_tens_instance->image_id = brewpanel_timer_glyph_table[minutes_tens];
+    minutes_ones_instance->image_id = brewpanel_timer_glyph_table[minutes_ones];
+    seconds_tens_instance->image_id = brewpanel_timer_glyph_table[seconds_tens];
+    seconds_ones_instance->image_id = brewpanel_timer_glyph_table[seconds_ones];
+
+    *redraw |= (
+        previous_hours_tens_image   != hours_tens_instance->image_id   ||
+        previous_hours_ones_image   != hours_ones_instance->image_id   ||
+        previous_minutes_tens_image != minutes_tens_instance->image_id ||
+        previous_minutes_ones_image != minutes_ones_instance->image_id ||
+        previous_seconds_tens_image != seconds_tens_instance->image_id ||
+        previous_seconds_ones_image != seconds_ones_instance->image_id 
+    );
+
+    if (*redraw) {
+        brewpanel_images_draw_image_instance(images_state,timer->panel_image);
         brewpanel_images_draw_image_instance(images_state,timer->digits.hours.tens_face);
-        redraw = true;
-    }
-    if (previous_digits.hours.ones_face != timer->digits.hours.ones_face) {
         brewpanel_images_draw_image_instance(images_state,timer->digits.hours.ones_face);
-        redraw = true;
-    }
-
-    //semicolon
-    brewpanel_images_draw_image_instance(images_state,timer->colon_1);
-
-    //draw the minutes
-    if (previous_digits.minutes.tens_face != timer->digits.minutes.tens_face) {
+        brewpanel_images_draw_image_instance(images_state,timer->colon_1);
         brewpanel_images_draw_image_instance(images_state,timer->digits.minutes.tens_face);
-        redraw = true;
-    }
-    if (previous_digits.minutes.ones_face != timer->digits.minutes.ones_face) {
         brewpanel_images_draw_image_instance(images_state,timer->digits.minutes.ones_face);
-        redraw = true;
-    }
-
-    //semicolon
-    brewpanel_images_draw_image_instance(images_state,timer->colon_2);
-
-    //draw the seconds
-    if (previous_digits.seconds.tens_face != timer->digits.seconds.tens_face) {
+        brewpanel_images_draw_image_instance(images_state,timer->colon_2);
         brewpanel_images_draw_image_instance(images_state,timer->digits.seconds.tens_face);
-        redraw = true;
-    }
-    if (previous_digits.seconds.ones_face != timer->digits.seconds.ones_face) {
         brewpanel_images_draw_image_instance(images_state,timer->digits.seconds.ones_face);
-        redraw = true;
     }
 
     return(redraw);
@@ -282,6 +238,26 @@ brewpanel_timer_control_update_buttons(
 
 }
 
+internal void
+brewpanel_timer_control_hide_timer(
+    timer*        timer,
+    button_store* buttons,
+    images_store* images) {
+
+    brewpanel_buttons_hide(buttons,timer->buttons.reset_button_id,images);
+    brewpanel_buttons_hide(buttons,timer->buttons.stop_button_id,images);
+}
+
+internal void
+brewpanel_timer_control_show_timer(
+    timer*        timer,
+    button_store* buttons,
+    images_store* images) {
+
+    brewpanel_buttons_show(buttons,timer->buttons.reset_button_id,images);
+    brewpanel_buttons_show(buttons,timer->buttons.stop_button_id,images);
+}
+
 internal bool
 brewpanel_timer_control_update(
     timer_control* timer_control,
@@ -293,13 +269,20 @@ brewpanel_timer_control_update(
     local panel_mode previous_mode = BREWPANEL_MODE_NULL;
     bool redraw = previous_mode != mode;
 
+    if (redraw) {
+
+        if(mode == BREWPANEL_MODE_BOIL) {
+            brewpanel_timer_control_hide_timer(&timer_control->mash_timer,button_store,images_state);
+            brewpanel_timer_control_show_timer(&timer_control->boil_timer,button_store,images_state);
+        } 
+        else {
+            brewpanel_timer_control_hide_timer(&timer_control->boil_timer,button_store,images_state);
+            brewpanel_timer_control_show_timer(&timer_control->mash_timer,button_store,images_state);
+        }
+    }
+
     //get the timer to update
     timer* timer = (mode == BREWPANEL_MODE_BOIL) ? &timer_control->boil_timer : &timer_control->mash_timer;
-    timer->redraw = redraw;
-
-    //update the timer buttons
-    // brewpanel_timer_control_update_buttons(&timer_control->mash_timer,button_store,images_state);
-    // brewpanel_timer_control_update_buttons(&timer_control->boil_timer,button_store,images_state);
 
     //calculate timestamp
     timer_timestamp timestamp = 
@@ -307,21 +290,17 @@ brewpanel_timer_control_update(
             timer->set_time_seconds,
             timer->elapsed_time_seconds
     ); 
-
-    //draw the timers
-    redraw |= brewpanel_timer_control_draw_timers(
-        timer,
-        images_state,
-        button_store,
-        draw_buffer
-    );
     
     //get the timer images
-    redraw |= brewpanel_timer_control_calculate_and_draw_digits(
+    redraw |= brewpanel_timer_control_update_and_render(
+        &redraw,
         timer,
         timestamp,
-        images_state
+        images_state,
+        button_store
     );
     
+    previous_mode = mode;
+
     return(redraw);
 }
