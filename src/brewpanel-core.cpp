@@ -114,12 +114,13 @@ brewpanel_core_update_and_render(
         &brewpanel_state->button_store
     );
 
-    // redraw |= brewpanel_timer_control_update(
-    //     &brewpanel_state->timer_control,
-    //     &brewpanel_state->images,
-    //     &brewpanel_state->button_store,
-    //     (mem_data)brewpanel_state->back_buffer.pixels
-    // );
+    redraw |= brewpanel_timer_control_update(
+        &brewpanel_state->timer_control,
+        &brewpanel_state->images,
+        &brewpanel_state->button_store,
+        brewpanel_state->mode_control.mode,
+        (mem_data)brewpanel_state->back_buffer.pixels
+    );
 
     //draw the buttons
     redraw |= brewpanel_buttons_draw(
