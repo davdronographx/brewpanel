@@ -164,7 +164,7 @@ brewpanel_timer_control_update_and_render(
     keypad*         keypad,
     panel_mode      mode) {
 
-    if (*redraw) {
+    // if (*redraw) {
 
 
         switch(timer->state) {
@@ -187,7 +187,7 @@ brewpanel_timer_control_update_and_render(
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.reset_button_id);
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
 
-                image_id panel_image = 
+                    image_id panel_image = 
                     (mode == BREWPANEL_MODE_BOIL) 
                     ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
                     : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
@@ -199,6 +199,13 @@ brewpanel_timer_control_update_and_render(
                     brewpanel_timer_control_keypad_callback,
                     (mem_data)timer);
 
+                timer->set_time_seconds  = keypad->input.values[5] * 36000;
+                timer->set_time_seconds += keypad->input.values[4] * 3600;
+                timer->set_time_seconds += keypad->input.values[3] * 600;
+                timer->set_time_seconds += keypad->input.values[2] * 60;
+                timer->set_time_seconds += keypad->input.values[1] * 10; 
+                timer->set_time_seconds += keypad->input.values[0]; 
+
             } break;
 
             default: {
@@ -207,7 +214,7 @@ brewpanel_timer_control_update_and_render(
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
             } break;
         }
-    }
+    // }
 
     //get the tens and ones digits of the timers
     u8 hours_tens   = (timestamp.hours / 10) % 10;
