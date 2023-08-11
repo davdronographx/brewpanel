@@ -96,6 +96,13 @@ brewpanel_keypad_update(
             brewpanel_keypad_enable(keypad,buttons,images);
         }
 
+        if (keypad->input.current_digit_count == 0) {
+            brewpanel_buttons_disable(buttons,keypad->button_del,images);
+        }
+        else {
+            brewpanel_buttons_enable(buttons,keypad->button_del,images);
+        }
+
         if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
             if (keypad->input.num_digits > 0 && keypad->input.current_digit_count == keypad->input.num_digits) {
                 brewpanel_buttons_disable(buttons,keypad->button_0,images);
