@@ -59,6 +59,7 @@ brewpanel_timer_control_keypad_callback(
 
     keypad_input* input = (keypad_input*)keypad_input_reference;
     timer* t = (timer*)payload;
+    t->redraw = true;
 
     switch (button_type) {
 
@@ -164,8 +165,7 @@ brewpanel_timer_control_update_and_render(
     keypad*         keypad,
     panel_mode      mode) {
 
-    // if (*redraw) {
-
+    if (*redraw || timer->redraw) {
 
         switch(timer->state) {
 
@@ -214,7 +214,7 @@ brewpanel_timer_control_update_and_render(
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
             } break;
         }
-    // }
+    }
 
     //get the tens and ones digits of the timers
     u8 hours_tens   = (timestamp.hours / 10) % 10;
@@ -337,6 +337,7 @@ brewpanel_timer_control_update(
     
     previous_mode = mode;
     timer->previous_state = timer->state;
+    timer->redraw = false;
 
     return(redraw);
 }

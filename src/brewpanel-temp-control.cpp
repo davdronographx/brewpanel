@@ -8,8 +8,8 @@
 internal void
 brewpanel_temp_control_change_element_state(
     heating_element_control* heating_element,
-    heating_element_state    new_state
-) {
+    heating_element_state    new_state) {
+        
     heating_element->previous_state = heating_element->state;
     heating_element->state          = new_state;
 }
