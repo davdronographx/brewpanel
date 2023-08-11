@@ -65,12 +65,15 @@ enum BrewPanelTimerState : u8 {
     BREWPANEL_TIMER_STATE_EXPIRED = 4
 };
 
+typedef BrewPanelTimerState timer_state;
+
 struct BrewPanelTimer {
     bool                         redraw;
     BrewPanelTimerControlButtons buttons;
     u32                          set_time_seconds;
     u32                          elapsed_time_seconds;
-    BrewPanelTimerState          state;
+    timer_state                  state;
+    timer_state                  previous_state;
     BrewPanelTimerDigits         digits;
     image_instance_id            panel_image;
     image_instance_id            colon_1;

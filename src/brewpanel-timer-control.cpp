@@ -4,13 +4,23 @@
 #include "brewpanel-memory.cpp"
 #include "brewpanel-images.cpp"
 #include "brewpanel-buttons.cpp"
+#include "brewpanel-keypad.cpp"
 
+internal void
+brewpanel_timer_control_change_timer_state(
+    timer*      timer,
+    timer_state state) {
+
+    timer->previous_state = timer->state;
+    timer->state = state;
+}
 
 internal void
 brewpanel_timer_control_on_start_button_click(
     mem_data payload) {
 
-    BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
+    timer* t = (timer*)payload;
+
 
     brewpanel_nop();
 }
@@ -19,7 +29,7 @@ internal void
 brewpanel_timer_control_on_stop_button_click(
     mem_data payload) {
 
-    BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
+    timer* t = (timer*)payload;
 
     brewpanel_nop();
 }
@@ -28,7 +38,7 @@ internal void
 brewpanel_timer_control_on_pause_button_click(
     mem_data payload) {
 
-    BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
+    timer* t = (timer*)payload;
 
     brewpanel_nop();
 }
@@ -37,9 +47,35 @@ internal void
 brewpanel_timer_control_on_reset_button_click(
     mem_data payload) {
 
-    BrewPanelTimerControl* mlt_timer = (BrewPanelTimerControl*)payload;
+    timer* t = (timer*)payload;
+    brewpanel_timer_control_change_timer_state(t,BREWPANEL_TIMER_STATE_SET);
+}
 
-    brewpanel_nop();
+internal void
+brewpanel_timer_control_keypad_callback(
+    keypad_click_type button_type,
+    mem_data          keypad_input_reference,
+    mem_data          payload) {
+
+    keypad_input* input = (keypad_input*)keypad_input_reference;
+    timer* t = (timer*)payload;
+
+    switch (button_type) {
+
+        case BREWPANEL_KEYPAD_BUTTON_TYPE_SET: {
+
+        } break;
+
+        case BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL: {
+            brewpanel_timer_control_change_timer_state(t,BREWPANEL_TIMER_STATE_IDLE);
+        } break;
+
+        default: {
+
+        } break;
+
+    }
+
 }
 
 internal void
@@ -124,9 +160,12 @@ brewpanel_timer_control_update_and_render(
     timer*          timer,
     timer_timestamp timestamp,
     images_store*   images_state,
-    button_store*   buttons) {
+    button_store*   buttons,
+    keypad*         keypad,
+    panel_mode      mode) {
 
     if (*redraw) {
+
 
         switch(timer->state) {
 
@@ -134,8 +173,34 @@ brewpanel_timer_control_update_and_render(
                 brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
 
+                image_id panel_image = 
+                    (mode == BREWPANEL_MODE_BOIL) 
+                    ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL 
+                    : BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
+
+                images_state->image_instances[timer->panel_image].image_id = panel_image;
+
             } break;
             
+            case BREWPANEL_TIMER_STATE_SET: {
+                
+                brewpanel_buttons_set_disabled(buttons,timer->buttons.reset_button_id);
+                brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+
+                image_id panel_image = 
+                    (mode == BREWPANEL_MODE_BOIL) 
+                    ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
+                    : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
+
+                images_state->image_instances[timer->panel_image].image_id = panel_image; 
+
+                brewpanel_keypad_active_input(
+                    keypad,6,timer->set_time_seconds,
+                    brewpanel_timer_control_keypad_callback,
+                    (mem_data)timer);
+
+            } break;
+
             default: {
                 timer->state = BREWPANEL_TIMER_STATE_IDLE;
                 brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
@@ -197,47 +262,6 @@ brewpanel_timer_control_update_and_render(
     return(redraw);
 }
 
-
-internal void
-brewpanel_timer_control_update_buttons(
-    BrewPanelTimer*        timer,
-    BrewPanelButtonStore*  button_store,
-    images_store*          images) {
-
-    switch (timer->state) {
-
-        case BREWPANEL_TIMER_STATE_IDLE: {
-
-            // brewpanel_buttons_disable(button_store,timer->buttons.start_button_id,images);
-            // brewpanel_buttons_disable(button_store,timer->buttons.stop_button_id,images);
-            // brewpanel_buttons_disable(button_store,timer->buttons.pause_button_id,images);
-            // brewpanel_buttons_enable(button_store, timer->buttons.reset_button_id,images);
-
-        } break;
-
-        case BREWPANEL_TIMER_STATE_SET: {
-
-        } break;
-
-        case BREWPANEL_TIMER_STATE_RUNNING: {
-
-        } break;
-
-        case BREWPANEL_TIMER_STATE_PAUSED: {
-
-        } break;
-
-        case BREWPANEL_TIMER_STATE_EXPIRED: {
-
-        } break;
-
-        default: {
-
-        } break;
-    }
-
-}
-
 internal void
 brewpanel_timer_control_hide_timer(
     timer*        timer,
@@ -263,11 +287,16 @@ brewpanel_timer_control_update(
     timer_control* timer_control,
     images_store*  images_state,
     button_store*  button_store,
+    keypad*        keypad,
     panel_mode     mode,
     mem_data       draw_buffer) {
 
+    //get the timer to update
+    timer* timer = (mode == BREWPANEL_MODE_BOIL) ? &timer_control->boil_timer : &timer_control->mash_timer;
+
     local panel_mode previous_mode = BREWPANEL_MODE_NULL;
-    bool redraw = previous_mode != mode;
+    
+    bool redraw = previous_mode != mode || timer->previous_state != timer->state;
 
     if (redraw) {
 
@@ -280,9 +309,6 @@ brewpanel_timer_control_update(
             brewpanel_timer_control_show_timer(&timer_control->mash_timer,button_store,images_state);
         }
     }
-
-    //get the timer to update
-    timer* timer = (mode == BREWPANEL_MODE_BOIL) ? &timer_control->boil_timer : &timer_control->mash_timer;
 
     //calculate timestamp
     timer_timestamp timestamp = 
@@ -297,10 +323,13 @@ brewpanel_timer_control_update(
         timer,
         timestamp,
         images_state,
-        button_store
+        button_store,
+        keypad,
+        mode
     );
     
     previous_mode = mode;
+    timer->previous_state = timer->state;
 
     return(redraw);
 }

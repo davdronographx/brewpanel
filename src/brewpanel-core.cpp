@@ -118,6 +118,7 @@ brewpanel_core_update_and_render(
         &brewpanel_state->timer_control,
         &brewpanel_state->images,
         &brewpanel_state->button_store,
+        &brewpanel_state->keypad,
         brewpanel_state->mode_control.mode,
         (mem_data)brewpanel_state->back_buffer.pixels
     );
