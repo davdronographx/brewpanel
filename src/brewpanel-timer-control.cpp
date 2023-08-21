@@ -145,11 +145,12 @@ brewpanel_timer_control_calculate_timestamp(
     timestamp.hours = (u32)total_hours;
 
     //calculate minutes
-    f32 total_minutes = (total_hours - timestamp.hours) * 60.0f;
+    total_seconds    -= timestamp.hours * 3600;
+    f32 total_minutes = (f32)total_seconds / 60.0f;
     timestamp.minutes = (u32)total_minutes;
 
     //calculate seconds
-    timestamp.seconds = (u32)((total_minutes - timestamp.minutes) * 60.0f);
+    timestamp.seconds = total_seconds - (timestamp.minutes * 60);
 
     return(timestamp);
 }

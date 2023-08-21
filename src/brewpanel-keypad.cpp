@@ -16,12 +16,12 @@ brewpanel_keypad_active_input(
     brewpanel_assert(button_callback && payload && input_reference);
 
     if (input_reference->input_state != BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
-        input_reference->num_digits           = num_digits;
-        input_reference->input_state          = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
-        input_reference->callback_payload     = payload;
-        input_reference->button_callback      = button_callback;
-        input_reference->starting_value       = starting_value;
-        keypad->input_reference            = input_reference;
+        input_reference->num_digits       = num_digits;
+        input_reference->input_state      = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
+        input_reference->callback_payload = payload;
+        input_reference->button_callback  = button_callback;
+        input_reference->starting_value   = starting_value;
+        keypad->input_reference           = input_reference;
 
     }
 }
@@ -379,6 +379,8 @@ brewpanel_keypad_button_click_set(
     keypad_input* input = *((keypad_input**)payload);
     input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_SET, (mem_data)input, input->callback_payload);
     input->input_state = BREWPANEL_KEYPAD_INPUT_STATE_IDLE;
+    *((keypad_input**)payload) = NULL;
+
 }
 
 internal void
@@ -389,6 +391,7 @@ brewpanel_keypad_button_click_cancel(
     input->current_digit_count = 0;
     input->input_state = BREWPANEL_KEYPAD_INPUT_STATE_IDLE;
     input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL, (mem_data)input, input->callback_payload);
+    *((keypad_input**)payload) = NULL;
 }
 
 internal void
