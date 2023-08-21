@@ -68,6 +68,7 @@ brewpanel_timer_control_keypad_callback(
         } break;
 
         case BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL: {
+            t->set_time_seconds = input->starting_value;
             brewpanel_timer_control_change_timer_state(t,BREWPANEL_TIMER_STATE_IDLE);
         } break;
 
