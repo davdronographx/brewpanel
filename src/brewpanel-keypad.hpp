@@ -20,6 +20,16 @@
 
 #define BREWPANEL_KEYPAD_INPUT_MAX_VALUES 6
 
+enum BrewPanelKeypadInputSource : u8 {
+    BREWPANEL_KEYPAD_INPUT_SOURCE_MASH_TEMP  = 0,
+    BREWPANEL_KEYPAD_INPUT_SOURCE_BOIL_TEMP  = 1,
+    BREWPANEL_KEYPAD_INPUT_SOURCE_MASH_TIMER = 2,
+    BREWPANEL_KEYPAD_INPUT_SOURCE_BOIL_TIMER = 3,
+    BREWPANEL_KEYPAD_INPUT_SOURCE_COUNT      = 4,
+};
+
+typedef BrewPanelKeypadInputSource keypad_input_source;
+
 enum BrewPanelKeypadInputState : u8 {
     BREWPANEL_KEYPAD_INPUT_STATE_IDLE   = 0,
     BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE = 1,
@@ -59,6 +69,8 @@ struct BrewPanelKeypadInput {
     keypad_input_state          input_state;
     func_keypad_button_callback button_callback;
     mem_data                    callback_payload;
+    BrewPanelKeypadInputSource  current_input_source;
+    u32                         previous_input_values[BREWPANEL_KEYPAD_INPUT_SOURCE_COUNT];
 };
 
 typedef BrewPanelKeypadInput keypad_input;
@@ -80,6 +92,7 @@ struct BrewPanelKeypad {
     button_id         button_set;
     button_id         button_cancel;
     keypad_input      input;
+    keypad_input*     input_reference;
 };
 typedef BrewPanelKeypad keypad;
 

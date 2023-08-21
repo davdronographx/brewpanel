@@ -78,6 +78,7 @@ struct BrewPanelTimer {
     image_instance_id            panel_image;
     image_instance_id            colon_1;
     image_instance_id            colon_2;
+    keypad_input                 keypad_input;
 };
 
 typedef BrewPanelTimer timer;

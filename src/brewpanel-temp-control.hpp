@@ -62,6 +62,7 @@ struct BrewPanelTempHeatingElementControl {
     image_instance_id     percent;
     heating_element_state state;
     heating_element_state previous_state;
+    keypad_input          keypad_input;
 };
 typedef BrewPanelTempHeatingElementControl heating_element_control;
 

@@ -103,8 +103,13 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_disabled(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
 
+            keypad_input_source input_source = (mode == BREWPANEL_MODE_MASH)
+                ? BREWPANEL_KEYPAD_INPUT_SOURCE_MASH_TEMP
+                : BREWPANEL_KEYPAD_INPUT_SOURCE_BOIL_TEMP;
+
             brewpanel_keypad_active_input(
                 keypad,3,heating_element->temp_values.value,
+                input_source,
                 brewpanel_temp_control_heating_element_keypad_callback,
                 (mem_data)heating_element);
 

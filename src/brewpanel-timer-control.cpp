@@ -187,15 +187,21 @@ brewpanel_timer_control_update_and_render(
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.reset_button_id);
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
 
-                    image_id panel_image = 
+                image_id panel_image = 
                     (mode == BREWPANEL_MODE_BOIL) 
-                    ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
-                    : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
+                        ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
+                        : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
 
                 images_state->image_instances[timer->panel_image].image_id = panel_image; 
 
+                keypad_input_source input_source = 
+                    (mode == BREWPANEL_MODE_BOIL) 
+                        ? BREWPANEL_KEYPAD_INPUT_SOURCE_BOIL_TIMER
+                        : BREWPANEL_KEYPAD_INPUT_SOURCE_MASH_TIMER;
+
                 brewpanel_keypad_active_input(
                     keypad,6,timer->set_time_seconds,
+                    input_source,
                     brewpanel_timer_control_keypad_callback,
                     (mem_data)timer);
 

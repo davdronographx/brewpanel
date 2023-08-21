@@ -9,17 +9,21 @@ brewpanel_keypad_active_input(
     keypad*                     keypad,
     u8                          num_digits,
     u32                         starting_value,
+    keypad_input_source         input_source,
+    keypad_input*               input_reference,
     func_keypad_button_callback button_callback, 
     mem_data                    payload) {
 
-    brewpanel_assert(button_callback && payload);
+    brewpanel_assert(button_callback && payload && input_reference);
 
     if (keypad->input.input_state != BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
-        keypad->input.num_digits       = num_digits;
-        keypad->input.input_state      = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
-        keypad->input.callback_payload = payload;
-        keypad->input.button_callback  = button_callback;
-        keypad->input.starting_value   = starting_value;
+        keypad->input.num_digits           = num_digits;
+        keypad->input.input_state          = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
+        keypad->input.callback_payload     = payload;
+        keypad->input.button_callback      = button_callback;
+        keypad->input.starting_value       = starting_value;
+        keypad->input.current_input_source = input_source;
+        keypad->input_reference = input_reference
     }
 
 }
@@ -78,7 +82,7 @@ brewpanel_keypad_update(
 
     local keypad_input_state previous_state = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
 
-    local u32 last_value = 0;
+    u32 last_value = keypad->input.previous_input_values[keypad->input.current_input_source];
 
     u32 new_value = 
         keypad->input.values[0] + 
@@ -131,7 +135,7 @@ brewpanel_keypad_update(
         }
     }
 
-    last_value = new_value;
+    keypad->input.previous_input_values[keypad->input.current_input_source] = new_value;
     previous_state = keypad->input.input_state;
 
     if (keypad->redraw) {
