@@ -95,7 +95,7 @@ brewpanel_temp_control_update_heating_element_control(
                 ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
                 : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
 
-            keypad->input = {0};
+            heating_element->keypad_input = {0};
 
         } break;
 
@@ -109,13 +109,13 @@ brewpanel_temp_control_update_heating_element_control(
 
             brewpanel_keypad_active_input(
                 keypad,3,heating_element->temp_values.value,
-                input_source,
+                &heating_element->keypad_input, 
                 brewpanel_temp_control_heating_element_keypad_callback,
                 (mem_data)heating_element);
 
-            heating_element->temp_values.value  = keypad->input.values[2] * 100;
-            heating_element->temp_values.value += keypad->input.values[1] * 10;
-            heating_element->temp_values.value += keypad->input.values[0];
+            heating_element->temp_values.value  = heating_element->keypad_input.values[2] * 100;
+            heating_element->temp_values.value += heating_element->keypad_input.values[1] * 10;
+            heating_element->temp_values.value += heating_element->keypad_input.values[0];
 
             switch(mode) {
 
@@ -123,9 +123,9 @@ brewpanel_temp_control_update_heating_element_control(
                     
                     if (heating_element->temp_values.value > 212) {
                         heating_element->temp_values.value = 212;
-                        keypad->input.values[2] = 2;
-                        keypad->input.values[1] = 1;
-                        keypad->input.values[0] = 2;
+                        heating_element->keypad_input.values[2] = 2;
+                        heating_element->keypad_input.values[1] = 1;
+                        heating_element->keypad_input.values[0] = 2;
                     }
                 
                 } break;
@@ -134,9 +134,9 @@ brewpanel_temp_control_update_heating_element_control(
                     
                     if (heating_element->temp_values.value > 100) {
                         heating_element->temp_values.value = 100;
-                        keypad->input.values[2] = 1;
-                        keypad->input.values[1] = 0;
-                        keypad->input.values[0] = 0;
+                        heating_element->keypad_input.values[2] = 1;
+                        heating_element->keypad_input.values[1] = 0;
+                        heating_element->keypad_input.values[0] = 0;
                     }
 
                 } break;
@@ -157,7 +157,7 @@ brewpanel_temp_control_update_heating_element_control(
                 ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_ON
                 : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_ON;
             
-            keypad->input = {0};
+            heating_element->keypad_input = {0};
         } break;
 
         default: {

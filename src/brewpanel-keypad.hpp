@@ -67,17 +67,17 @@ struct BrewPanelKeypadInput {
     u8                          current_digit_count;
     u32                         starting_value;
     keypad_input_state          input_state;
+    keypad_input_state          previous_input_state;
     func_keypad_button_callback button_callback;
     mem_data                    callback_payload;
-    BrewPanelKeypadInputSource  current_input_source;
-    u32                         previous_input_values[BREWPANEL_KEYPAD_INPUT_SOURCE_COUNT];
+    u32                         previous_input_value;
 };
 
 typedef BrewPanelKeypadInput keypad_input;
 
 struct BrewPanelKeypad {
     bool              redraw;
-    image_instance_id panel_id;
+    image_instance_id panel_id;    
     button_id         button_del;
     button_id         button_0;
     button_id         button_1;
@@ -91,7 +91,6 @@ struct BrewPanelKeypad {
     button_id         button_9;
     button_id         button_set;
     button_id         button_cancel;
-    keypad_input      input;
     keypad_input*     input_reference;
 };
 typedef BrewPanelKeypad keypad;

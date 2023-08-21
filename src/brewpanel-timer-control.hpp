@@ -4,6 +4,7 @@
 #include "brewpanel-types.hpp"
 #include "brewpanel-buttons.hpp"
 #include "brewpanel-images.hpp"
+#include "brewpanel-keypad.hpp"
 
 #define BREWPANEL_TIMER_CONTROL_MLT_DIGITS_OFFSET_X  320
 #define BREWPANEL_TIMER_CONTROL_BOIL_DIGITS_OFFSET_X 620

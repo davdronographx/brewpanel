@@ -9,23 +9,21 @@ brewpanel_keypad_active_input(
     keypad*                     keypad,
     u8                          num_digits,
     u32                         starting_value,
-    keypad_input_source         input_source,
     keypad_input*               input_reference,
     func_keypad_button_callback button_callback, 
     mem_data                    payload) {
 
     brewpanel_assert(button_callback && payload && input_reference);
 
-    if (keypad->input.input_state != BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
-        keypad->input.num_digits           = num_digits;
-        keypad->input.input_state          = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
-        keypad->input.callback_payload     = payload;
-        keypad->input.button_callback      = button_callback;
-        keypad->input.starting_value       = starting_value;
-        keypad->input.current_input_source = input_source;
-        keypad->input_reference = input_reference
-    }
+    if (input_reference->input_state != BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
+        input_reference->num_digits           = num_digits;
+        input_reference->input_state          = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
+        input_reference->callback_payload     = payload;
+        input_reference->button_callback      = button_callback;
+        input_reference->starting_value       = starting_value;
+        keypad->input_reference            = input_reference;
 
+    }
 }
 
 internal void
@@ -80,35 +78,44 @@ brewpanel_keypad_update(
     images_store* images,
     button_store* buttons) {
 
-    local keypad_input_state previous_state = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
+    if (keypad->input_reference == NULL) {
+        keypad->redraw = false;
 
-    u32 last_value = keypad->input.previous_input_values[keypad->input.current_input_source];
+        brewpanel_images_draw_image_instance(
+            images,
+            keypad->panel_id
+        );
+        brewpanel_keypad_disable(keypad,buttons,images);
+        return(true);
+    }
+
+    keypad_input* input = keypad->input_reference;
 
     u32 new_value = 
-        keypad->input.values[0] + 
-        (keypad->input.values[1] * 10) +
-        (keypad->input.values[2] * 100) +
-        (keypad->input.values[3] * 1000) +
-        (keypad->input.values[4] * 10000) +
-        (keypad->input.values[5] * 100000);
+        input->values[0] + 
+        (input->values[1] * 10) +
+        (input->values[2] * 100) +
+        (input->values[3] * 1000) +
+        (input->values[4] * 10000) +
+        (input->values[5] * 100000);
 
-    if (previous_state != keypad->input.input_state || last_value != new_value) {
-        if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_IDLE) {
+    if (input->previous_input_state != input->input_state || input->previous_input_value != new_value) {
+        if (input->input_state == BREWPANEL_KEYPAD_INPUT_STATE_IDLE) {
            brewpanel_keypad_disable(keypad,buttons,images);
         }
         else {
             brewpanel_keypad_enable(keypad,buttons,images);
         }
 
-        if (keypad->input.current_digit_count == 0) {
+        if (input->current_digit_count == 0) {
             brewpanel_buttons_disable(buttons,keypad->button_del,images);
         }
         else {
             brewpanel_buttons_enable(buttons,keypad->button_del,images);
         }
 
-        if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
-            if (keypad->input.num_digits > 0 && keypad->input.current_digit_count == keypad->input.num_digits) {
+        if (input->input_state == BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
+            if (input->num_digits > 0 && input->current_digit_count == input->num_digits) {
                 brewpanel_buttons_disable(buttons,keypad->button_0,images);
                 brewpanel_buttons_disable(buttons,keypad->button_1,images);
                 brewpanel_buttons_disable(buttons,keypad->button_2,images);
@@ -135,8 +142,8 @@ brewpanel_keypad_update(
         }
     }
 
-    keypad->input.previous_input_values[keypad->input.current_input_source] = new_value;
-    previous_state = keypad->input.input_state;
+    input->previous_input_value = new_value;
+    input->previous_input_state = input->input_state;
 
     if (keypad->redraw) {
 
@@ -391,7 +398,6 @@ brewpanel_keypad_create(
     button_store* buttons) {
 
     keypad->redraw = true;
-    keypad->input.input_state = BREWPANEL_KEYPAD_INPUT_STATE_IDLE;
 
     keypad->panel_id = brewpanel_images_create_image_instance(
         images,
@@ -399,11 +405,12 @@ brewpanel_keypad_create(
         BREWPANEL_KEYPAD_OFFSET_X,
         BREWPANEL_KEYPAD_OFFSET_Y
     );
+    //TODO: I need to pass a pointer to the pointer, because right now its just passing null
 
     keypad->button_0 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_0,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_0_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_0_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_0_CLICKED,
@@ -415,7 +422,7 @@ brewpanel_keypad_create(
     keypad->button_del = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_del,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_DELETE_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_DELETE_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_DELETE_CLICKED,
@@ -427,7 +434,7 @@ brewpanel_keypad_create(
     keypad->button_1 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_1,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_1_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_1_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_1_CLICKED,
@@ -439,7 +446,7 @@ brewpanel_keypad_create(
     keypad->button_2 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_2,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_2_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_2_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_2_CLICKED,
@@ -451,7 +458,7 @@ brewpanel_keypad_create(
     keypad->button_3 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_3,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_3_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_3_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_3_CLICKED,
@@ -463,7 +470,7 @@ brewpanel_keypad_create(
     keypad->button_4 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_4,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_4_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_4_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_4_CLICKED,
@@ -475,7 +482,7 @@ brewpanel_keypad_create(
     keypad->button_5 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_5,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_5_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_5_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_5_CLICKED,
@@ -487,7 +494,7 @@ brewpanel_keypad_create(
     keypad->button_6 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_6,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_6_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_6_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_6_CLICKED,
@@ -499,7 +506,7 @@ brewpanel_keypad_create(
     keypad->button_7 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_7,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_7_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_7_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_7_CLICKED,
@@ -511,7 +518,7 @@ brewpanel_keypad_create(
     keypad->button_8 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_8,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_8_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_8_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_8_CLICKED,
@@ -523,7 +530,7 @@ brewpanel_keypad_create(
     keypad->button_9 = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_9,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_9_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_9_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_9_CLICKED,
@@ -535,7 +542,7 @@ brewpanel_keypad_create(
     keypad->button_set = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_set,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_SET_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_SET_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_SET_CLICKED,
@@ -547,7 +554,7 @@ brewpanel_keypad_create(
     keypad->button_cancel = brewpanel_buttons_create_button(
         buttons,images,
         brewpanel_keypad_button_click_cancel,
-        (mem_data)&keypad->input,
+        (mem_data)keypad->input_reference,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_CANCEL_IDLE,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_CANCEL_HOVER,
         BREWPANEL_IMAGES_ID_KEYPAD_BUTTON_CANCEL_CLICKED,

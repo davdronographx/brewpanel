@@ -201,16 +201,16 @@ brewpanel_timer_control_update_and_render(
 
                 brewpanel_keypad_active_input(
                     keypad,6,timer->set_time_seconds,
-                    input_source,
+                    &timer->keypad_input,
                     brewpanel_timer_control_keypad_callback,
                     (mem_data)timer);
 
-                timer->set_time_seconds  = keypad->input.values[5] * 36000;
-                timer->set_time_seconds += keypad->input.values[4] * 3600;
-                timer->set_time_seconds += keypad->input.values[3] * 600;
-                timer->set_time_seconds += keypad->input.values[2] * 60;
-                timer->set_time_seconds += keypad->input.values[1] * 10; 
-                timer->set_time_seconds += keypad->input.values[0]; 
+                timer->set_time_seconds  = timer->keypad_input.values[5] * 36000;
+                timer->set_time_seconds += timer->keypad_input.values[4] * 3600;
+                timer->set_time_seconds += timer->keypad_input.values[3] * 600;
+                timer->set_time_seconds += timer->keypad_input.values[2] * 60;
+                timer->set_time_seconds += timer->keypad_input.values[1] * 10; 
+                timer->set_time_seconds += timer->keypad_input.values[0]; 
 
             } break;
 
