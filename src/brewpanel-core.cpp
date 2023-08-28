@@ -104,7 +104,8 @@ brewpanel_core_update_and_render(
     redraw |= brewpanel_mode_control_update(
         &brewpanel_state->mode_control,
         &brewpanel_state->images,
-        &brewpanel_state->button_store
+        &brewpanel_state->button_store,
+        brewpanel_state->keypad.input_reference != NULL
     );
 
     //draw the keypad

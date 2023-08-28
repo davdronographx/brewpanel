@@ -72,13 +72,30 @@ internal bool
 brewpanel_mode_control_update(
     mode_control* mode_control,
     images_store* images,
-    button_store* buttons) {
+    button_store* buttons,
+    bool          keypad_in_use) {
 
     bool redraw = false;
 
     local panel_mode previous_mode = BREWPANEL_MODE_NULL;
+    local bool re_enabled = false;
 
-    if (previous_mode != mode_control->mode) {
+    //we don't want the ability to change mode in the middle of capturing input
+    if (keypad_in_use) {
+        re_enabled = false;
+        brewpanel_buttons_disable(buttons,mode_control->mash_mode_button,images);
+        brewpanel_buttons_disable(buttons,mode_control->boil_mode_button,images);
+    } 
+    else if ( !keypad_in_use && (brewpanel_buttons_is_disabled(buttons,mode_control->mash_mode_button) || brewpanel_buttons_is_disabled(buttons,mode_control->boil_mode_button))) {
+        brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
+        brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
+        re_enabled = true;
+    } 
+
+    if (re_enabled || previous_mode != mode_control->mode) {
+        
+        re_enabled = false;
+
         switch (mode_control->mode) {
         
             case BREWPANEL_MODE_MASH: {
