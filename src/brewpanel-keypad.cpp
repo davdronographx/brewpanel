@@ -16,20 +16,12 @@ brewpanel_keypad_active_input(
     brewpanel_assert(button_callback && payload && input_reference);
 
     if (input_reference->input_state != BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
+        input_reference->previous_input_state = input_reference->input_state;
         input_reference->num_digits       = num_digits;
         input_reference->input_state      = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
         input_reference->callback_payload = payload;
         input_reference->button_callback  = button_callback;
         input_reference->starting_value   = starting_value;
-        keypad->input_reference           = input_reference;
-
-    if (keypad->input.input_state != BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
-        keypad->input.previous_input_state = keypad->input.input_state;
-        keypad->input.num_digits       = num_digits;
-        keypad->input.input_state      = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
-        keypad->input.callback_payload = payload;
-        keypad->input.button_callback  = button_callback;
-        keypad->input.starting_value   = starting_value;
         keypad->input_reference           = input_reference;
     }
 }
@@ -98,6 +90,8 @@ brewpanel_keypad_update(
     }
 
     keypad_input* input = keypad->input_reference;
+    local u32 last_value = 0;
+
 
     u32 new_value = 
         input->values[0] + 
@@ -107,8 +101,9 @@ brewpanel_keypad_update(
         (input->values[4] * 10000) +
         (input->values[5] * 100000);
 
-    if (keypad->input.previous_input_state != keypad->input.input_state || last_value != new_value) {
-        if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_IDLE) {
+    if (input->previous_input_state != input->input_state || last_value != new_value) {
+        
+        if (input->input_state == BREWPANEL_KEYPAD_INPUT_STATE_IDLE) {
            brewpanel_keypad_disable(keypad,buttons,images);
         }
         else {
@@ -150,7 +145,7 @@ brewpanel_keypad_update(
         }
 
         last_value = new_value;
-        keypad->input.previous_input_state = keypad->input.input_state;
+        input->previous_input_state = input->input_state;
     }
 
 
