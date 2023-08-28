@@ -15,13 +15,13 @@ brewpanel_keypad_active_input(
     brewpanel_assert(button_callback && payload);
 
     if (keypad->input.input_state != BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE) {
-        keypad->input.num_digits       = num_digits;
-        keypad->input.input_state      = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
-        keypad->input.callback_payload = payload;
-        keypad->input.button_callback  = button_callback;
-        keypad->input.starting_value   = starting_value;
+        keypad->input.previous_input_state = keypad->input.input_state;
+        keypad->input.num_digits           = num_digits;
+        keypad->input.input_state          = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
+        keypad->input.callback_payload     = payload;
+        keypad->input.button_callback      = button_callback;
+        keypad->input.starting_value       = starting_value;
     }
-
 }
 
 internal void
@@ -76,8 +76,6 @@ brewpanel_keypad_update(
     images_store* images,
     button_store* buttons) {
 
-    local keypad_input_state previous_state = BREWPANEL_KEYPAD_INPUT_STATE_ACTIVE;
-
     local u32 last_value = 0;
 
     u32 new_value = 
@@ -88,7 +86,7 @@ brewpanel_keypad_update(
         (keypad->input.values[4] * 10000) +
         (keypad->input.values[5] * 100000);
 
-    if (previous_state != keypad->input.input_state || last_value != new_value) {
+    if (keypad->input.previous_input_state != keypad->input.input_state || last_value != new_value) {
         if (keypad->input.input_state == BREWPANEL_KEYPAD_INPUT_STATE_IDLE) {
            brewpanel_keypad_disable(keypad,buttons,images);
         }
@@ -129,10 +127,11 @@ brewpanel_keypad_update(
                 brewpanel_buttons_enable(buttons,keypad->button_9,images);    
             }
         }
+
+        last_value = new_value;
+        keypad->input.previous_input_state = keypad->input.input_state;
     }
 
-    last_value = new_value;
-    previous_state = keypad->input.input_state;
 
     if (keypad->redraw) {
 
@@ -367,6 +366,7 @@ brewpanel_keypad_button_click_set(
 
     keypad_input* input = (keypad_input*)payload;
     input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_SET, (mem_data)input, input->callback_payload);
+    input->previous_input_state = input->input_state;
     input->input_state = BREWPANEL_KEYPAD_INPUT_STATE_IDLE;
 }
 
@@ -376,6 +376,7 @@ brewpanel_keypad_button_click_cancel(
 
     keypad_input* input = (keypad_input*)payload;
     input->current_digit_count = 0;
+    input->previous_input_state = input->input_state;
     input->input_state = BREWPANEL_KEYPAD_INPUT_STATE_IDLE;
     input->button_callback(BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL, (mem_data)input, input->callback_payload);
 }

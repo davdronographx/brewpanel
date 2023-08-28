@@ -57,6 +57,7 @@ struct BrewPanelKeypadInput {
     u8                          current_digit_count;
     u32                         starting_value;
     keypad_input_state          input_state;
+    keypad_input_state          previous_input_state;
     func_keypad_button_callback button_callback;
     mem_data                    callback_payload;
 };
