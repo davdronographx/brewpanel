@@ -313,6 +313,26 @@ brewpanel_timer_control_update(
     
     bool redraw = previous_mode != mode || timer->previous_state != timer->state;
 
+    //first we need to determine if another control is using the keypad
+    //if so, we need to disable the timer controls
+    if (keypad->input_reference != NULL && keypad->input_reference != &timer->keypad_input) {
+        brewpanel_nop();
+        brewpanel_buttons_disable(button_store,timer->buttons.start_button_id,images_state);
+        brewpanel_buttons_disable(button_store,timer->buttons.stop_button_id, images_state);
+        brewpanel_buttons_disable(button_store,timer->buttons.pause_button_id,images_state);
+        brewpanel_buttons_disable(button_store,timer->buttons.reset_button_id,images_state);
+    }
+    else if (brewpanel_buttons_is_disabled(button_store,timer->buttons.start_button_id) || 
+             brewpanel_buttons_is_disabled(button_store,timer->buttons.stop_button_id) ||
+             brewpanel_buttons_is_disabled(button_store,timer->buttons.pause_button_id) ||
+             brewpanel_buttons_is_disabled(button_store,timer->buttons.reset_button_id)) {
+        
+        brewpanel_buttons_enable(button_store,timer->buttons.start_button_id,images_state);
+        brewpanel_buttons_enable(button_store,timer->buttons.stop_button_id, images_state);
+        brewpanel_buttons_enable(button_store,timer->buttons.pause_button_id,images_state);
+        brewpanel_buttons_enable(button_store,timer->buttons.reset_button_id,images_state);
+    }
+
     if (redraw) {
 
         if(mode == BREWPANEL_MODE_BOIL) {
