@@ -245,7 +245,20 @@ brewpanel_temp_control_update(
         ? &control->mlt_element
         : &control->boil_element;
 
+    //first we need to determine if another control is using the keypad
+    //if so, we need to disable the temperature controls
+    if (keypad->input_reference != NULL && keypad->input_reference != &heating_element->keypad_input) {
+        brewpanel_nop();
+        brewpanel_buttons_disable(buttons,heating_element->set_button_id,images);
+        brewpanel_buttons_disable(buttons,heating_element->off_button_id,images);
+    }
+    else if (brewpanel_buttons_is_disabled(buttons,heating_element->set_button_id) || brewpanel_buttons_is_disabled(buttons,heating_element->off_button_id)) {
+            brewpanel_buttons_enable(buttons,heating_element->set_button_id,images);
+            brewpanel_buttons_enable(buttons,heating_element->off_button_id,images);
+    }
+    
     if (previous_mode != mode || heating_element->redraw) {
+        
         heating_element->redraw = true;
 
         switch (mode) {
