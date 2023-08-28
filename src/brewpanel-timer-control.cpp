@@ -68,6 +68,7 @@ brewpanel_timer_control_keypad_callback(
         } break;
 
         case BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL: {
+            t->set_time_seconds = input->starting_value;
             brewpanel_timer_control_change_timer_state(t,BREWPANEL_TIMER_STATE_IDLE);
         } break;
 
@@ -145,11 +146,12 @@ brewpanel_timer_control_calculate_timestamp(
     timestamp.hours = (u32)total_hours;
 
     //calculate minutes
-    f32 total_minutes = (total_hours - timestamp.hours) * 60.0f;
+    total_seconds    -= timestamp.hours * 3600;
+    f32 total_minutes = (f32)total_seconds / 60.0f;
     timestamp.minutes = (u32)total_minutes;
 
     //calculate seconds
-    timestamp.seconds = (u32)((total_minutes - timestamp.minutes) * 60.0f);
+    timestamp.seconds = total_seconds - (timestamp.minutes * 60);
 
     return(timestamp);
 }
@@ -187,24 +189,30 @@ brewpanel_timer_control_update_and_render(
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.reset_button_id);
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
 
-                    image_id panel_image = 
+                image_id panel_image = 
                     (mode == BREWPANEL_MODE_BOIL) 
-                    ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
-                    : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
+                        ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
+                        : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
 
                 images_state->image_instances[timer->panel_image].image_id = panel_image; 
 
+                keypad_input_source input_source = 
+                    (mode == BREWPANEL_MODE_BOIL) 
+                        ? BREWPANEL_KEYPAD_INPUT_SOURCE_BOIL_TIMER
+                        : BREWPANEL_KEYPAD_INPUT_SOURCE_MASH_TIMER;
+
                 brewpanel_keypad_active_input(
                     keypad,6,timer->set_time_seconds,
+                    &timer->keypad_input,
                     brewpanel_timer_control_keypad_callback,
                     (mem_data)timer);
 
-                timer->set_time_seconds  = keypad->input.values[5] * 36000;
-                timer->set_time_seconds += keypad->input.values[4] * 3600;
-                timer->set_time_seconds += keypad->input.values[3] * 600;
-                timer->set_time_seconds += keypad->input.values[2] * 60;
-                timer->set_time_seconds += keypad->input.values[1] * 10; 
-                timer->set_time_seconds += keypad->input.values[0]; 
+                timer->set_time_seconds  = timer->keypad_input.values[5] * 36000;
+                timer->set_time_seconds += timer->keypad_input.values[4] * 3600;
+                timer->set_time_seconds += timer->keypad_input.values[3] * 600;
+                timer->set_time_seconds += timer->keypad_input.values[2] * 60;
+                timer->set_time_seconds += timer->keypad_input.values[1] * 10; 
+                timer->set_time_seconds += timer->keypad_input.values[0]; 
 
             } break;
 

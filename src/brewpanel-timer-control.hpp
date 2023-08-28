@@ -4,6 +4,7 @@
 #include "brewpanel-types.hpp"
 #include "brewpanel-buttons.hpp"
 #include "brewpanel-images.hpp"
+#include "brewpanel-keypad.hpp"
 
 #define BREWPANEL_TIMER_CONTROL_MLT_DIGITS_OFFSET_X  320
 #define BREWPANEL_TIMER_CONTROL_BOIL_DIGITS_OFFSET_X 620
@@ -78,6 +79,7 @@ struct BrewPanelTimer {
     image_instance_id            panel_image;
     image_instance_id            colon_1;
     image_instance_id            colon_2;
+    keypad_input                 keypad_input;
 };
 
 typedef BrewPanelTimer timer;
