@@ -86,7 +86,10 @@ brewpanel_mode_control_update(
         brewpanel_buttons_disable(buttons,mode_control->mash_mode_button,images);
         brewpanel_buttons_disable(buttons,mode_control->boil_mode_button,images);
     } 
-    else if ( !keypad_in_use && (brewpanel_buttons_is_disabled(buttons,mode_control->mash_mode_button) || brewpanel_buttons_is_disabled(buttons,mode_control->boil_mode_button))) {
+    else if (!keypad_in_use && 
+             !re_enabled &&
+             brewpanel_buttons_is_disabled(buttons,mode_control->mash_mode_button) &&
+             brewpanel_buttons_is_disabled(buttons,mode_control->boil_mode_button)) {
         brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
         brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
         re_enabled = true;
