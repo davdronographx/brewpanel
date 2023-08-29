@@ -43,10 +43,10 @@ brewpanel_mode_control_create(
             images,
             brewpanel_mode_control_mash_button_click,
             (mem_data)mode,
-            BREWPANEL_IMAGES_ID_MODE_MASH_ON_IDLE,
-            BREWPANEL_IMAGES_ID_MODE_MASH_ON_HOVER,
-            BREWPANEL_IMAGES_ID_MODE_MASH_ON_CLICKED,
-            BREWPANEL_IMAGES_ID_MODE_MASH_ON_DISABLED,
+            BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE,
+            BREWPANEL_IMAGES_ID_MODE_MASH_OFF_HOVER,
+            BREWPANEL_IMAGES_ID_MODE_MASH_OFF_CLICKED,
+            BREWPANEL_IMAGES_ID_MODE_MASH_OFF_DISABLED,
             BREWPANEL_MODE_BUTTONS_X_OFFSET,
             BREWPANEL_MODE_MASH_BUTTON_Y_OFFSET
     );
@@ -57,10 +57,10 @@ brewpanel_mode_control_create(
             images,
             brewpanel_mode_control_boil_button_click,
             (mem_data)mode,
-            BREWPANEL_IMAGES_ID_MODE_BOIL_ON_IDLE,
-            BREWPANEL_IMAGES_ID_MODE_BOIL_ON_HOVER,
-            BREWPANEL_IMAGES_ID_MODE_BOIL_ON_CLICKED,
-            BREWPANEL_IMAGES_ID_MODE_BOIL_ON_DISABLED,
+            BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE,
+            BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_HOVER,
+            BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_CLICKED,
+            BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_DISABLED,
             BREWPANEL_MODE_BUTTONS_X_OFFSET,
             BREWPANEL_MODE_BOIL_BUTTON_Y_OFFSET
     );
