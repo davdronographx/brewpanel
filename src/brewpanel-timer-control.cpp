@@ -313,27 +313,36 @@ brewpanel_timer_control_update(
     
     bool redraw = previous_mode != mode || timer->previous_state != timer->state;
 
+    local bool re_enabled = false;
+    
+    bool keypad_in_use = keypad->input_reference != NULL && keypad->input_reference != &timer->keypad_input; 
+
     //first we need to determine if another control is using the keypad
     //if so, we need to disable the timer controls
-    if (keypad->input_reference != NULL && keypad->input_reference != &timer->keypad_input) {
-        brewpanel_nop();
+    if (keypad_in_use) {
+        re_enabled = false;
         brewpanel_buttons_disable(button_store,timer->buttons.start_button_id,images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.stop_button_id, images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.pause_button_id,images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.reset_button_id,images_state);
     }
-    else if (brewpanel_buttons_is_disabled(button_store,timer->buttons.start_button_id) || 
-             brewpanel_buttons_is_disabled(button_store,timer->buttons.stop_button_id) ||
-             brewpanel_buttons_is_disabled(button_store,timer->buttons.pause_button_id) ||
+    else if (!re_enabled &&
+             !keypad_in_use &&
+             brewpanel_buttons_is_disabled(button_store,timer->buttons.start_button_id) && 
+             brewpanel_buttons_is_disabled(button_store,timer->buttons.stop_button_id)  &&
+             brewpanel_buttons_is_disabled(button_store,timer->buttons.pause_button_id) &&
              brewpanel_buttons_is_disabled(button_store,timer->buttons.reset_button_id)) {
         
+        re_enabled = true;
         brewpanel_buttons_enable(button_store,timer->buttons.start_button_id,images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.stop_button_id, images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.pause_button_id,images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.reset_button_id,images_state);
     }
 
-    if (redraw) {
+    if (redraw || re_enabled || previous_mode != mode) {
+
+        re_enabled = false;
 
         if(mode == BREWPANEL_MODE_BOIL) {
             brewpanel_timer_control_hide_timer(&timer_control->mash_timer,button_store,images_state);

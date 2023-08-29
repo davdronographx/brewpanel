@@ -245,20 +245,31 @@ brewpanel_temp_control_update(
         ? &control->mlt_element
         : &control->boil_element;
 
+    local bool re_enabled = false;
+
     //first we need to determine if another control is using the keypad
     //if so, we need to disable the temperature controls
-    if (keypad->input_reference != NULL && keypad->input_reference != &heating_element->keypad_input) {
-        brewpanel_nop();
+    bool keypad_in_use = keypad->input_reference != NULL && keypad->input_reference != &heating_element->keypad_input;
+    
+    if (keypad_in_use) {
+        re_enabled = false;
         brewpanel_buttons_disable(buttons,heating_element->set_button_id,images);
         brewpanel_buttons_disable(buttons,heating_element->off_button_id,images);
     }
-    else if (brewpanel_buttons_is_disabled(buttons,heating_element->set_button_id) || brewpanel_buttons_is_disabled(buttons,heating_element->off_button_id)) {
-            brewpanel_buttons_enable(buttons,heating_element->set_button_id,images);
-            brewpanel_buttons_enable(buttons,heating_element->off_button_id,images);
+    else if (
+        !re_enabled && 
+        !keypad_in_use &&
+        brewpanel_buttons_is_disabled(buttons,heating_element->set_button_id) &&
+        brewpanel_buttons_is_disabled(buttons,heating_element->off_button_id)) {
+            
+        brewpanel_buttons_enable(buttons,heating_element->set_button_id,images);
+        brewpanel_buttons_enable(buttons,heating_element->off_button_id,images);
+        re_enabled = true;
     }
     
-    if (previous_mode != mode || heating_element->redraw) {
+    if (re_enabled || previous_mode != mode || heating_element->redraw) {
         
+        re_enabled = false;
         heating_element->redraw = true;
 
         switch (mode) {
