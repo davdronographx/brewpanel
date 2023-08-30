@@ -90,10 +90,7 @@ brewpanel_temp_control_update_heating_element_control(
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF: {
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
-
-
             heating_element->keypad_input = {0};
-
         } break;
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET: {
@@ -285,7 +282,6 @@ brewpanel_temp_control_update(
 
             } break;
         }
-
     }
 
     //draw controls

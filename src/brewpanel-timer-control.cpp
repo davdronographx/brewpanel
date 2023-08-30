@@ -167,78 +167,76 @@ brewpanel_timer_control_update_and_render(
     keypad*         keypad,
     panel_mode      mode) {
 
-    if (*redraw || timer->redraw) {
 
-        switch(timer->state) {
+    switch(timer->state) {
 
-            case BREWPANEL_TIMER_STATE_IDLE: {
-                brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
-                brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
-                // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
+        case BREWPANEL_TIMER_STATE_IDLE: {
+            brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
+            brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+            // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
 
-                image_id panel_image = 
-                    (mode == BREWPANEL_MODE_BOIL) 
+            image_id panel_image = 
+                (mode == BREWPANEL_MODE_BOIL) 
+                ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL 
+                : BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
+
+            images_state->image_instances[timer->panel_image].image_id = panel_image;
+
+            timer->set_time_seconds = 0;
+
+            timer->keypad_input = {0};
+
+        } break;
+        
+        case BREWPANEL_TIMER_STATE_SET: {
+            
+            brewpanel_buttons_set_disabled(buttons,timer->buttons.reset_button_id);
+            brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+            // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
+
+            image_id panel_image = 
+                (mode == BREWPANEL_MODE_BOIL) 
+                    ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
+                    : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
+
+            images_state->image_instances[timer->panel_image].image_id = panel_image; 
+
+            brewpanel_keypad_active_input(
+                keypad,6,timer->set_time_seconds,
+                &timer->keypad_input,
+                brewpanel_timer_control_keypad_callback,
+                (mem_data)timer);
+
+            timer->set_time_seconds  = timer->keypad_input.values[5] * 36000;
+            timer->set_time_seconds += timer->keypad_input.values[4] * 3600;
+            timer->set_time_seconds += timer->keypad_input.values[3] * 600;
+            timer->set_time_seconds += timer->keypad_input.values[2] * 60;
+            timer->set_time_seconds += timer->keypad_input.values[1] * 10; 
+            timer->set_time_seconds += timer->keypad_input.values[0]; 
+
+        } break;
+
+        case BREWPANEL_TIMER_STATE_PAUSED: {
+
+            image_id panel_image = 
+                (mode == BREWPANEL_MODE_BOIL) 
                     ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL 
                     : BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
 
-                images_state->image_instances[timer->panel_image].image_id = panel_image;
+            images_state->image_instances[timer->panel_image].image_id = panel_image; 
 
-                timer->set_time_seconds = 0;
+            brewpanel_buttons_hide(buttons, timer->buttons.reset_button_id,images_state);
+            // brewpanel_buttons_show(buttons,timer->buttons.start_button_id,images_state);
+            brewpanel_buttons_set_idle(buttons, timer->buttons.stop_button_id);
 
-                timer->keypad_input = {0};
+        } break;
 
-            } break;
-            
-            case BREWPANEL_TIMER_STATE_SET: {
-                
-                brewpanel_buttons_set_disabled(buttons,timer->buttons.reset_button_id);
-                brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
-                // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
-
-                image_id panel_image = 
-                    (mode == BREWPANEL_MODE_BOIL) 
-                        ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
-                        : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
-
-                images_state->image_instances[timer->panel_image].image_id = panel_image; 
-
-                brewpanel_keypad_active_input(
-                    keypad,6,timer->set_time_seconds,
-                    &timer->keypad_input,
-                    brewpanel_timer_control_keypad_callback,
-                    (mem_data)timer);
-
-                timer->set_time_seconds  = timer->keypad_input.values[5] * 36000;
-                timer->set_time_seconds += timer->keypad_input.values[4] * 3600;
-                timer->set_time_seconds += timer->keypad_input.values[3] * 600;
-                timer->set_time_seconds += timer->keypad_input.values[2] * 60;
-                timer->set_time_seconds += timer->keypad_input.values[1] * 10; 
-                timer->set_time_seconds += timer->keypad_input.values[0]; 
-
-            } break;
-
-            case BREWPANEL_TIMER_STATE_PAUSED: {
-
-                image_id panel_image = 
-                    (mode == BREWPANEL_MODE_BOIL) 
-                        ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL 
-                        : BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
-
-                images_state->image_instances[timer->panel_image].image_id = panel_image; 
-
-                brewpanel_buttons_hide(buttons, timer->buttons.reset_button_id,images_state);
-                // brewpanel_buttons_show(buttons,timer->buttons.start_button_id,images_state);
-                brewpanel_buttons_set_idle(buttons, timer->buttons.stop_button_id);
-
-            } break;
-
-            default: {
-                timer->state = BREWPANEL_TIMER_STATE_IDLE;
-                brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
-                brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
-                // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
-            } break;
-        }
+        default: {
+            timer->state = BREWPANEL_TIMER_STATE_IDLE;
+            brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
+            brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+            // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
+        } break;
     }
 
     //get the tens and ones digits of the timers
@@ -325,6 +323,14 @@ brewpanel_timer_control_update(
     panel_mode     mode,
     mem_data       draw_buffer) {
 
+    
+
+    //get the timer to update
+    timer* timer = (mode == BREWPANEL_MODE_BOIL) ? &timer_control->boil_timer : &timer_control->mash_timer;
+    local panel_mode previous_mode = BREWPANEL_MODE_OFF;
+    local bool re_enabled = false;
+    bool redraw        = previous_mode != mode || timer->previous_state != timer->state;
+    bool keypad_in_use = keypad->input_reference != NULL && keypad->input_reference != &timer->keypad_input; 
 
     //if the panel is off, draw the off panel and we're done
     if (mode == BREWPANEL_MODE_OFF){
@@ -336,18 +342,11 @@ brewpanel_timer_control_update(
 
         brewpanel_timer_control_hide_timer(&timer_control->mash_timer,button_store,images_state);
         brewpanel_timer_control_hide_timer(&timer_control->boil_timer,button_store,images_state);
-        
+
+        redraw = true;
+
         return(true);
     }
-
-    //get the timer to update
-    timer* timer = (mode == BREWPANEL_MODE_BOIL) ? &timer_control->boil_timer : &timer_control->mash_timer;
-
-    local panel_mode previous_mode = BREWPANEL_MODE_OFF;
-    local bool re_enabled = false;
-    
-    bool redraw        = previous_mode != mode || timer->previous_state != timer->state;
-    bool keypad_in_use = keypad->input_reference != NULL && keypad->input_reference != &timer->keypad_input; 
 
     //first we need to determine if another control is using the keypad
     //if so, we need to disable the timer controls
@@ -410,7 +409,6 @@ brewpanel_timer_control_update(
     
     previous_mode = mode;
     timer->previous_state = timer->state;
-    timer->redraw = false;
 
     return(redraw);
 }
