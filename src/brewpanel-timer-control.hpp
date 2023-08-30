@@ -85,8 +85,9 @@ struct BrewPanelTimer {
 typedef BrewPanelTimer timer;
 
 struct BrewPanelTimerControl {
-    BrewPanelTimer mash_timer;
-    BrewPanelTimer boil_timer;
+    BrewPanelTimer    mash_timer;
+    BrewPanelTimer    boil_timer;
+    image_instance_id off_timer_panel;
 };
 typedef BrewPanelTimerControl timer_control;
 

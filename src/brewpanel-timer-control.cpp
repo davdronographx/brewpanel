@@ -87,6 +87,13 @@ brewpanel_timer_control_create(
     BrewPanelImagesStore*  image_store) {
 
     *timer_control = {0};
+    timer_control->off_timer_panel = 
+        brewpanel_images_create_image_instance(
+            image_store,
+            BREWPANEL_IMAGES_ID_TIMER_PANEL_OFF,
+            BREWPANEL_TIMER_PANEL_X, 
+            BREWPANEL_TIMER_PANEL_Y
+    );
 
     u32 hours_tens_x_offset   = BREWPANEL_TIMER_DIGIT_X;
     u32 hours_ones_x_offset   = BREWPANEL_TIMER_DIGIT_X + BREWPANEL_TIMER_DIGIT_WIDTH;
@@ -306,15 +313,28 @@ brewpanel_timer_control_update(
     panel_mode     mode,
     mem_data       draw_buffer) {
 
+
+    //if the panel is off, draw the off panel and we're done
+    if (mode == BREWPANEL_MODE_OFF){
+        
+        brewpanel_images_draw_image_instance(
+            images_state,
+            timer_control->off_timer_panel
+        );
+
+        brewpanel_timer_control_hide_timer(&timer_control->mash_timer,button_store,images_state);
+        brewpanel_timer_control_hide_timer(&timer_control->boil_timer,button_store,images_state);
+        
+        return(true);
+    }
+
     //get the timer to update
     timer* timer = (mode == BREWPANEL_MODE_BOIL) ? &timer_control->boil_timer : &timer_control->mash_timer;
 
     local panel_mode previous_mode = BREWPANEL_MODE_OFF;
-    
-    bool redraw = previous_mode != mode || timer->previous_state != timer->state;
-
     local bool re_enabled = false;
     
+    bool redraw        = previous_mode != mode || timer->previous_state != timer->state;
     bool keypad_in_use = keypad->input_reference != NULL && keypad->input_reference != &timer->keypad_input; 
 
     //first we need to determine if another control is using the keypad
@@ -344,13 +364,17 @@ brewpanel_timer_control_update(
 
         re_enabled = false;
 
-        if(mode == BREWPANEL_MODE_BOIL) {
-            brewpanel_timer_control_hide_timer(&timer_control->mash_timer,button_store,images_state);
-            brewpanel_timer_control_show_timer(&timer_control->boil_timer,button_store,images_state);
-        } 
-        else {
-            brewpanel_timer_control_hide_timer(&timer_control->boil_timer,button_store,images_state);
-            brewpanel_timer_control_show_timer(&timer_control->mash_timer,button_store,images_state);
+        switch(mode) {
+            
+            case BREWPANEL_MODE_MASH: {
+                brewpanel_timer_control_hide_timer(&timer_control->boil_timer,button_store,images_state);
+                brewpanel_timer_control_show_timer(&timer_control->mash_timer,button_store,images_state);
+            } break;
+            
+            case BREWPANEL_MODE_BOIL: {
+                brewpanel_timer_control_hide_timer(&timer_control->mash_timer,button_store,images_state);
+                brewpanel_timer_control_show_timer(&timer_control->boil_timer,button_store,images_state);
+            } break;
         }
     }
 
@@ -361,7 +385,7 @@ brewpanel_timer_control_update(
             timer->elapsed_time_seconds
     ); 
     
-    //get the timer images
+    //update the timer
     redraw |= brewpanel_timer_control_update_and_render(
         &redraw,
         timer,
