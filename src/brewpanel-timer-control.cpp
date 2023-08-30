@@ -30,8 +30,7 @@ brewpanel_timer_control_on_stop_button_click(
     mem_data payload) {
 
     timer* t = (timer*)payload;
-
-    brewpanel_nop();
+    brewpanel_timer_control_change_timer_state(t,BREWPANEL_TIMER_STATE_IDLE);
 }
 
 internal void
@@ -64,7 +63,7 @@ brewpanel_timer_control_keypad_callback(
     switch (button_type) {
 
         case BREWPANEL_KEYPAD_BUTTON_TYPE_SET: {
-
+            brewpanel_timer_control_change_timer_state(t,BREWPANEL_TIMER_STATE_PAUSED);
         } break;
 
         case BREWPANEL_KEYPAD_BUTTON_TYPE_CANCEL: {
@@ -189,6 +188,12 @@ brewpanel_timer_control_update_and_render(
 
                 images_state->image_instances[timer->panel_image].image_id = panel_image;
 
+                timer->set_time_seconds = 0;
+
+                timer->keypad_input = {0};
+
+                
+
             } break;
             
             case BREWPANEL_TIMER_STATE_SET: {
@@ -203,11 +208,6 @@ brewpanel_timer_control_update_and_render(
 
                 images_state->image_instances[timer->panel_image].image_id = panel_image; 
 
-                keypad_input_source input_source = 
-                    (mode == BREWPANEL_MODE_BOIL) 
-                        ? BREWPANEL_KEYPAD_INPUT_SOURCE_BOIL_TIMER
-                        : BREWPANEL_KEYPAD_INPUT_SOURCE_MASH_TIMER;
-
                 brewpanel_keypad_active_input(
                     keypad,6,timer->set_time_seconds,
                     &timer->keypad_input,
@@ -220,6 +220,22 @@ brewpanel_timer_control_update_and_render(
                 timer->set_time_seconds += timer->keypad_input.values[2] * 60;
                 timer->set_time_seconds += timer->keypad_input.values[1] * 10; 
                 timer->set_time_seconds += timer->keypad_input.values[0]; 
+
+            } break;
+
+            case BREWPANEL_TIMER_STATE_PAUSED: {
+
+                image_id panel_image = 
+                    (mode == BREWPANEL_MODE_BOIL) 
+                        ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL 
+                        : BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
+
+                images_state->image_instances[timer->panel_image].image_id = panel_image; 
+
+                brewpanel_buttons_hide(buttons, timer->buttons.reset_button_id,images_state);
+                
+                brewpanel_buttons_set_idle(buttons, timer->buttons.stop_button_id);
+
 
             } break;
 
