@@ -51,7 +51,7 @@ struct BrewPanelSystemTime {
 };
 
 enum BrewPanelMode : u8 {
-    BREWPANEL_MODE_NULL = 0,
+    BREWPANEL_MODE_OFF = 0,
     BREWPANEL_MODE_MASH = 1,
     BREWPANEL_MODE_BOIL = 2
 };

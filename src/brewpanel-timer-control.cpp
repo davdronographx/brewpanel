@@ -309,7 +309,7 @@ brewpanel_timer_control_update(
     //get the timer to update
     timer* timer = (mode == BREWPANEL_MODE_BOIL) ? &timer_control->boil_timer : &timer_control->mash_timer;
 
-    local panel_mode previous_mode = BREWPANEL_MODE_NULL;
+    local panel_mode previous_mode = BREWPANEL_MODE_OFF;
     
     bool redraw = previous_mode != mode || timer->previous_state != timer->state;
 

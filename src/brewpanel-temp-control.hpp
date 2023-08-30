@@ -74,6 +74,7 @@ struct BrewPanelTempControl {
     heating_element_control mlt_element;
     heating_element_control boil_element;
     image_instance_id       digit_glyph_table;
+    image_instance_id       off_panel;
 };
 typedef BrewPanelTempControl temp_control;
 

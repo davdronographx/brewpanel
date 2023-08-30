@@ -9,7 +9,11 @@ brewpanel_mode_control_mash_button_click(
     mem_data payload) {
 
     mode_control* control = (mode_control*)payload;
-    control->mode = BREWPANEL_MODE_MASH;
+
+    control->mode = 
+        control->mode == BREWPANEL_MODE_OFF
+            ? BREWPANEL_MODE_MASH
+            : BREWPANEL_MODE_OFF;
 }
 
 internal void
@@ -17,7 +21,11 @@ brewpanel_mode_control_boil_button_click(
     mem_data payload) {
 
     mode_control* control = (mode_control*)payload;
-    control->mode = BREWPANEL_MODE_BOIL;
+
+    control->mode = 
+        control->mode == BREWPANEL_MODE_OFF
+            ? BREWPANEL_MODE_BOIL
+            : BREWPANEL_MODE_OFF;
 }
 
 internal void
@@ -27,7 +35,7 @@ brewpanel_mode_control_create(
     button_store* buttons) {
 
     *mode = {0};
-    mode->mode = BREWPANEL_MODE_MASH;
+    mode->mode = BREWPANEL_MODE_OFF;
 
     mode->panel_id =
         brewpanel_images_create_image_instance(
@@ -77,7 +85,7 @@ brewpanel_mode_control_update(
 
     bool redraw = false;
 
-    local panel_mode previous_mode = BREWPANEL_MODE_NULL;
+    local panel_mode previous_mode = BREWPANEL_MODE_OFF;
     local bool re_enabled = false;
 
     //we don't want the ability to change mode in the middle of capturing input
@@ -101,20 +109,71 @@ brewpanel_mode_control_update(
 
         switch (mode_control->mode) {
         
-            case BREWPANEL_MODE_MASH: {
-                brewpanel_buttons_disable(buttons,mode_control->mash_mode_button,images);
+            case BREWPANEL_MODE_OFF: {
+
+                brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
                 brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
+
+                buttons->images.idle[mode_control->mash_mode_button]     = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+                buttons->images.hover[mode_control->mash_mode_button]    = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_HOVER; 
+                buttons->images.clicked[mode_control->mash_mode_button]  = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_CLICKED; 
+                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+
+                buttons->images.idle[mode_control->boil_mode_button]     = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
+                buttons->images.hover[mode_control->boil_mode_button]    = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_HOVER; 
+                buttons->images.clicked[mode_control->boil_mode_button]  = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_CLICKED; 
+                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
+
+            } break;
+
+            case BREWPANEL_MODE_MASH: {
+                brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
+                brewpanel_buttons_disable(buttons,mode_control->boil_mode_button,images);
+
+                buttons->images.idle[mode_control->mash_mode_button]     = BREWPANEL_IMAGES_ID_MODE_MASH_ON_IDLE; 
+                buttons->images.hover[mode_control->mash_mode_button]    = BREWPANEL_IMAGES_ID_MODE_MASH_ON_HOVER; 
+                buttons->images.clicked[mode_control->mash_mode_button]  = BREWPANEL_IMAGES_ID_MODE_MASH_ON_CLICKED; 
+                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_ON_IDLE; 
+
+                buttons->images.idle[mode_control->boil_mode_button]     = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
+                buttons->images.hover[mode_control->boil_mode_button]    = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_HOVER; 
+                buttons->images.clicked[mode_control->boil_mode_button]  = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_CLICKED; 
+                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
+
             } break;
 
             case BREWPANEL_MODE_BOIL: {
-                brewpanel_buttons_disable(buttons,mode_control->boil_mode_button,images);
-                brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
+                brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
+                brewpanel_buttons_disable(buttons,mode_control->mash_mode_button,images);
+
+                buttons->images.idle[mode_control->mash_mode_button]     = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+                buttons->images.hover[mode_control->mash_mode_button]    = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_HOVER; 
+                buttons->images.clicked[mode_control->mash_mode_button]  = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_CLICKED; 
+                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+
+                buttons->images.idle[mode_control->boil_mode_button]     = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_IDLE; 
+                buttons->images.hover[mode_control->boil_mode_button]    = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_HOVER; 
+                buttons->images.clicked[mode_control->boil_mode_button]  = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_CLICKED; 
+                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_IDLE; 
+
             } break;
 
             default: {
-                //by default we are in mash mode
-                brewpanel_buttons_disable(buttons,mode_control->mash_mode_button,images);
+                //by default the panel is off
+                mode_control->mode = BREWPANEL_MODE_OFF;
+                
+                brewpanel_buttons_enable(buttons,mode_control->mash_mode_button,images);
                 brewpanel_buttons_enable(buttons,mode_control->boil_mode_button,images);
+
+                buttons->images.idle[mode_control->mash_mode_button]     = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+                buttons->images.hover[mode_control->mash_mode_button]    = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_HOVER; 
+                buttons->images.clicked[mode_control->mash_mode_button]  = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_CLICKED; 
+                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+
+                buttons->images.idle[mode_control->boil_mode_button]     = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
+                buttons->images.hover[mode_control->boil_mode_button]    = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_HOVER; 
+                buttons->images.clicked[mode_control->boil_mode_button]  = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_CLICKED; 
+                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
             } break;
         }
     }
