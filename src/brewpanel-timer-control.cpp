@@ -20,9 +20,6 @@ brewpanel_timer_control_on_start_button_click(
     mem_data payload) {
 
     timer* t = (timer*)payload;
-
-
-    brewpanel_nop();
 }
 
 internal void
@@ -38,8 +35,6 @@ brewpanel_timer_control_on_pause_button_click(
     mem_data payload) {
 
     timer* t = (timer*)payload;
-
-    brewpanel_nop();
 }
 
 internal void
@@ -117,7 +112,7 @@ brewpanel_timer_control_create(
     timer_control->mash_timer.digits.seconds.ones_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,seconds_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
     timer_control->mash_timer.buttons.reset_button_id  = brewpanel_timer_control_create_reset_button(button_store,image_store,timer_control->mash_timer);
     timer_control->mash_timer.buttons.stop_button_id   = brewpanel_timer_control_create_stop_button(button_store,image_store,timer_control->mash_timer);
-    // timer_control->buttons.start_button_id = brewpanel_timer_control_create_mlt_start_button(button_store,image_store,(*timer_control));
+    // timer_control->mash_timer.buttons.start_button_id  = brewpanel_timer_control_create_start_button(button_store,image_store,timer_control->mash_timer);
     // timer_control->buttons.pause_button_id = brewpanel_timer_control_create_mlt_pause_button(button_store,image_store,(*timer_control));
 
     //boil timer
@@ -133,9 +128,8 @@ brewpanel_timer_control_create(
     timer_control->boil_timer.digits.seconds.tens_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,seconds_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
     timer_control->boil_timer.digits.seconds.ones_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,seconds_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
     timer_control->boil_timer.buttons.reset_button_id  = brewpanel_timer_control_create_reset_button(button_store,image_store,timer_control->boil_timer);
-    timer_control->boil_timer.buttons.stop_button_id   = brewpanel_timer_control_create_stop_button(button_store,image_store,timer_control->mash_timer);
-    
-    // timer_control->buttons.start_button_id = brewpanel_timer_control_create_boil_start_button(button_store,image_store,(*timer_control));
+    timer_control->boil_timer.buttons.stop_button_id   = brewpanel_timer_control_create_stop_button(button_store,image_store,timer_control->boil_timer);
+    // timer_control->boil_timer.buttons.start_button_id  = brewpanel_timer_control_create_start_button(button_store,image_store,timer_control->boil_timer);
     // timer_control->buttons.pause_button_id = brewpanel_timer_control_create_boil_pause_button(button_store,image_store,(*timer_control));
 }
 
@@ -180,6 +174,7 @@ brewpanel_timer_control_update_and_render(
             case BREWPANEL_TIMER_STATE_IDLE: {
                 brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+                // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
 
                 image_id panel_image = 
                     (mode == BREWPANEL_MODE_BOIL) 
@@ -192,14 +187,13 @@ brewpanel_timer_control_update_and_render(
 
                 timer->keypad_input = {0};
 
-                
-
             } break;
             
             case BREWPANEL_TIMER_STATE_SET: {
                 
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.reset_button_id);
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+                // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
 
                 image_id panel_image = 
                     (mode == BREWPANEL_MODE_BOIL) 
@@ -233,9 +227,8 @@ brewpanel_timer_control_update_and_render(
                 images_state->image_instances[timer->panel_image].image_id = panel_image; 
 
                 brewpanel_buttons_hide(buttons, timer->buttons.reset_button_id,images_state);
-                
+                // brewpanel_buttons_show(buttons,timer->buttons.start_button_id,images_state);
                 brewpanel_buttons_set_idle(buttons, timer->buttons.stop_button_id);
-
 
             } break;
 
@@ -243,6 +236,7 @@ brewpanel_timer_control_update_and_render(
                 timer->state = BREWPANEL_TIMER_STATE_IDLE;
                 brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
                 brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
+                // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
             } break;
         }
     }
@@ -308,6 +302,7 @@ brewpanel_timer_control_hide_timer(
 
     brewpanel_buttons_hide(buttons,timer->buttons.reset_button_id,images);
     brewpanel_buttons_hide(buttons,timer->buttons.stop_button_id,images);
+    // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images);
 }
 
 internal void
@@ -318,6 +313,7 @@ brewpanel_timer_control_show_timer(
 
     brewpanel_buttons_show(buttons,timer->buttons.reset_button_id,images);
     brewpanel_buttons_show(buttons,timer->buttons.stop_button_id,images);
+    // brewpanel_buttons_show(buttons,timer->buttons.start_button_id,images);
 }
 
 internal bool
@@ -357,20 +353,20 @@ brewpanel_timer_control_update(
     //if so, we need to disable the timer controls
     if (keypad_in_use) {
         re_enabled = false;
-        brewpanel_buttons_disable(button_store,timer->buttons.start_button_id,images_state);
+        // brewpanel_buttons_disable(button_store,timer->buttons.start_button_id,images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.stop_button_id, images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.pause_button_id,images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.reset_button_id,images_state);
     }
     else if (!re_enabled &&
              !keypad_in_use &&
-             brewpanel_buttons_is_disabled(button_store,timer->buttons.start_button_id) && 
+            //  brewpanel_buttons_is_disabled(button_store,timer->buttons.start_button_id) && 
              brewpanel_buttons_is_disabled(button_store,timer->buttons.stop_button_id)  &&
              brewpanel_buttons_is_disabled(button_store,timer->buttons.pause_button_id) &&
              brewpanel_buttons_is_disabled(button_store,timer->buttons.reset_button_id)) {
         
         re_enabled = true;
-        brewpanel_buttons_enable(button_store,timer->buttons.start_button_id,images_state);
+        // brewpanel_buttons_enable(button_store,timer->buttons.start_button_id,images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.stop_button_id, images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.pause_button_id,images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.reset_button_id,images_state);
