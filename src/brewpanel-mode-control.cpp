@@ -117,12 +117,12 @@ brewpanel_mode_control_update(
                 buttons->images.idle[mode_control->mash_mode_button]     = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
                 buttons->images.hover[mode_control->mash_mode_button]    = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_HOVER; 
                 buttons->images.clicked[mode_control->mash_mode_button]  = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_CLICKED; 
-                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_DISABLED; 
 
                 buttons->images.idle[mode_control->boil_mode_button]     = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
                 buttons->images.hover[mode_control->boil_mode_button]    = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_HOVER; 
                 buttons->images.clicked[mode_control->boil_mode_button]  = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_CLICKED; 
-                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
+                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_DISABLED; 
 
             } break;
 
@@ -133,12 +133,12 @@ brewpanel_mode_control_update(
                 buttons->images.idle[mode_control->mash_mode_button]     = BREWPANEL_IMAGES_ID_MODE_MASH_ON_IDLE; 
                 buttons->images.hover[mode_control->mash_mode_button]    = BREWPANEL_IMAGES_ID_MODE_MASH_ON_HOVER; 
                 buttons->images.clicked[mode_control->mash_mode_button]  = BREWPANEL_IMAGES_ID_MODE_MASH_ON_CLICKED; 
-                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_ON_IDLE; 
+                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_ON_DISABLED; 
 
                 buttons->images.idle[mode_control->boil_mode_button]     = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
                 buttons->images.hover[mode_control->boil_mode_button]    = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_HOVER; 
                 buttons->images.clicked[mode_control->boil_mode_button]  = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_CLICKED; 
-                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
+                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_DISABLED; 
 
             } break;
 
@@ -149,12 +149,12 @@ brewpanel_mode_control_update(
                 buttons->images.idle[mode_control->mash_mode_button]     = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
                 buttons->images.hover[mode_control->mash_mode_button]    = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_HOVER; 
                 buttons->images.clicked[mode_control->mash_mode_button]  = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_CLICKED; 
-                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_DISABLED; 
 
                 buttons->images.idle[mode_control->boil_mode_button]     = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_IDLE; 
                 buttons->images.hover[mode_control->boil_mode_button]    = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_HOVER; 
                 buttons->images.clicked[mode_control->boil_mode_button]  = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_CLICKED; 
-                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_IDLE; 
+                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_ON_DISABLED; 
 
             } break;
 
@@ -168,12 +168,12 @@ brewpanel_mode_control_update(
                 buttons->images.idle[mode_control->mash_mode_button]     = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
                 buttons->images.hover[mode_control->mash_mode_button]    = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_HOVER; 
                 buttons->images.clicked[mode_control->mash_mode_button]  = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_CLICKED; 
-                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_IDLE; 
+                buttons->images.disabled[mode_control->mash_mode_button] = BREWPANEL_IMAGES_ID_MODE_MASH_OFF_DISABLED; 
 
                 buttons->images.idle[mode_control->boil_mode_button]     = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
                 buttons->images.hover[mode_control->boil_mode_button]    = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_HOVER; 
                 buttons->images.clicked[mode_control->boil_mode_button]  = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_CLICKED; 
-                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_IDLE; 
+                buttons->images.disabled[mode_control->boil_mode_button] = BREWPANEL_IMAGES_ID_MODE_BOIL_OFF_DISABLED; 
             } break;
         }
     }
