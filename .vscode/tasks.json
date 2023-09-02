@@ -13,6 +13,20 @@
 				"$msCompile"
 			],
 			"group": "build"
+		},
+		{
+			"label": "BrewPanel Control Build",
+			"command": "build-scripts\\brewpanel-control-build.bat",
+			"args":[
+            ],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
 		}
+
 	]
 }
