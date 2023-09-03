@@ -115,7 +115,7 @@ brewpanel_sdl2_api_system_time() {
     auto system_time_now = std::chrono::system_clock::to_time_t(system_clock_now);
     auto local_time = *localtime(&system_time_now);
     
-    bp_system_time.hours   = local_time.tm_hour % 12;
+    bp_system_time.hours   = local_time.tm_hour;
     bp_system_time.minutes = local_time.tm_min;
     bp_system_time.seconds = local_time.tm_sec;
 
