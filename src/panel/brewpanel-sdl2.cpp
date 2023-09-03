@@ -61,14 +61,41 @@ brewpanel_sd2_poll_events(
         switch (sdl_event->type) {
 
             case SDL_MOUSEMOTION: {
+                
+                SDL_GetMouseState(
+                    (s32*)&input.mouse_x_pos,
+                    (s32*)&input.mouse_y_pos
+                );
+
+                input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - input.mouse_y_pos;
+
+            } break;
+
+            case SDL_MOUSEBUTTONDOWN: {
+
+                input.click = true;
 
                 SDL_GetMouseState(
                     (s32*)&input.mouse_x_pos,
                     (s32*)&input.mouse_y_pos
                 );
 
+                input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - input.mouse_y_pos;
+
             } break;
 
+            case SDL_MOUSEBUTTONUP: {
+
+                input.click = false;
+
+                SDL_GetMouseState(
+                    (s32*)&input.mouse_x_pos,
+                    (s32*)&input.mouse_y_pos
+                );
+
+                input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - input.mouse_y_pos;
+
+            } break;
 
             case SDL_WINDOWEVENT: {
 
@@ -128,8 +155,8 @@ int main(int argc, char** argv) {
 
     while (running) {
 
-        SDL_PollEvent(&sdl_event);
-
+        brewpanel_sd2_poll_events(&sdl_event);
+        
         if (brewpanel_core_update_and_render(&input)) {
             brewpanel_sdl2_draw_bitmap();
         }
