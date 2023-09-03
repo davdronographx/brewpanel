@@ -4,8 +4,85 @@
 
 #define SDL_main main
 
-SDL_Window* sdl_window;
+SDL_Window*     sdl_window;
+SDL_Renderer*   sdl_renderer;
+SDL_Texture*    sdl_texture;
+BrewPanelInput  input;
 
+internal void
+brewpanel_sdl2_draw_bitmap() {
+
+    mem_data bitmap_data = brewpanel_back_buffer_data();
+
+    SDL_UpdateTexture(
+        sdl_texture,
+        0,
+        (void*)&brewpanel_state->back_buffer.pixels,
+        BREW_PANEL_WIDTH_PIXELS * 4
+    );
+
+    u32 flip = SDL_FLIP_VERTICAL;
+
+    SDL_RenderCopyEx(
+        sdl_renderer,
+        sdl_texture,
+        0,
+        0,
+        0,
+        NULL,
+        (SDL_RendererFlip)flip
+    );
+
+    SDL_RenderPresent(sdl_renderer);
+
+}
+
+internal void
+brewpanel_sdl2_resize_bitmap() {
+    
+    if (sdl_texture) {
+        SDL_DestroyTexture(sdl_texture);
+    }
+    sdl_texture = SDL_CreateTexture(
+        sdl_renderer,
+        SDL_PIXELFORMAT_ARGB8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        BREW_PANEL_WIDTH_PIXELS,
+        BREW_PANEL_HEIGHT_PIXELS
+    );
+}
+
+internal void
+brewpanel_sd2_poll_events(
+    SDL_Event* sdl_event) {
+
+    if (SDL_PollEvent(sdl_event)) {
+
+        switch (sdl_event->type) {
+
+            case SDL_MOUSEMOTION: {
+
+                SDL_GetMouseState(
+                    (s32*)&input.mouse_x_pos,
+                    (s32*)&input.mouse_y_pos
+                );
+
+            } break;
+
+
+            case SDL_WINDOWEVENT: {
+
+                switch (sdl_event->window.event) {
+                    case SDL_WINDOWEVENT_RESIZED: {
+                        brewpanel_sdl2_resize_bitmap();
+                    } break;
+                }
+
+            } break;
+
+        }
+    }
+}
 
 int main(int argc, char** argv) {
 
@@ -23,13 +100,17 @@ int main(int argc, char** argv) {
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    SDL_Window* sdl_window = SDL_CreateWindow(
+    sdl_window = SDL_CreateWindow(
         "BrewPanel",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 
         BREW_PANEL_WIDTH_PIXELS,
         BREW_PANEL_HEIGHT_PIXELS,
         SDL_WINDOW_RESIZABLE
+    );
+
+    sdl_renderer = SDL_CreateRenderer(
+        sdl_window,-1,0
     );
 
     SDL_SetWindowBordered(sdl_window, SDL_FALSE);
@@ -41,14 +122,16 @@ int main(int argc, char** argv) {
     brewpanel_core_init();
     brewpanel_assert(brewpanel_state);
 
-    BrewPanelInput input = {0};
+    input = {0};
+
+    brewpanel_sdl2_resize_bitmap();
 
     while (running) {
 
         SDL_PollEvent(&sdl_event);
 
         if (brewpanel_core_update_and_render(&input)) {
-            continue;
+            brewpanel_sdl2_draw_bitmap();
         }
 
     }
