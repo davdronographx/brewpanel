@@ -2,8 +2,21 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "BrewPanel Build",
-			"command": "build-scripts\\brewpanel-build.bat",
+			"label": "BrewPanel Build Win32",
+			"command": "build-scripts\\brewpanel-build-win32.bat",
+			"args":[
+            ],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "BrewPanel Build SDL2",
+			"command": "build-scripts\\brewpanel-build-sdl2.bat",
 			"args":[
             ],
 			"options": {

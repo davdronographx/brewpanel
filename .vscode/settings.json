@@ -32,7 +32,8 @@
         "type_traits": "cpp",
         "xmemory": "cpp",
         "xstring": "cpp",
-        "xtr1common": "cpp"
+        "xtr1common": "cpp",
+        "chrono": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only",
 }

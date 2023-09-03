@@ -14,6 +14,17 @@
 internal void
 brewpanel_core_init() {
 
+    //assert the api is valid
+    brewpanel_assert(platform_api.memory_allocate);
+    brewpanel_assert(platform_api.memory_free);
+    brewpanel_assert(platform_api.file_open);
+    brewpanel_assert(platform_api.file_get_size);
+    brewpanel_assert(platform_api.file_create);
+    brewpanel_assert(platform_api.file_close);
+    brewpanel_assert(platform_api.file_read);
+    brewpanel_assert(platform_api.file_write);
+    brewpanel_assert(platform_api.system_time_get);
+
     //allocate memory for the state
     BrewPanelMemory memory = brewpanel_memory_create();
     brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
