@@ -4,6 +4,9 @@
 
 #define SDL_main main
 
+SDL_Window* sdl_window;
+
+
 int main(int argc, char** argv) {
 
     //initialize the api
