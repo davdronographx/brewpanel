@@ -3,16 +3,15 @@
 #include "brewpanel-control-communication.hpp"
 #include "brewpanel-control-communication.cpp"
 
-int main(void) {
-    
-    BrewpanelControlState control_state = {0};
+BrewpanelControlState control_state = {0};
+
+void setup() {
+
     control_state.comm_handler = brewpanel_control_communication_init();
 
-    while(true) {
+}
 
-        brewpanel_control_communication_read(&control_state.comm_handler);
+void loop() {
 
-    }
-
-    return(0);
+    brewpanel_control_communication_read(&control_state.comm_handler);
 }
