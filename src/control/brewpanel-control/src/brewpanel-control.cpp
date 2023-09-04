@@ -6,8 +6,13 @@
 int main(void) {
     
     BrewpanelControlState control_state = {0};
-    control_state.comm_handler = brewpanel_communication_init();
+    control_state.comm_handler = brewpanel_control_communication_init();
 
+    while(true) {
+
+        brewpanel_control_communication_read(&control_state.comm_handler);
+
+    }
 
     return(0);
 }
