@@ -82,8 +82,10 @@ struct BrewPanelCommunicationMessageQueue {
 typedef BrewPanelCommunicationMessageQueue comm_message_queue;
 
 struct BrewPanelCommunicationHandler {
-    comm_message       incoming_message;
-    comm_message_queue sent_message_queue;
+    comm_message            incoming_message;
+    comm_message_queue      sent_message_queue;
+    BrewPanelControllerInfo controller_info;
+    controller_handle       controller_handle;
 };
 typedef BrewPanelCommunicationHandler comm_handler;
 

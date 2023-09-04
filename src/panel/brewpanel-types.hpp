@@ -28,8 +28,15 @@ typedef u8        mem_byte;
 typedef mem_byte* mem_data;
 
 typedef void* file_handle;
+typedef void* controller_handle;
 
 typedef char* str;
+
+struct BrewPanelControllerInfo {
+    u16 vendor_id;
+    u16 product_id;
+    str serial_number;
+};
 
 struct RGBAPixel {
     u8 blue;

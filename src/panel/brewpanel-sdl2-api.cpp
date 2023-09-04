@@ -121,3 +121,19 @@ brewpanel_sdl2_api_system_time() {
 
     return(bp_system_time);
 }
+
+internal controller_handle
+brewpanel_sdl2_api_controller_handle(
+    BrewPanelControllerInfo controller_info) {
+
+    const wchar_t* serial = (wchar_t*)controller_info.serial_number;
+
+    SDL_hid_device* sdl_device = 
+        SDL_hid_open(
+            controller_info.vendor_id, 
+            controller_info.product_id, 
+            NULL
+    );
+
+    return((controller_handle)sdl_device);
+}

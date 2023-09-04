@@ -9,7 +9,11 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\bin\\brewpanel.exe",
-            "args": [],
+            "args": [
+                "2341",
+                "0043 ",
+                "44238313838351510161"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}\\bin",
             "environment": [],

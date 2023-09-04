@@ -64,16 +64,23 @@ typedef BrewPanelSystemTime
     void
 );
 
+typedef controller_handle
+(*func_brewpanel_controller_handle)
+(
+    BrewPanelControllerInfo controller_info
+);
+
 struct BrewpanelPlatformApi {
-    func_platform_memory_allocate memory_allocate;
-    func_platform_memory_free     memory_free;
-    func_platform_file_open       file_open;
-    func_platform_file_get_size   file_get_size;
-    func_platform_file_create     file_create;
-    func_platform_file_close      file_close;
-    func_platform_file_read       file_read;
-    func_platform_file_write      file_write;
-    func_brewpanel_system_time    system_time_get;
+    func_platform_memory_allocate    memory_allocate;
+    func_platform_memory_free        memory_free;
+    func_platform_file_open          file_open;
+    func_platform_file_get_size      file_get_size;
+    func_platform_file_create        file_create;
+    func_platform_file_close         file_close;
+    func_platform_file_read          file_read;
+    func_platform_file_write         file_write;
+    func_brewpanel_system_time       system_time_get;
+    func_brewpanel_controller_handle controller_handle;
 };
 
 global BrewpanelPlatformApi platform_api;
@@ -87,5 +94,6 @@ global BrewpanelPlatformApi platform_api;
 #define brewpanel_platform_file_read(file,buffer,size,offset)  platform_api.file_read(file,buffer,size,offset)
 #define brewpanel_platform_file_write(file,buffer,size,offset) platform_api.file_write(file,buffer,size,offset)
 #define brewpanel_platform_system_time_get()                   platform_api.system_time_get()
+#define brewpanel_platform_controller_handle(info)             platform_api.controller_handle(info);
 
 #endif //BREWPANEL_PLATFORM_API_HPP

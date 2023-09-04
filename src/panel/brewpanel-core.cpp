@@ -12,7 +12,7 @@
 #include "brewpanel-keypad.cpp"
 
 internal void
-brewpanel_core_init() {
+brewpanel_core_init(BrewPanelControllerInfo controller_info) {
 
     //assert the api is valid
     brewpanel_assert(platform_api.memory_allocate);
@@ -24,11 +24,13 @@ brewpanel_core_init() {
     brewpanel_assert(platform_api.file_read);
     brewpanel_assert(platform_api.file_write);
     brewpanel_assert(platform_api.system_time_get);
+    brewpanel_assert(platform_api.controller_handle);
 
     //allocate memory for the state
     BrewPanelMemory memory = brewpanel_memory_create();
     brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
     brewpanel_state->memory = memory;
+
 
     //get the images
     brewpanel_images_state_create(
@@ -43,7 +45,10 @@ brewpanel_core_init() {
     );
 
     //create the message handler
-    brewpanel_state->comm_handler = brewpanel_communication_create_handler();
+    brewpanel_state->comm_handler =
+        brewpanel_communication_create_handler(
+            controller_info
+    );
     
     //initialize the clock
     brewpanel_clock_create(
@@ -91,6 +96,8 @@ brewpanel_core_update_and_render(
     BrewPanelInput* input) {
 
     bool redraw = false;
+
+    brewpanel_communication_update(&brewpanel_state->comm_handler);
 
     brewpanel_buttons_update(
         input,
