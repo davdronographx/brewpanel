@@ -120,8 +120,8 @@ int main(int argc, char** argv) {
     brewpanel_assert(argc == 4);
 
     BrewPanelControllerInfo controller_info = {0};
-    controller_info.vendor_id     = std::stoi(argv[1]);
-    controller_info.product_id    = std::stoi(argv[2]);
+    controller_info.vendor_id     = argv[1];
+    controller_info.product_id    = argv[2];
     controller_info.serial_number = argv[3];
 
     //initialize the api

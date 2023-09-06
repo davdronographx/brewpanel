@@ -33,8 +33,8 @@ typedef void* controller_handle;
 typedef char* str;
 
 struct BrewPanelControllerInfo {
-    u16 vendor_id;
-    u16 product_id;
+    str vendor_id;
+    str product_id;
     str serial_number;
 };
 

@@ -28,5 +28,4 @@ brewpanel_communication_update(
     }
 
     brewpanel_nop();
-
 }
