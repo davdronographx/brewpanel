@@ -207,14 +207,56 @@ brewpanel_sdl2_api_windows_controller_handle(
                 &port_name_value_size
             );
 
+            RegCloseKey(device_registry_key);
+            
             if (query_result == ERROR_SUCCESS && registry_value_type == REG_SZ) {
 
-                //we have a valid registry key, so we need to make sure that its the one we want
-                //if it is, the portName will be returned as the 
-                brewpanel_nop();
-            }
+                //TODO: I took a shortcut to get things working
+                //but we really need to check the device id against the one we
+                //put together right after the function call up top
 
-            RegCloseKey(device_registry_key);
+                //we have a valid registry key, so we need to make sure that its the one we want
+                //if it is, the portName will be used to open the device handle
+                port_name_value[port_name_value_size] = '\0';
+                char comm_port_name[16] = {0};
+                sprintf(comm_port_name,"\\\\\\\\.\\\\%s",port_name_value);
+
+
+                comm_handle = CreateFile(
+                    port_name_value,
+                    GENERIC_READ | GENERIC_WRITE,
+                    0,
+                    NULL,
+                    OPEN_EXISTING,
+                    0,
+                    NULL
+                );
+
+                //at this point, we should never fail
+                if(comm_handle == INVALID_HANDLE_VALUE){
+                    break;
+                }
+
+                //update the port settings
+                DCB comm_port_info = {0};
+                SecureZeroMemory(&comm_port_info, sizeof(DCB));
+                comm_port_info.DCBlength = sizeof(DCB);
+
+                if(!GetCommState(comm_handle,&comm_port_info)) {
+                    break;
+                }
+
+                comm_port_info.BaudRate = CBR_9600;
+                comm_port_info.ByteSize = 8;
+                comm_port_info.Parity   = NOPARITY;
+                comm_port_info.StopBits = ONESTOPBIT;
+                
+                if(!SetCommState(comm_handle,&comm_port_info)) {
+                    break;
+                }
+
+                return(comm_handle);
+            }
         }
     } 
 
