@@ -167,6 +167,12 @@ typedef controller_handle
 );
 
 typedef void
+(*func_platform_controller_close)
+(
+    controller_handle handle
+);
+
+typedef bool
 (*func_platform_controller_write_buffer)
 (
     controller_handle controller_handle,
@@ -185,6 +191,7 @@ struct BrewpanelPlatformApi {
     func_platform_file_write              file_write;
     func_platform_system_time             system_time_get;
     func_platform_controller_handle       controller_handle;
+    func_platform_controller_close        controller_close;
     func_platform_controller_write_buffer controller_write;
 };
 
@@ -200,6 +207,7 @@ global BrewpanelPlatformApi platform_api;
 #define brewpanel_platform_file_write(file,buffer,size,offset)  platform_api.file_write(file,buffer,size,offset)
 #define brewpanel_platform_system_time_get()                    platform_api.system_time_get()
 #define brewpanel_platform_controller_handle(info)              platform_api.controller_handle(info)
+#define brewpanel_platform_controller_close(handle)             platform_api.controller_close(handle)
 #define brewpanel_platform_controller_write(handle,buffer,size) platform_api.controller_write(handle,buffer,size)
 
 #endif //BREWPANEL_PLATFORM_API_HPP

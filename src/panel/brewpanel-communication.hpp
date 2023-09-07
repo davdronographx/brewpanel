@@ -10,7 +10,6 @@ enum BrewPanelCommunicationMessageSender : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC = 0x01,
     BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI = 0x02
 };
-typedef BrewPanelCommunicationMessageSender comm_message_sender;
 
 enum BrewPanelCommunicationMessageType : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT         = 0x01,
@@ -26,7 +25,6 @@ enum BrewPanelCommunicationMessageType : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PID_TUNE          = 0x0A,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PID_TUNE_ACK      = 0x0B,
 };
-typedef BrewPanelCommunicationMessageType comm_message_type;
 
 struct BrewPanelCommunicationMessageHeader {
     u8  sender;
@@ -34,26 +32,22 @@ struct BrewPanelCommunicationMessageHeader {
     u32 message_size;
     u64 timestamp;
 };
-typedef BrewPanelCommunicationMessageHeader comm_message_header; 
 
 struct BrewPanelCommunicationMessage {
-    comm_message_header header;
-    u32                 payload_size_bytes;
-    mem_byte            payload_data[BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE];
+    BrewPanelCommunicationMessageHeader header;
+    u32                                 payload_size_bytes;
+    mem_byte                            payload_data[BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE];
 };
-typedef BrewPanelCommunicationMessage comm_message;
 
 enum BrewPanelCommunicationMode : u8 {
     BREWPANEL_COMMUNICATION_MODE_MASH = 0x01,
     BREWPANEL_COMMUNICATION_MODE_BOIL = 0x02,
 };
-typedef BrewPanelCommunicationMode comm_panel_mode;
 
 enum BrewPanelCommunicationPumpStatus : u8 {
     BREWPANEL_COMMUNICATION_PUMP_STATUS_ON  = 0x01,
     BREWPANEL_COMMUNICATION_PUMP_STATUS_OFF = 0x02,
 };
-typedef BrewPanelCommunicationPumpStatus comm_pump_status;
 
 enum BrewPanelCommunicationTimerStatus : u8 {
     BREWPANEL_COMMUNICATION_TIMER_STATUS_NOT_SET = 0x01,
@@ -61,7 +55,6 @@ enum BrewPanelCommunicationTimerStatus : u8 {
     BREWPANEL_COMMUNICATION_TIMER_STATUS_PAUSED  = 0x03,
     BREWPANEL_COMMUNICATION_TIMER_STATUS_EXPIRED = 0x04
 };
-typedef BrewPanelCommunicationTimerStatus comm_timer_status;
 
 struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
     u8  hlt_element_temp;
@@ -76,17 +69,27 @@ struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
 };
 
 struct BrewPanelCommunicationMessageQueue {
-    u8           sent_message_count;
-    comm_message sent_messages[BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES]; 
+    u8                            sent_message_count;
+    BrewPanelCommunicationMessage sent_messages[BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES]; 
 };
-typedef BrewPanelCommunicationMessageQueue comm_message_queue;
 
 struct BrewPanelCommunicationHandler {
-    comm_message            incoming_message;
-    comm_message_queue      sent_message_queue;
-    BrewPanelControllerInfo controller_info;
-    controller_handle       controller_handle;
+    BrewPanelCommunicationMessage                    incoming_message;
+    BrewPanelCommunicationMessage                    outgoing_message;
+    BrewPanelCommunicationMessageQueue               sent_message_queue;
+    BrewPanelControllerInfo                          controller_info;
+    controller_handle                                controller_handle;
+    BrewPanelCommunicationMessagePayloadHeartBeatAck latest_heartbeat;
 };
+
+typedef BrewPanelCommunicationMessageType comm_message_type;
+typedef BrewPanelCommunicationMessageSender comm_message_sender;
+typedef BrewPanelCommunicationMessageHeader comm_message_header; 
+typedef BrewPanelCommunicationMessage comm_message;
+typedef BrewPanelCommunicationMode comm_panel_mode;
+typedef BrewPanelCommunicationPumpStatus comm_pump_status;
+typedef BrewPanelCommunicationTimerStatus comm_timer_status;
+typedef BrewPanelCommunicationMessageQueue comm_message_queue;
 typedef BrewPanelCommunicationHandler comm_handler;
 
 #endif //BREWPANEL_COMMUNICATION_HPP

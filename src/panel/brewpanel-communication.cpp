@@ -14,6 +14,16 @@ brewpanel_communication_create_handler(
 }
 
 internal void
+brewpanel_communication_message_heartbeat_build(
+    comm_handler* comm_handler) {
+
+    comm_handler->outgoing_message = {0};
+    comm_handler->outgoing_message.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT;
+    comm_handler->outgoing_message.payload_data[0]     = '\0';
+    comm_handler->outgoing_message.payload_size_bytes  = 1;
+}
+
+internal void
 brewpanel_communication_update(
     comm_handler* comm_handler) {
 
@@ -27,17 +37,6 @@ brewpanel_communication_update(
         }
     }
 
-    char test_buffer[5];
-    test_buffer[0] = 'T';
-    test_buffer[1] = 'E';
-    test_buffer[2] = 'S';
-    test_buffer[3] = 'T';
-    test_buffer[4] = '\0';
-
-    brewpanel_platform_controller_write(
-        comm_handler->controller_handle,
-        (mem_data)test_buffer,
-        5
-    );
+    
 
 }

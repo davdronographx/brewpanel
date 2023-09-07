@@ -291,6 +291,10 @@ brewpanel_win32_api_controller_handle(
                     break;
                 }
 
+                if (!SetCommMask(comm_handle,EV_RXCHAR | EV_DSR | EV_CTS | EV_CTS | EV_ERR)) {
+                    break;
+                }
+
                 return(comm_handle);
             }
         }
@@ -299,9 +303,16 @@ brewpanel_win32_api_controller_handle(
     return(NULL);
 }
 
+internal void
+brewpanel_win32_api_controller_close(
+    controller_handle controller_handle) {
+        
+    brewpanel_assert(CloseHandle(controller_handle));
+}
+
 //https://www.xanthium.in/Serial-Port-Programming-using-Win32-API#:~:text=SetCommTimeouts()%20function.-,Writing%20Data%20to%20Serial%20Port,files%20and%20I%2FO%20ports.&text=%2F%2FBytes%20written-,NULL)%3B,(I%20am%20using%20USB2SERIAL).
 
-internal void
+internal bool
 brewpanel_win32_api_controller_write(
     controller_handle controller_handle,
     mem_data          write_buffer,
@@ -320,5 +331,11 @@ brewpanel_win32_api_controller_write(
             NULL
     );
 
-    brewpanel_assert(result && bytes_written == write_buffer_size);
+    return(result && bytes_written == write_buffer_size);
 }
+
+//https://gist.github.com/DavidEGrayson/5e5bb95ae291cdfdffd4
+//TODO: for reading from a serial port, we may need a thread with a callback 
+//for whenever we detect any data on the port
+
+//likewise for the controller

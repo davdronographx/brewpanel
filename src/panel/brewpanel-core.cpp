@@ -26,12 +26,12 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     brewpanel_assert(platform_api.system_time_get);
     brewpanel_assert(platform_api.controller_handle);
     brewpanel_assert(platform_api.controller_write);
+    brewpanel_assert(platform_api.controller_close);
 
     //allocate memory for the state
     BrewPanelMemory memory = brewpanel_memory_create();
     brewpanel_state = brewpanel_memory_allocate_struct(&memory,BrewPanelState);
     brewpanel_state->memory = memory;
-
 
     //get the images
     brewpanel_images_state_create(
