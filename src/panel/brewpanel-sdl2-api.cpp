@@ -126,7 +126,6 @@ brewpanel_sdl2_api_system_time() {
     return(bp_system_time);
 }
 
-#define BUFF_LEN 20
 
 //https://aticleworld.com/get-com-port-of-usb-serial-device/
 internal controller_handle
