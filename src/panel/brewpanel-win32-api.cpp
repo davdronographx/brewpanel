@@ -299,12 +299,26 @@ brewpanel_win32_api_controller_handle(
     return(NULL);
 }
 
+//https://www.xanthium.in/Serial-Port-Programming-using-Win32-API#:~:text=SetCommTimeouts()%20function.-,Writing%20Data%20to%20Serial%20Port,files%20and%20I%2FO%20ports.&text=%2F%2FBytes%20written-,NULL)%3B,(I%20am%20using%20USB2SERIAL).
+
 internal void
 brewpanel_win32_api_controller_write(
     controller_handle controller_handle,
     mem_data          write_buffer,
     u64               write_buffer_size) {
 
-    
+    brewpanel_assert(write_buffer);
 
+    DWORD bytes_written = 0;
+
+    bool result =
+        WriteFile(
+            controller_handle,
+            write_buffer,
+            write_buffer_size,
+            &bytes_written,
+            NULL
+    );
+
+    brewpanel_assert(result && bytes_written == write_buffer_size);
 }

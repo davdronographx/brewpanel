@@ -27,5 +27,17 @@ brewpanel_communication_update(
         }
     }
 
-    brewpanel_nop();
+    char test_buffer[5];
+    test_buffer[0] = 'T';
+    test_buffer[1] = 'E';
+    test_buffer[2] = 'S';
+    test_buffer[3] = 'T';
+    test_buffer[4] = '\0';
+
+    brewpanel_platform_controller_write(
+        comm_handler->controller_handle,
+        (mem_data)test_buffer,
+        5
+    );
+
 }
