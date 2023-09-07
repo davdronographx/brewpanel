@@ -6,7 +6,7 @@
 #include "brewpanel-platform-api.hpp"
 
 internal mem_data
-brewpanel_win32_allocate_memory(
+brewpanel_win32_api_allocate_memory(
     u64 size) {
 
     mem_data memory = (mem_data)VirtualAlloc(0,size,MEM_COMMIT,PAGE_READWRITE);
@@ -14,7 +14,7 @@ brewpanel_win32_allocate_memory(
 }
 
 internal void
-brewpanel_win32_free_memory(
+brewpanel_win32_api_free_memory(
     u64      size,
     mem_data memory) {
     
@@ -22,7 +22,7 @@ brewpanel_win32_free_memory(
 }
 
 internal file_handle
-brewpanel_win32_open_file(
+brewpanel_win32_api_open_file(
     str file_path) {
 
     HANDLE file_handle = 
@@ -42,7 +42,7 @@ brewpanel_win32_open_file(
 }
 
 internal u64
-brewpanel_win32_get_file_size(
+brewpanel_win32_api_get_file_size(
     file_handle file) {
 
     u64 file_size = 
@@ -54,7 +54,7 @@ brewpanel_win32_get_file_size(
 } 
 
 internal file_handle
-brewpanel_win32_create_file(
+brewpanel_win32_api_create_file(
     str file_path) {
 
     HANDLE file_handle = 
@@ -74,7 +74,7 @@ brewpanel_win32_create_file(
 }
 
 internal void
-brewpanel_win32_close_file(
+brewpanel_win32_api_close_file(
     file_handle file) {
     
     CloseHandle(file);
@@ -83,7 +83,7 @@ brewpanel_win32_close_file(
 global u64 bytes_read = 0;
 
 VOID CALLBACK
-brewpanel_win32_file_io_completion_routine(
+brewpanel_win32_api_file_io_completion_routine(
     DWORD          error_code,
     DWORD          bytes_transferred,
     LPOVERLAPPED   lpOverlapped) {
@@ -93,7 +93,7 @@ brewpanel_win32_file_io_completion_routine(
 
 
 internal void
-brewpanel_win32_read_file(
+brewpanel_win32_api_read_file(
     file_handle file_handle,
     mem_data    file_buffer,
     u64         file_buffer_size,
@@ -112,7 +112,7 @@ brewpanel_win32_read_file(
             file_buffer,
             file_buffer_size,
             &overlapped,
-            brewpanel_win32_file_io_completion_routine
+            brewpanel_win32_api_file_io_completion_routine
     );
  
     file_buffer[file_buffer_size] = '\0';
@@ -121,7 +121,7 @@ brewpanel_win32_read_file(
 }
 
 internal void
-brewpanel_win32_write_file(
+brewpanel_win32_api_write_file(
     file_handle file_handle,
     mem_data    write_buffer,
     u64         write_buffer_size,
@@ -139,8 +139,23 @@ brewpanel_win32_write_file(
             write_buffer,
             write_buffer_size,
             &overlapped,
-            brewpanel_win32_file_io_completion_routine
+            brewpanel_win32_api_file_io_completion_routine
     );
 
     brewpanel_assert(write_result);
+}
+
+internal BrewPanelSystemTime
+brewpanel_win32_api_get_system_time() {
+
+    BrewPanelSystemTime bp_system_time = {0};
+
+    SYSTEMTIME system_time = {0};
+    GetLocalTime(&system_time);
+
+    bp_system_time.hours   = system_time.wHour;
+    bp_system_time.minutes = system_time.wMinute;
+    bp_system_time.seconds = system_time.wSecond;
+
+    return(bp_system_time);
 }

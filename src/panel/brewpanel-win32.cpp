@@ -18,21 +18,6 @@ global RECT       client_rect;
 
 global BrewPanelInput brewpanel_input;
 
-internal BrewPanelSystemTime
-brewpanel_win32_get_system_time() {
-
-    BrewPanelSystemTime bp_system_time = {0};
-
-    SYSTEMTIME system_time = {0};
-    GetLocalTime(&system_time);
-
-    bp_system_time.hours   = system_time.wHour;
-    bp_system_time.minutes = system_time.wMinute;
-    bp_system_time.seconds = system_time.wSecond;
-
-    return(bp_system_time);
-}
-
 internal void
 brewpanel_win32_draw_bitmap() {
 
@@ -227,17 +212,37 @@ wWinMain(
     PWSTR pw_str,
     s32 cmd_show) {
     
+    //get the controller info
+    s32     argc;
+    LPWSTR* argv;
+
+    argv = CommandLineToArgvW(GetCommandLineW(),&argc);
+    brewpanel_assert(argc == 4);
+
+    char vendor_id_buffer[32];
+    char product_id_buffer[32];
+    char serial_number_buffer[32];
+
+    wcstombs(vendor_id_buffer,     argv[1], 32);
+    wcstombs(product_id_buffer,    argv[2], 32);
+    wcstombs(serial_number_buffer, argv[3], 32);
+
+    BrewPanelControllerInfo controller_info = {0};
+    controller_info.vendor_id     = vendor_id_buffer;
+    controller_info.product_id    = product_id_buffer;
+    controller_info.serial_number = serial_number_buffer;
+
     //create the api
     platform_api = {0};
-    platform_api.memory_allocate = brewpanel_win32_allocate_memory;
-    platform_api.memory_free     = brewpanel_win32_free_memory;
-    platform_api.file_open       = brewpanel_win32_open_file;
-    platform_api.file_get_size   = brewpanel_win32_get_file_size;
-    platform_api.file_create     = brewpanel_win32_create_file;
-    platform_api.file_close      = brewpanel_win32_close_file;
-    platform_api.file_read       = brewpanel_win32_read_file;
-    platform_api.file_write      = brewpanel_win32_write_file;
-    platform_api.system_time_get = brewpanel_win32_get_system_time;
+    platform_api.memory_allocate = brewpanel_win32_api_allocate_memory;
+    platform_api.memory_free     = brewpanel_win32_api_free_memory;
+    platform_api.file_open       = brewpanel_win32_api_open_file;
+    platform_api.file_get_size   = brewpanel_win32_api_get_file_size;
+    platform_api.file_create     = brewpanel_win32_api_create_file;
+    platform_api.file_close      = brewpanel_win32_api_close_file;
+    platform_api.file_read       = brewpanel_win32_api_read_file;
+    platform_api.file_write      = brewpanel_win32_api_write_file;
+    platform_api.system_time_get = brewpanel_win32_api_get_system_time;
 
     //open the window
     WNDCLASS window_class      = {0};
@@ -272,7 +277,7 @@ wWinMain(
 
     running = true;
     
-    brewpanel_core_init();
+    brewpanel_core_init(controller_info);
     brewpanel_assert(brewpanel_state != NULL);
 
     brewpanel_win32_draw_bitmap();
