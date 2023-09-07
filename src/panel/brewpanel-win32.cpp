@@ -244,6 +244,7 @@ wWinMain(
     platform_api.file_write        = brewpanel_win32_api_write_file;
     platform_api.system_time_get   = brewpanel_win32_api_get_system_time;
     platform_api.controller_handle = brewpanel_win32_api_controller_handle;
+    platform_api.controller_write  = brewpanel_win32_api_controller_write;
 
     //open the window
     WNDCLASS window_class      = {0};

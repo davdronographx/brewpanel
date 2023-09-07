@@ -298,3 +298,13 @@ brewpanel_win32_api_controller_handle(
 
     return(NULL);
 }
+
+internal void
+brewpanel_win32_api_controller_write(
+    controller_handle controller_handle,
+    mem_data          write_buffer,
+    u64               write_buffer_size) {
+
+    
+
+}
