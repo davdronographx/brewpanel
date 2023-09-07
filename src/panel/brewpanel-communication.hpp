@@ -4,7 +4,9 @@
 #include "brewpanel-types.hpp"
 
 #define BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES 8
-#define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE  256
+#define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE   256
+#define BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE        368
+
 
 enum BrewPanelCommunicationMessageSender : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC = 0x01,
@@ -39,6 +41,11 @@ struct BrewPanelCommunicationMessage {
     mem_byte                            payload_data[BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE];
 };
 
+struct BrewPanelCommunicationMessageBuffer {
+    u32      buffer_size;
+    mem_byte buffer[BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE];
+};
+
 enum BrewPanelCommunicationMode : u8 {
     BREWPANEL_COMMUNICATION_MODE_MASH = 0x01,
     BREWPANEL_COMMUNICATION_MODE_BOIL = 0x02,
@@ -69,14 +76,14 @@ struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
 };
 
 struct BrewPanelCommunicationMessageQueue {
-    u8                            sent_message_count;
-    BrewPanelCommunicationMessage sent_messages[BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES]; 
+    u8                            message_count;
+    BrewPanelCommunicationMessage messages[BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES]; 
 };
 
 struct BrewPanelCommunicationHandler {
     BrewPanelCommunicationMessage                    incoming_message;
     BrewPanelCommunicationMessage                    outgoing_message;
-    BrewPanelCommunicationMessageQueue               sent_message_queue;
+    BrewPanelCommunicationMessageQueue               outgoing_message_queue;
     BrewPanelControllerInfo                          controller_info;
     controller_handle                                controller_handle;
     BrewPanelCommunicationMessagePayloadHeartBeatAck latest_heartbeat;

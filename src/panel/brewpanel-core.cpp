@@ -27,6 +27,7 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     brewpanel_assert(platform_api.controller_handle);
     brewpanel_assert(platform_api.controller_write);
     brewpanel_assert(platform_api.controller_close);
+    brewpanel_assert(platform_api.controller_read);
 
     //allocate memory for the state
     BrewPanelMemory memory = brewpanel_memory_create();

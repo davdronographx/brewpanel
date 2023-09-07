@@ -180,6 +180,15 @@ typedef bool
     u64               write_buffer_size
 );
 
+typedef bool
+(*func_platform_controller_read_buffer)
+(
+    controller_handle controller_handle,
+    mem_data          read_buffer,
+    u64               read_buffer_size,
+    u64*              bytes_read     
+);
+
 struct BrewpanelPlatformApi {
     func_platform_memory_allocate         memory_allocate;
     func_platform_memory_free             memory_free;
@@ -193,6 +202,7 @@ struct BrewpanelPlatformApi {
     func_platform_controller_handle       controller_handle;
     func_platform_controller_close        controller_close;
     func_platform_controller_write_buffer controller_write;
+    func_platform_controller_read_buffer  controller_read;
 };
 
 global BrewpanelPlatformApi platform_api;
@@ -209,5 +219,6 @@ global BrewpanelPlatformApi platform_api;
 #define brewpanel_platform_controller_handle(info)              platform_api.controller_handle(info)
 #define brewpanel_platform_controller_close(handle)             platform_api.controller_close(handle)
 #define brewpanel_platform_controller_write(handle,buffer,size) platform_api.controller_write(handle,buffer,size)
+#define brewpanel_platform_controller_read(handle,buffer,size,bytes_read)  platform_api.controller_read(handle,buffer,size,bytes_read);
 
 #endif //BREWPANEL_PLATFORM_API_HPP

@@ -339,3 +339,24 @@ brewpanel_win32_api_controller_write(
 //for whenever we detect any data on the port
 
 //likewise for the controller
+
+internal bool
+brewpanel_win32_api_controller_read(
+    controller_handle controller_handle,
+    mem_data          read_buffer,
+    u64               read_buffer_size,
+    u64*              bytes_read) {
+
+    brewpanel_assert(read_buffer);
+
+    bool result = 
+        ReadFile(
+            controller_handle,
+            read_buffer,
+            read_buffer_size,
+            (LPDWORD)bytes_read,
+            NULL
+        );
+
+    return (result && *bytes_read > 0);
+}

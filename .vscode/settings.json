@@ -34,7 +34,11 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "chrono": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "array": "cpp",
+        "initializer_list": "cpp",
+        "vector": "cpp",
+        "xtree": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only",
 }
