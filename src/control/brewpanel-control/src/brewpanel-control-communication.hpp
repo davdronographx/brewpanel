@@ -8,10 +8,10 @@
 #define BREWPANEL_CONTROL_COMMUNICATION_BAUD 9600
 
 #define BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES 8
-#define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE  256
-#define BREWPANEL_COMMUNICATION_MESSAGE_TOTAL_SIZE (sizeof(BrewPanelCommunicationMessageHeader) + BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE)
-#define BREWPANEL_COMMUNICATION_MESSAGE_TERMINATOR '\0'
-#define BREWPANEL_COMMUNICATION_MESSAGE_TIMEOUT_MS 1000
+#define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE   256
+#define BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE        368
+#define BREWPANEL_COMMUNICATION_MESSAGE_TERMINATOR         '\0'
+#define BREWPANEL_COMMUNICATION_MESSAGE_TIMEOUT_MS         1000
 
 enum BrewPanelCommunicationMessageSender : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC = 0x01,
@@ -19,7 +19,7 @@ enum BrewPanelCommunicationMessageSender : u8 {
 };
 
 enum BrewPanelCommunicationMessageType : u8 {
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_NONE              = 0x00,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID           = 0x00,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT         = 0x01,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK     = 0x02,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE       = 0x03,
@@ -64,6 +64,12 @@ enum BrewPanelCommunicationTimerStatus : u8 {
     BREWPANEL_COMMUNICATION_TIMER_STATUS_EXPIRED = 0x04
 };
 
+struct BrewPanelCommunicationMessageBuffer {
+    u32      buffer_size;
+    mem_byte buffer[BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE];
+};
+
+
 struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
     u8  hlt_element_temp;
     u8  mlt_element_temp;
@@ -95,5 +101,6 @@ typedef BrewPanelCommunicationPumpStatus    comm_pump_status;
 typedef BrewPanelCommunicationTimerStatus   comm_timer_status;
 typedef BrewPanelCommunicationMessageQueue  comm_message_queue;
 typedef BrewPanelCommunicationHandler       comm_handler;
+typedef BrewPanelCommunicationMessageBuffer comm_message_buffer;
 
 #endif //BREWPANEL_COMMUNICATION_HPP

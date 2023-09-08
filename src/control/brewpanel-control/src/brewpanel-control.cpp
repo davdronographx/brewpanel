@@ -1,17 +1,21 @@
 #include <Arduino.h>
 #include "brewpanel-control.hpp"
-#include "brewpanel-control-communication.hpp"
 #include "brewpanel-control-communication.cpp"
+#include "brewpanel-control-temperature.cpp"
 
-BrewpanelControlState control_state = {0};
+global BrewpanelControlState control  = {0};
 
 void setup() {
 
-    control_state.comm_handler = brewpanel_control_communication_init();
-
+    control.comm = brewpanel_control_communication_init();
+    control.temp = brewpanel_control_temperature_init();
 }
 
 void loop() {
 
-    brewpanel_control_communication_read(&control_state.comm_handler);
+    brewpanel_control_temperature_update(&control.temp);
+    brewpanel_control_communication_update(
+        &control.comm,
+        control.temp
+    );
 }
