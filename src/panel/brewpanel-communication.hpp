@@ -81,22 +81,20 @@ struct BrewPanelCommunicationMessageQueue {
 };
 
 struct BrewPanelCommunicationHandler {
-    BrewPanelCommunicationMessage                    incoming_message;
-    BrewPanelCommunicationMessage                    outgoing_message;
     BrewPanelCommunicationMessageQueue               outgoing_message_queue;
     BrewPanelControllerInfo                          controller_info;
     controller_handle                                controller_handle;
     BrewPanelCommunicationMessagePayloadHeartBeatAck latest_heartbeat;
 };
 
-typedef BrewPanelCommunicationMessageType comm_message_type;
+typedef BrewPanelCommunicationMessageType   comm_message_type;
 typedef BrewPanelCommunicationMessageSender comm_message_sender;
 typedef BrewPanelCommunicationMessageHeader comm_message_header; 
-typedef BrewPanelCommunicationMessage comm_message;
-typedef BrewPanelCommunicationMode comm_panel_mode;
-typedef BrewPanelCommunicationPumpStatus comm_pump_status;
-typedef BrewPanelCommunicationTimerStatus comm_timer_status;
-typedef BrewPanelCommunicationMessageQueue comm_message_queue;
-typedef BrewPanelCommunicationHandler comm_handler;
+typedef BrewPanelCommunicationMessage       comm_message;
+typedef BrewPanelCommunicationMode          comm_panel_mode;
+typedef BrewPanelCommunicationPumpStatus    comm_pump_status;
+typedef BrewPanelCommunicationTimerStatus   comm_timer_status;
+typedef BrewPanelCommunicationMessageQueue  comm_message_queue;
+typedef BrewPanelCommunicationHandler       comm_handler;
 
 #endif //BREWPANEL_COMMUNICATION_HPP

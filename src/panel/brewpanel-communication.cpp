@@ -1,4 +1,7 @@
 #include "brewpanel-communication.hpp"
+#include <time.h>
+#include <string.h>
+
 
 #pragma once
 
@@ -13,14 +16,34 @@ brewpanel_communication_create_handler(
     return(handler);
 }
 
+internal bool
+brewpanel_communication_message_queue_add(
+    comm_handler*                 comm_handler,
+    BrewPanelCommunicationMessage message) {
+
+    if (comm_handler->outgoing_message_queue.message_count < BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES) {
+
+        comm_handler->outgoing_message_queue.messages[comm_handler->outgoing_message_queue.message_count] = message;
+        ++comm_handler->outgoing_message_queue.message_count;
+
+        return(true);
+    }
+
+    return(false);
+}
+
 internal void
 brewpanel_communication_message_heartbeat_build(
-    comm_handler* comm_handler) {
+    BrewPanelCommunicationMessage* message) {
 
-    comm_handler->outgoing_message = {0};
-    comm_handler->outgoing_message.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT;
-    comm_handler->outgoing_message.payload_data[0]     = '\0';
-    comm_handler->outgoing_message.payload_size_bytes  = 1;
+    *message = {0};
+
+    message->header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
+    message->header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT;
+    message->header.message_size = sizeof(BrewPanelCommunicationMessageHeader) + 1;
+    message->header.timestamp    = (u64)time(NULL);
+    message->payload_data[0]     = '\0';
+    message->payload_size_bytes  = 1;
 }
 
 internal void
@@ -28,26 +51,45 @@ brewpanel_communication_message_buffer_build(
     BrewPanelCommunicationMessage        message,
     BrewPanelCommunicationMessageBuffer* message_buffer) {
 
+    *message_buffer = {0};
     
+    memmove(
+        message_buffer->buffer,
+        &message.header,
+        sizeof(BrewPanelCommunicationMessageHeader)
+    );
 
+    memmove(
+        &message_buffer->buffer[sizeof(BrewPanelCommunicationMessageHeader)],
+        message.payload_data,
+        message.payload_size_bytes
+    );
 }
 
 internal void
 brewpanel_communication_update(
     comm_handler* comm_handler) {
 
-    BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
-    BrewPanelCommunicationMessageBuffer incoming_message_buffer = {0};
 
+    //establish communication with the controller
     if (comm_handler->controller_handle == NULL) {
 
         comm_handler->controller_handle = brewpanel_platform_controller_handle(comm_handler->controller_info);
         
         if (comm_handler->controller_handle == NULL) {
-            brewpanel_nop();
             return;
         }
     }
+
+    //start by building the heartbeat message
+    //it will be the last message we request to get the latest
+    //data from the controller after all user requests
+    BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
+    BrewPanelCommunicationMessageBuffer incoming_message_buffer = {0};
+    BrewPanelCommunicationMessage       heartbeat_message       = {0};
+
+    brewpanel_communication_message_heartbeat_build(&heartbeat_message);
+    brewpanel_communication_message_queue_add(comm_handler,heartbeat_message);
 
     for (
         u32 message_index = 0;
