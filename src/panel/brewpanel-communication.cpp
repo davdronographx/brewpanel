@@ -36,8 +36,8 @@ internal void
 brewpanel_communication_update(
     comm_handler* comm_handler) {
 
-    BrewPanelCommunicationMessageBuffer outgoing_message_buffer;
-    BrewPanelCommunicationMessageBuffer incoming_message_buffer;
+    BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
+    BrewPanelCommunicationMessageBuffer incoming_message_buffer = {0};
 
     if (comm_handler->controller_handle == NULL) {
 
@@ -80,5 +80,7 @@ brewpanel_communication_update(
             incoming_message_buffer.buffer_size,
             &bytes_read
         );
+
+        brewpanel_nop();
     }
 }
