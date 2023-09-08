@@ -12,6 +12,7 @@
 #define BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE        368
 #define BREWPANEL_COMMUNICATION_MESSAGE_TERMINATOR         '\0'
 #define BREWPANEL_COMMUNICATION_MESSAGE_TIMEOUT_MS         1000
+#define BREWPANEL_COMMUNICATION_MESSAGE_SIZE_HEARTBEAT_ACK sizeof(BrewPanelCommunicationMessageHeader) + sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck) + 1
 
 enum BrewPanelCommunicationMessageSender : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC = 0x01,
