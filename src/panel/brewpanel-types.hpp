@@ -29,6 +29,7 @@ typedef mem_byte* mem_data;
 
 typedef void* file_handle;
 typedef void* controller_handle;
+typedef void* thread_handle;
 
 typedef char* str;
 
@@ -63,6 +64,18 @@ enum BrewPanelMode : u8 {
     BREWPANEL_MODE_BOIL = 2
 };
 typedef BrewPanelMode panel_mode;
+
+#define BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE 368
+
+struct BrewPanelControlCommData {
+    u32               bytes_written;
+    u32               bytes_read;
+    mem_byte          write_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
+    mem_byte          read_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
+    controller_handle controller;
+};
+
+typedef BrewPanelControlCommData controller_comm_data;
 
 #define brewpanel_kilobytes(value) ((u64)value * 1024)
 #define brewpanel_megabytes(value) (brewpanel_kilobytes(value) * 1024)

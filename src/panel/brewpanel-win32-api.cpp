@@ -259,7 +259,7 @@ brewpanel_win32_api_controller_handle(
 
 
                 comm_handle = CreateFile(
-                    port_name_value,
+                    "\\\\.\\COM4",
                     GENERIC_READ | GENERIC_WRITE,
                     0,
                     NULL,
@@ -286,12 +286,20 @@ brewpanel_win32_api_controller_handle(
                 comm_port_info.ByteSize = 8;
                 comm_port_info.Parity   = NOPARITY;
                 comm_port_info.StopBits = ONESTOPBIT;
-                
+
                 if(!SetCommState(comm_handle,&comm_port_info)) {
                     break;
                 }
 
-                if (!SetCommMask(comm_handle,EV_RXCHAR | EV_DSR | EV_CTS | EV_CTS | EV_ERR)) {
+                //set the timeouts
+                COMMTIMEOUTS timeouts = {0};
+                timeouts.ReadIntervalTimeout         = 50;
+                timeouts.ReadTotalTimeoutConstant    = 50;
+                timeouts.ReadTotalTimeoutMultiplier  = 10;
+                timeouts.WriteTotalTimeoutConstant   = 50;
+                timeouts.WriteTotalTimeoutMultiplier = 10;
+
+                if (!SetCommTimeouts(comm_handle, &timeouts)) {
                     break;
                 }
 
@@ -340,6 +348,8 @@ brewpanel_win32_api_controller_write(
 
 //likewise for the controller
 
+//https://aticleworld.com/serial-port-programming-using-win32-api/
+
 internal bool
 brewpanel_win32_api_controller_read(
     controller_handle controller_handle,
@@ -349,14 +359,80 @@ brewpanel_win32_api_controller_read(
 
     brewpanel_assert(read_buffer);
 
-    bool result = 
-        ReadFile(
-            controller_handle,
-            read_buffer,
-            read_buffer_size,
-            (LPDWORD)bytes_read,
-            NULL
-        );
+    if (!SetCommMask(controller_handle,EV_RXCHAR)) {
+        return false;
+    }
 
-    return (result && *bytes_read > 0);
+    DWORD event_mask = 0;
+
+    // if (!WaitCommEvent(controller_handle,&event_mask, NULL)) {
+    //     return false;
+    // }
+
+
+    DWORD loop_bytes_read = 0; 
+
+    // bool result;
+    // do {
+
+    //     result = 
+    //         ReadFile(
+    //             controller_handle,
+    //             read_buffer,
+    //             read_buffer_size,
+    //             &loop_bytes_read,
+    //             NULL
+    //     );
+
+    //     ++(*bytes_read);
+
+    // } while(loop_bytes_read > 0);
+    
+    // --(*bytes_read);
+    
+    return (*bytes_read > 0);
+}
+
+internal void
+brewpanel_win32_controller_read() {
+
+    bool thread_running = true;
+    while (thread_running) {
+
+    }
+}
+
+internal void
+brewpanel_win32_controller_write() {
+
+
+    bool thread_running = true;
+    while (thread_running) {
+
+    }
+}
+
+internal thread_handle
+brewpanel_win32_api_controller_thread_start_read(
+    controller_handle     controller,
+    controller_comm_data* comm_data) {
+    
+    SECURITY_ATTRIBUTES attributes = {0};
+
+    thread_handle thread = CreateThread(
+        &attributes,
+        0,
+        brewpanel_win32_controller_read,
+        comm_data
+    );
+
+    return(NULL);
+}
+
+internal thread_handle
+brewpanel_win32_api_controller_thread_start_write(
+    controller_handle     controller,
+    controller_comm_data* comm_data
+) {
+    return(NULL);
 }

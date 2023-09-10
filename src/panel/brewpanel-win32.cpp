@@ -234,17 +234,21 @@ wWinMain(
 
     //create the api
     platform_api = {0};
-    platform_api.memory_allocate   = brewpanel_win32_api_allocate_memory;
-    platform_api.memory_free       = brewpanel_win32_api_free_memory;
-    platform_api.file_open         = brewpanel_win32_api_open_file;
-    platform_api.file_get_size     = brewpanel_win32_api_get_file_size;
-    platform_api.file_create       = brewpanel_win32_api_create_file;
-    platform_api.file_close        = brewpanel_win32_api_close_file;
-    platform_api.file_read         = brewpanel_win32_api_read_file;
-    platform_api.file_write        = brewpanel_win32_api_write_file;
-    platform_api.system_time_get   = brewpanel_win32_api_get_system_time;
-    platform_api.controller_handle = brewpanel_win32_api_controller_handle;
-    platform_api.controller_write  = brewpanel_win32_api_controller_write;
+    platform_api.memory_allocate               = brewpanel_win32_api_allocate_memory;
+    platform_api.memory_free                   = brewpanel_win32_api_free_memory;
+    platform_api.file_open                     = brewpanel_win32_api_open_file;
+    platform_api.file_get_size                 = brewpanel_win32_api_get_file_size;
+    platform_api.file_create                   = brewpanel_win32_api_create_file;
+    platform_api.file_close                    = brewpanel_win32_api_close_file;
+    platform_api.file_read                     = brewpanel_win32_api_read_file;
+    platform_api.file_write                    = brewpanel_win32_api_write_file;
+    platform_api.system_time_get               = brewpanel_win32_api_get_system_time;
+    platform_api.controller_handle             = brewpanel_win32_api_controller_handle;
+    platform_api.controller_write              = brewpanel_win32_api_controller_write;
+    platform_api.controller_close              = brewpanel_win32_api_controller_close;
+    platform_api.controller_read               = brewpanel_win32_api_controller_read; 
+    platform_api.controller_thread_start_read  = brewpanel_win32_api_controller_thread_start_read;
+    platform_api.controller_thread_start_write = brewpanel_win32_api_controller_thread_start_write;
 
     //open the window
     WNDCLASS window_class      = {0};

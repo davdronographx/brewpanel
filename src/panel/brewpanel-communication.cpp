@@ -64,6 +64,8 @@ brewpanel_communication_message_buffer_build(
         message.payload_data,
         message.payload_size_bytes
     );
+
+    message_buffer->buffer_size = sizeof(BrewPanelCommunicationMessageHeader) + message.payload_size_bytes;
 }
 
 internal void

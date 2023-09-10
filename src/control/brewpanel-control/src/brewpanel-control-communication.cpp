@@ -58,41 +58,52 @@ brewpanel_control_communication_update(
 
     //respond to the next incoming message
     if (Serial.available()) {
+        while (Serial.available()) {
 
+            //if we have data available, read until we hit a terminator or max message size
+            bytes_read = Serial.readBytesUntil(
+                BREWPANEL_COMMUNICATION_MESSAGE_TERMINATOR,
+                serial_buffer,
+                BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE
+            );
 
-        //if we have data available, read until we hit a terminator or max message size
-        bytes_read = Serial.readBytesUntil(
-            BREWPANEL_COMMUNICATION_MESSAGE_TERMINATOR,
-            serial_buffer,
-            BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE
-        );
+            //if there's no actual data, just empty the incoming message
+            if (bytes_read == 0) {
+                comm->incoming_message = {0};
+                return;
+            }
 
-        //if there's no actual data, just empty the incoming message
-        if (bytes_read == 0) {
-            comm->incoming_message = {0};
-            return;
-        }
-
-        //otherwise, cast the data to the message type
-        comm->incoming_message = *((BrewPanelCommunicationMessage*)serial_buffer);
-        BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
-        
-        //process the request and construct a response
-        switch (comm->incoming_message.header.message_type) {
+            //otherwise, cast the data to the message type
+            comm->incoming_message = *((BrewPanelCommunicationMessage*)serial_buffer);
+            BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
             
-            case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT: {
-                brewpanel_control_communication_build_message_heartbeat_ack(
-                    &outgoing_message_buffer,
-                    temp,
-                    comm->incoming_message.header.timestamp
-                );
-            } break;
-        
-        }
+            //process the request and construct a response
+            switch (comm->incoming_message.header.message_type) {
+                
+                case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT: {
+                    brewpanel_control_communication_build_message_heartbeat_ack(
+                        &outgoing_message_buffer,
+                        temp,
+                        comm->incoming_message.header.timestamp
+                    );
+                } break;
 
-        //send the response
-        Serial.write(
-            (const char*)outgoing_message_buffer.buffer
-        );
+                default: {
+                    const char* test = "TEST\0";
+                    memmove(
+                        outgoing_message_buffer.buffer,
+                        test,
+                        5
+                    );
+                }
+                
+
+            }
+
+            //send the response
+            Serial.write(
+                (const char*)outgoing_message_buffer.buffer
+            );
+        }
     }
 }

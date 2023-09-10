@@ -189,36 +189,53 @@ typedef bool
     u64*              bytes_read     
 );
 
+typedef thread_handle
+(*func_platform_start_controller_read_thread)
+(
+    controller_handle         controller,
+    BrewPanelControlCommData* controller_comm_data
+);
+
+typedef thread_handle
+(*func_platform_start_controller_write_thread)
+(
+    BrewPanelControlCommData* controller_comm_data
+);
+
 struct BrewpanelPlatformApi {
-    func_platform_memory_allocate         memory_allocate;
-    func_platform_memory_free             memory_free;
-    func_platform_file_open               file_open;
-    func_platform_file_get_size           file_get_size;
-    func_platform_file_create             file_create;
-    func_platform_file_close              file_close;
-    func_platform_file_read               file_read;
-    func_platform_file_write              file_write;
-    func_platform_system_time             system_time_get;
-    func_platform_controller_handle       controller_handle;
-    func_platform_controller_close        controller_close;
-    func_platform_controller_write_buffer controller_write;
-    func_platform_controller_read_buffer  controller_read;
+    func_platform_memory_allocate               memory_allocate;
+    func_platform_memory_free                   memory_free;
+    func_platform_file_open                     file_open;
+    func_platform_file_get_size                 file_get_size;
+    func_platform_file_create                   file_create;
+    func_platform_file_close                    file_close;
+    func_platform_file_read                     file_read;
+    func_platform_file_write                    file_write;
+    func_platform_system_time                   system_time_get;
+    func_platform_controller_handle             controller_handle;
+    func_platform_controller_close              controller_close;
+    func_platform_controller_write_buffer       controller_write;
+    func_platform_controller_read_buffer        controller_read;
+    func_platform_start_controller_read_thread  controller_thread_start_read;
+    func_platform_start_controller_write_thread controller_thread_start_write;
 };
 
 global BrewpanelPlatformApi platform_api;
 
-#define brewpanel_platform_memory_allocate(size)                platform_api.memory_allocate(size)
-#define brewpanel_platform_memory_free(size,memory)             platform_api.memory_free(size,memory)
-#define brewpanel_platform_file_open(path)                      platform_api.file_open(path)
-#define brewpanel_platform_file_get_size(file)                  platform_api.file_get_size(file)
-#define brewpanel_platform_file_create(path)                    platform_api.file_create(path)
-#define brewpanel_platform_file_close(file)                     platform_api.file_close(file)
-#define brewpanel_platform_file_read(file,buffer,size,offset)   platform_api.file_read(file,buffer,size,offset)
-#define brewpanel_platform_file_write(file,buffer,size,offset)  platform_api.file_write(file,buffer,size,offset)
-#define brewpanel_platform_system_time_get()                    platform_api.system_time_get()
-#define brewpanel_platform_controller_handle(info)              platform_api.controller_handle(info)
-#define brewpanel_platform_controller_close(handle)             platform_api.controller_close(handle)
-#define brewpanel_platform_controller_write(handle,buffer,size) platform_api.controller_write(handle,buffer,size)
-#define brewpanel_platform_controller_read(handle,buffer,size,bytes_read)  platform_api.controller_read(handle,buffer,size,bytes_read);
+#define brewpanel_platform_memory_allocate(size)                          platform_api.memory_allocate(size)
+#define brewpanel_platform_memory_free(size,memory)                       platform_api.memory_free(size,memory)
+#define brewpanel_platform_file_open(path)                                platform_api.file_open(path)
+#define brewpanel_platform_file_get_size(file)                            platform_api.file_get_size(file)
+#define brewpanel_platform_file_create(path)                              platform_api.file_create(path)
+#define brewpanel_platform_file_close(file)                               platform_api.file_close(file)
+#define brewpanel_platform_file_read(file,buffer,size,offset)             platform_api.file_read(file,buffer,size,offset)
+#define brewpanel_platform_file_write(file,buffer,size,offset)            platform_api.file_write(file,buffer,size,offset)
+#define brewpanel_platform_system_time_get()                              platform_api.system_time_get()
+#define brewpanel_platform_controller_handle(info)                        platform_api.controller_handle(info)
+#define brewpanel_platform_controller_close(handle)                       platform_api.controller_close(handle)
+#define brewpanel_platform_controller_write(handle,buffer,size)           platform_api.controller_write(handle,buffer,size)
+#define brewpanel_platform_controller_read(handle,buffer,size,bytes_read) platform_api.controller_read(handle,buffer,size,bytes_read);
+#define brewpanel_platform_controller_thread_start_read(data)             platform_api.controller_thread_start_read(handle,data)
+#define brewpanel_platform_controller_thread_start_write(data)            platform_api.controller_thread_start_write(handle,data)
 
 #endif //BREWPANEL_PLATFORM_API_HPP
