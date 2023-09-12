@@ -264,7 +264,7 @@ brewpanel_win32_api_controller_handle(
                     0,
                     NULL,
                     OPEN_EXISTING,
-                    0,
+                    FILE_FLAG_OVERLAPPED,
                     NULL
                 );
 
@@ -393,28 +393,61 @@ brewpanel_win32_api_controller_read(
     return (*bytes_read > 0);
 }
 
-internal void
-brewpanel_win32_controller_read() {
+internal DWORD WINAPI
+brewpanel_win32_controller_read(LPVOID payload) {
+
+    controller_comm_data* comm_data = (controller_comm_data*)payload;
+    OVERLAPPED overlapped_reader = {0};
+    overlapped_reader.hEvent = CreateEvent(NULL,TRUE,FALSE,NULL);
+
+    brewpanel_assert(overlapped_reader.hEvent);
+
+    bool waiting_on_read = FALSE;
+
+    DWORD bytes_read_local = 0;
 
     bool thread_running = true;
     while (thread_running) {
 
+        if (comm_data->controller && !waiting_on_read) {
+
+            if (!ReadFile(
+                comm_data->controller,
+                comm_data->read_buffer,
+                BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE,
+                &bytes_read_local,
+                &overlapped_reader)) {
+
+                waiting_on_read = (GetLastError() == ERROR_IO_PENDING);
+            }
+        }
     }
+
+    return(NULL);
 }
 
-internal void
-brewpanel_win32_controller_write() {
+internal DWORD WINAPI
+brewpanel_win32_controller_write(LPVOID payload) {
+
+    controller_comm_data* comm_data = (controller_comm_data*)payload;
 
 
     bool thread_running = true;
     while (thread_running) {
 
+        if (comm_data->controller && comm_data->bytes_to_write > 0) {
+
+            
+
+
+        }
     }
+
+    return(NULL);
 }
 
 internal thread_handle
 brewpanel_win32_api_controller_thread_start_read(
-    controller_handle     controller,
     controller_comm_data* comm_data) {
     
     SECURITY_ATTRIBUTES attributes = {0};
@@ -423,16 +456,28 @@ brewpanel_win32_api_controller_thread_start_read(
         &attributes,
         0,
         brewpanel_win32_controller_read,
-        comm_data
+        comm_data,
+        NULL,
+        NULL
     );
 
-    return(NULL);
+    return(thread);
 }
 
 internal thread_handle
 brewpanel_win32_api_controller_thread_start_write(
-    controller_handle     controller,
-    controller_comm_data* comm_data
-) {
-    return(NULL);
+    controller_comm_data* comm_data) {
+
+    SECURITY_ATTRIBUTES attributes = {0};
+
+    thread_handle thread = CreateThread(
+        &attributes,
+        0,
+        brewpanel_win32_controller_write,
+        comm_data,
+        NULL,
+        NULL
+    );
+
+    return(thread);
 }

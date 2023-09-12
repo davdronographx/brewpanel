@@ -47,9 +47,9 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     );
 
     //create the message handler
-    brewpanel_state->comm_handler =
-        brewpanel_communication_create_handler(
-            controller_info
+    brewpanel_communication_create_handler(
+        &brewpanel_state->comm_handler,
+        controller_info
     );
     
     //initialize the clock

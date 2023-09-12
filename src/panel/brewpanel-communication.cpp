@@ -5,15 +5,15 @@
 
 #pragma once
 
-internal comm_handler
+internal void
 brewpanel_communication_create_handler(
-    BrewPanelControllerInfo controller_info
-) {
+    BrewPanelCommunicationHandler* comm_handler,
+    BrewPanelControllerInfo        controller_info) {
 
-    comm_handler handler = {0};
-    handler.controller_info = controller_info;
-
-    return(handler);
+    *comm_handler = {0};
+    comm_handler->controller_info = controller_info;
+    comm_handler->write_thread = brewpanel_platform_controller_thread_start_write(&comm_handler->comm_data);
+    comm_handler->read_thread  = brewpanel_platform_controller_thread_start_read(&comm_handler->comm_data);
 }
 
 internal bool
@@ -74,11 +74,11 @@ brewpanel_communication_update(
 
 
     //establish communication with the controller
-    if (comm_handler->controller_handle == NULL) {
+    if (comm_handler->comm_data.controller == NULL) {
 
-        comm_handler->controller_handle = brewpanel_platform_controller_handle(comm_handler->controller_info);
+        comm_handler->comm_data.controller = brewpanel_platform_controller_handle(comm_handler->controller_info);
         
-        if (comm_handler->controller_handle == NULL) {
+        if (comm_handler->comm_data.controller == NULL) {
             return;
         }
     }
@@ -107,19 +107,19 @@ brewpanel_communication_update(
 
         //send the message
         if (!brewpanel_platform_controller_write(
-            comm_handler->controller_handle,
+            comm_handler->comm_data.controller,
             outgoing_message_buffer.buffer,
             outgoing_message_buffer.buffer_size
         )) {
-            brewpanel_platform_controller_close(comm_handler->controller_handle);
-            comm_handler->controller_handle = NULL;
+            brewpanel_platform_controller_close(comm_handler->comm_data.controller);
+            comm_handler->comm_data.controller = NULL;
             break;  
         }
 
         //get any replies
         u64 bytes_read = 0;
         brewpanel_platform_controller_read(
-            comm_handler->controller_handle,
+            comm_handler->comm_data.controller,
             incoming_message_buffer.buffer,
             incoming_message_buffer.buffer_size,
             &bytes_read

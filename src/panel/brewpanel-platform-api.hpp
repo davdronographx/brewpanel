@@ -192,7 +192,6 @@ typedef bool
 typedef thread_handle
 (*func_platform_start_controller_read_thread)
 (
-    controller_handle         controller,
     BrewPanelControlCommData* controller_comm_data
 );
 
@@ -235,7 +234,7 @@ global BrewpanelPlatformApi platform_api;
 #define brewpanel_platform_controller_close(handle)                       platform_api.controller_close(handle)
 #define brewpanel_platform_controller_write(handle,buffer,size)           platform_api.controller_write(handle,buffer,size)
 #define brewpanel_platform_controller_read(handle,buffer,size,bytes_read) platform_api.controller_read(handle,buffer,size,bytes_read);
-#define brewpanel_platform_controller_thread_start_read(data)             platform_api.controller_thread_start_read(handle,data)
-#define brewpanel_platform_controller_thread_start_write(data)            platform_api.controller_thread_start_write(handle,data)
+#define brewpanel_platform_controller_thread_start_read(data)             platform_api.controller_thread_start_read(data)
+#define brewpanel_platform_controller_thread_start_write(data)            platform_api.controller_thread_start_write(data)
 
 #endif //BREWPANEL_PLATFORM_API_HPP
