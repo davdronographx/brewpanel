@@ -16,6 +16,24 @@ brewpanel_control_communication_init() {
 }
 
 internal void
+brewpanel_control_communication_build_message_invalid(
+    BrewPanelCommunicationMessageBuffer* message_buffer) {
+    
+    BrewPanelCommunicationMessage message = {0};
+    message.header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
+    message.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID;
+    message.header.message_size = BREWPANEL_COMMUNICATION_MESSAGE_SIZE_INVALID;
+
+    memmove(
+        message_buffer->buffer,
+        &message.header,
+        sizeof(BrewPanelCommunicationMessageHeader)
+    );
+
+    message_buffer->buffer[BREWPANEL_COMMUNICATION_MESSAGE_SIZE_INVALID] = '\0';
+}
+
+internal void
 brewpanel_control_communication_build_message_heartbeat_ack(
     BrewPanelCommunicationMessageBuffer* message_buffer,
     BrewpanelControlTemperatureState     temp,
@@ -89,15 +107,10 @@ brewpanel_control_communication_update(
                 } break;
 
                 default: {
-                    const char* test = "TEST\0";
-                    memmove(
-                        outgoing_message_buffer.buffer,
-                        test,
-                        5
+                    brewpanel_control_communication_build_message_invalid(
+                        &outgoing_message_buffer
                     );
                 }
-                
-
             }
 
             //send the response

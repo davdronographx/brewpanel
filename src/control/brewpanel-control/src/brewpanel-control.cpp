@@ -14,9 +14,13 @@ void setup() {
 
 void loop() {
 
-    String msg = "";
+    brewpanel_control_temperature_update(
+        &control.temp
+    );
 
-    Serial.write("JUST FUCKING WORK",18);
-    delay(1000);    
+    brewpanel_control_communication_update(
+        &control.comm,
+        control.temp
+    );
 
 }
