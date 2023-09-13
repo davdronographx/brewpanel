@@ -14,13 +14,12 @@ void setup() {
 
 void loop() {
 
-    brewpanel_control_temperature_update(
-        &control.temp
-    );
+    String msg = "";
+
+    brewpanel_control_temperature_update(&control.temp);
 
     brewpanel_control_communication_update(
         &control.comm,
         control.temp
     );
-
 }

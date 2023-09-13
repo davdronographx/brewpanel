@@ -356,6 +356,7 @@ brewpanel_win32_controller_read(LPVOID payload) {
             );
 
             if (!comm_event_result) {
+                u64 error = GetLastError();
                 brewpanel_assert(GetLastError() == ERROR_IO_PENDING);
             }
 
@@ -420,26 +421,6 @@ brewpanel_win32_controller_read(LPVOID payload) {
     return(NULL);
 }
 
-internal DWORD WINAPI
-brewpanel_win32_controller_write(LPVOID payload) {
-
-    controller_comm_data* comm_data = (controller_comm_data*)payload;
-
-
-    bool thread_running = true;
-    while (thread_running) {
-
-        if (comm_data->controller && comm_data->bytes_to_write > 0) {
-
-            
-
-
-        }
-    }
-
-    return(NULL);
-}
-
 internal thread_handle
 brewpanel_win32_api_controller_thread_start_read(
     controller_comm_data* comm_data) {
@@ -458,20 +439,24 @@ brewpanel_win32_api_controller_thread_start_read(
     return(comm_data->read_thread_handle);
 }
 
-internal thread_handle
-brewpanel_win32_api_controller_thread_start_write(
-    controller_comm_data* comm_data) {
+internal bool
+brewpanel_win32_api_controller_write(
+    controller_handle controller,
+    mem_data          write_buffer,
+    u64               write_buffer_size) {
 
-    SECURITY_ATTRIBUTES attributes = {0};
+    u64 bytes_written = 0;
 
-    comm_data->write_thread_handle = CreateThread(
-        &attributes,
-        0,
-        brewpanel_win32_controller_write,
-        comm_data,
-        NULL,
-        NULL
-    );
+    OVERLAPPED overlapped = {0};
 
-    return(comm_data->write_thread_handle);
+    bool write_result = 
+        WriteFile(
+            controller,
+            write_buffer,
+            write_buffer_size,
+            (LPDWORD)((void*)&bytes_written),
+            &overlapped
+        );
+
+    return(write_result && bytes_written == write_buffer_size);
 }
