@@ -99,7 +99,7 @@ brewpanel_core_update_and_render(
 
     bool redraw = false;
 
-    // brewpanel_communication_update(&brewpanel_state->comm_handler);
+    brewpanel_communication_update(&brewpanel_state->comm_handler);
 
     brewpanel_buttons_update(
         input,

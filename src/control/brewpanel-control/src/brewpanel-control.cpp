@@ -21,7 +21,7 @@ void loop() {
 
     //     }
 
-        Serial.write("JUST FUCKING WORK");
+        Serial.write("JUST FUCKING WORK",18);
     
     
     // }

@@ -99,31 +99,31 @@ brewpanel_communication_update(
         ++message_index
     ) {
 
-        //build the outgoing message
-        brewpanel_communication_message_buffer_build(
-            comm_handler->outgoing_message_queue.messages[message_index],
-            &outgoing_message_buffer
-        );
+        // //build the outgoing message
+        // brewpanel_communication_message_buffer_build(
+        //     comm_handler->outgoing_message_queue.messages[message_index],
+        //     &outgoing_message_buffer
+        // );
 
-        //send the message
-        if (!brewpanel_platform_controller_write(
-            comm_handler->comm_data.controller,
-            outgoing_message_buffer.buffer,
-            outgoing_message_buffer.buffer_size
-        )) {
-            brewpanel_platform_controller_close(comm_handler->comm_data.controller);
-            comm_handler->comm_data.controller = NULL;
-            break;  
-        }
+        // //send the message
+        // if (!brewpanel_platform_controller_write(
+        //     comm_handler->comm_data.controller,
+        //     outgoing_message_buffer.buffer,
+        //     outgoing_message_buffer.buffer_size
+        // )) {
+        //     brewpanel_platform_controller_close(comm_handler->comm_data.controller);
+        //     comm_handler->comm_data.controller = NULL;
+        //     break;  
+        // }
 
-        //get any replies
-        u64 bytes_read = 0;
-        brewpanel_platform_controller_read(
-            comm_handler->comm_data.controller,
-            incoming_message_buffer.buffer,
-            incoming_message_buffer.buffer_size,
-            &bytes_read
-        );
+        // //get any replies
+        // u64 bytes_read = 0;
+        // brewpanel_platform_controller_read(
+        //     comm_handler->comm_data.controller,
+        //     incoming_message_buffer.buffer,
+        //     incoming_message_buffer.buffer_size,
+        //     &bytes_read
+        // );
 
         brewpanel_nop();
     }

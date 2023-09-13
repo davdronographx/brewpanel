@@ -407,18 +407,25 @@ brewpanel_win32_controller_read(LPVOID payload) {
     DWORD bytes_read_local = 0;
 
     bool thread_running = true;
+
+    char buffer[512];
+
     while (thread_running) {
 
-        if (comm_data->controller && !waiting_on_read) {
+        bool controller_connected = comm_data->controller != NULL; 
+
+        if (controller_connected) {
 
             if (!ReadFile(
                 comm_data->controller,
-                comm_data->read_buffer,
+                buffer,
                 BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE,
                 &bytes_read_local,
                 &overlapped_reader)) {
 
                 waiting_on_read = (GetLastError() == ERROR_IO_PENDING);
+                *buffer = {0};
+                brewpanel_nop();
             }
         }
     }
