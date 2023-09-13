@@ -257,7 +257,6 @@ brewpanel_win32_api_controller_handle(
                 char comm_port_name[16] = {0};
                 sprintf(comm_port_name,"\\\\\\\\.\\\\%s",port_name_value);
 
-
                 comm_handle = CreateFile(
                     "\\\\.\\COM4",
                     GENERIC_READ | GENERIC_WRITE,
@@ -274,32 +273,38 @@ brewpanel_win32_api_controller_handle(
                 }
 
                 //update the port settings
-                DCB comm_port_info = {0};
-                SecureZeroMemory(&comm_port_info, sizeof(DCB));
-                comm_port_info.DCBlength = sizeof(DCB);
+                char mode_str[128];
+                strcpy(mode_str,"baud=9600 data=8 parity=n stop=1 xon=off to=off odsr=off dtr=on rts=on");
+                DCB comm_port_settings = {0};
+                SecureZeroMemory(&comm_port_settings, sizeof(DCB));
+                comm_port_settings.DCBlength = sizeof(DCB);
 
-                if(!GetCommState(comm_handle,&comm_port_info)) {
+                if (!BuildCommDCBA(mode_str,&comm_port_settings)) {
+                    CloseHandle(comm_handle);
                     break;
                 }
 
-                comm_port_info.BaudRate = CBR_9600;
-                comm_port_info.ByteSize = 8;
-                comm_port_info.Parity   = NOPARITY;
-                comm_port_info.StopBits = ONESTOPBIT;
-
-                if(!SetCommState(comm_handle,&comm_port_info)) {
+                if (!SetCommState(comm_handle,&comm_port_settings)) {
+                    CloseHandle(comm_handle);
                     break;
                 }
 
                 //set the timeouts
                 COMMTIMEOUTS timeouts = {0};
-                timeouts.ReadIntervalTimeout         = 50;
-                timeouts.ReadTotalTimeoutConstant    = 50;
-                timeouts.ReadTotalTimeoutMultiplier  = 10;
-                timeouts.WriteTotalTimeoutConstant   = 50;
-                timeouts.WriteTotalTimeoutMultiplier = 10;
+                timeouts.ReadIntervalTimeout         = MAXDWORD;
+                timeouts.ReadTotalTimeoutConstant    = 0;
+                timeouts.ReadTotalTimeoutMultiplier  = 0;
+                timeouts.WriteTotalTimeoutConstant   = 0;
+                timeouts.WriteTotalTimeoutMultiplier = 0;
 
                 if (!SetCommTimeouts(comm_handle, &timeouts)) {
+                    CloseHandle(comm_handle);
+                    break;
+                }
+
+                //tell the ports we are interested in monitoring
+                if (!SetCommMask(comm_handle,EV_TXEMPTY |EV_RXCHAR)) {
+                    CloseHandle(comm_handle);
                     break;
                 }
 
@@ -319,79 +324,11 @@ brewpanel_win32_api_controller_close(
 }
 
 //https://www.xanthium.in/Serial-Port-Programming-using-Win32-API#:~:text=SetCommTimeouts()%20function.-,Writing%20Data%20to%20Serial%20Port,files%20and%20I%2FO%20ports.&text=%2F%2FBytes%20written-,NULL)%3B,(I%20am%20using%20USB2SERIAL).
-
-internal bool
-brewpanel_win32_api_controller_write(
-    controller_handle controller_handle,
-    mem_data          write_buffer,
-    u64               write_buffer_size) {
-
-    brewpanel_assert(write_buffer);
-
-    DWORD bytes_written = 0;
-
-    bool result =
-        WriteFile(
-            controller_handle,
-            write_buffer,
-            write_buffer_size,
-            &bytes_written,
-            NULL
-    );
-
-    return(result && bytes_written == write_buffer_size);
-}
-
 //https://gist.github.com/DavidEGrayson/5e5bb95ae291cdfdffd4
-//TODO: for reading from a serial port, we may need a thread with a callback 
-//for whenever we detect any data on the port
-
-//likewise for the controller
-
 //https://aticleworld.com/serial-port-programming-using-win32-api/
-
-internal bool
-brewpanel_win32_api_controller_read(
-    controller_handle controller_handle,
-    mem_data          read_buffer,
-    u64               read_buffer_size,
-    u64*              bytes_read) {
-
-    brewpanel_assert(read_buffer);
-
-    if (!SetCommMask(controller_handle,EV_RXCHAR)) {
-        return false;
-    }
-
-    DWORD event_mask = 0;
-
-    // if (!WaitCommEvent(controller_handle,&event_mask, NULL)) {
-    //     return false;
-    // }
-
-
-    DWORD loop_bytes_read = 0; 
-
-    // bool result;
-    // do {
-
-    //     result = 
-    //         ReadFile(
-    //             controller_handle,
-    //             read_buffer,
-    //             read_buffer_size,
-    //             &loop_bytes_read,
-    //             NULL
-    //     );
-
-    //     ++(*bytes_read);
-
-    // } while(loop_bytes_read > 0);
-    
-    // --(*bytes_read);
-    
-    return (*bytes_read > 0);
-}
+//https://learn.microsoft.com/en-us/previous-versions/ff802693(v=msdn.10)?redirectedfrom=MSDN
+//https://forums.codeguru.com/showthread.php?542379-RESOLVED-Overlapped-serial-comunication
+//https://www.codeproject.com/Articles/2682/Serial-Communication-in-Windows
 
 internal DWORD WINAPI
 brewpanel_win32_controller_read(LPVOID payload) {
@@ -400,32 +337,58 @@ brewpanel_win32_controller_read(LPVOID payload) {
     OVERLAPPED overlapped_reader = {0};
     overlapped_reader.hEvent = CreateEvent(NULL,TRUE,FALSE,NULL);
 
-    brewpanel_assert(overlapped_reader.hEvent);
+    HANDLE event_handles[2];
+    event_handles[0] = comm_data->read_thread_handle;
+    event_handles[1] = overlapped_reader.hEvent; 
 
-    bool waiting_on_read = FALSE;
+    //TODO: not sure if i'm supposed to set this
+    u64 event_mask = EV_TXEMPTY | EV_RXCHAR; 
 
-    DWORD bytes_read_local = 0;
+    while (true) {
 
-    bool thread_running = true;
+        if (comm_data->controller) {
 
-    char buffer[512];
+            bool comm_event_result = 
+                WaitCommEvent(
+                    comm_data->controller,
+                    (LPDWORD)((void*)&event_mask),
+                    &overlapped_reader
+            );
 
-    while (thread_running) {
+            if (!comm_event_result) {
+                brewpanel_assert(GetLastError() == ERROR_IO_PENDING);
+            }
 
-        bool controller_connected = comm_data->controller != NULL; 
 
-        if (controller_connected) {
+            bool wait_result = WaitForMultipleObjects(
+                2,event_handles,FALSE,INFINITE
+            );
 
-            if (!ReadFile(
-                comm_data->controller,
-                buffer,
-                BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE,
-                &bytes_read_local,
-                &overlapped_reader)) {
+            switch(wait_result) {
 
-                waiting_on_read = (GetLastError() == ERROR_IO_PENDING);
-                *buffer = {0};
-                brewpanel_nop();
+                case WAIT_OBJECT_0: {
+                    brewpanel_panic();
+                } break;
+
+                case WAIT_OBJECT_0 + 1: {
+
+                    u64 mask = 0;
+                    if (GetCommMask(comm_data->controller,(LPDWORD)((void*)&mask))) {
+                        
+                        //write event
+                        if (mask & EV_TXEMPTY) {
+                            ResetEvent(overlapped_reader.hEvent);
+                            brewpanel_nop();
+                        }
+
+                        //read event
+                        if (mask & EV_RXCHAR) {
+                            ResetEvent(overlapped_reader.hEvent);
+                            brewpanel_nop();
+                        }
+                    }
+
+                } break;
             }
         }
     }
@@ -459,7 +422,7 @@ brewpanel_win32_api_controller_thread_start_read(
     
     SECURITY_ATTRIBUTES attributes = {0};
 
-    thread_handle thread = CreateThread(
+    comm_data->read_thread_handle = CreateThread(
         &attributes,
         0,
         brewpanel_win32_controller_read,
@@ -468,7 +431,7 @@ brewpanel_win32_api_controller_thread_start_read(
         NULL
     );
 
-    return(thread);
+    return(comm_data->read_thread_handle);
 }
 
 internal thread_handle
@@ -477,7 +440,7 @@ brewpanel_win32_api_controller_thread_start_write(
 
     SECURITY_ATTRIBUTES attributes = {0};
 
-    thread_handle thread = CreateThread(
+    comm_data->write_thread_handle = CreateThread(
         &attributes,
         0,
         brewpanel_win32_controller_write,
@@ -486,5 +449,5 @@ brewpanel_win32_api_controller_thread_start_write(
         NULL
     );
 
-    return(thread);
+    return(comm_data->write_thread_handle);
 }

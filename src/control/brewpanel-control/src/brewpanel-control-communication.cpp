@@ -9,7 +9,7 @@ brewpanel_control_communication_init() {
 
     BrewPanelCommunicationHandler comm_handler = {0};
 
-    Serial.begin(BREWPANEL_CONTROL_COMMUNICATION_BAUD);
+    Serial.begin(BREWPANEL_CONTROL_COMMUNICATION_BAUD,SERIAL_8N1);
     Serial.setTimeout(BREWPANEL_COMMUNICATION_MESSAGE_TIMEOUT_MS);
 
     return(comm_handler);

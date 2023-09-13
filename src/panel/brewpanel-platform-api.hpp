@@ -213,8 +213,6 @@ struct BrewpanelPlatformApi {
     func_platform_system_time                   system_time_get;
     func_platform_controller_handle             controller_handle;
     func_platform_controller_close              controller_close;
-    func_platform_controller_write_buffer       controller_write;
-    func_platform_controller_read_buffer        controller_read;
     func_platform_start_controller_read_thread  controller_thread_start_read;
     func_platform_start_controller_write_thread controller_thread_start_write;
 };

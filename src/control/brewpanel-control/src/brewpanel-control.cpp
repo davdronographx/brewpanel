@@ -16,19 +16,7 @@ void loop() {
 
     String msg = "";
 
-    // if (Serial.available()) {
-    //     while (Serial.available()) {
+    Serial.write("JUST FUCKING WORK",18);
+    delay(1000);    
 
-    //     }
-
-        Serial.write("JUST FUCKING WORK",18);
-    
-    
-    // }
-
-    // brewpanel_control_temperature_update(&control.temp);
-    // brewpanel_control_communication_update(
-    //     &control.comm,
-    //     control.temp
-    // );
 }

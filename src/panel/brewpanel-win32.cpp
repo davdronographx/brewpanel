@@ -244,9 +244,7 @@ wWinMain(
     platform_api.file_write                    = brewpanel_win32_api_write_file;
     platform_api.system_time_get               = brewpanel_win32_api_get_system_time;
     platform_api.controller_handle             = brewpanel_win32_api_controller_handle;
-    platform_api.controller_write              = brewpanel_win32_api_controller_write;
     platform_api.controller_close              = brewpanel_win32_api_controller_close;
-    platform_api.controller_read               = brewpanel_win32_api_controller_read; 
     platform_api.controller_thread_start_read  = brewpanel_win32_api_controller_thread_start_read;
     platform_api.controller_thread_start_write = brewpanel_win32_api_controller_thread_start_write;
 
