@@ -357,7 +357,9 @@ brewpanel_win32_controller_read(LPVOID payload) {
 
             if (!comm_event_result) {
                 u64 error = GetLastError();
-                brewpanel_assert(GetLastError() == ERROR_IO_PENDING);
+                if (error != ERROR_IO_PENDING) {
+                    continue;
+                }
             }
 
 
@@ -403,7 +405,7 @@ brewpanel_win32_controller_read(LPVOID payload) {
                                         &overlapped_reader
                                     );
 
-                                    strcat((char*)comm_data->read_buffer,buffer);
+                                    // strcat((char*)comm_data->read_buffer,buffer);
                                     comm_data->bytes_read += bytes_read;
                                 
                                 } while (bytes_read > 0 );    
@@ -450,18 +452,59 @@ brewpanel_win32_api_controller_write(
     mem_data          write_buffer,
     u64               write_buffer_size) {
 
+    //create the overlapped event
+    OVERLAPPED overlapped_writer = {0};
+    overlapped_writer.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    brewpanel_assert(overlapped_writer.hEvent);
+
+    //write to the port
     u64 bytes_written = 0;
-
-    OVERLAPPED overlapped = {0};
-
     bool write_result = 
         WriteFile(
             controller,
             write_buffer,
             write_buffer_size,
             (LPDWORD)((void*)&bytes_written),
-            &overlapped
-        );
+            &overlapped_writer
+    );
 
-    return(write_result && bytes_written == write_buffer_size);
+    //if it returned immediately, we're done
+    if (write_result) {
+        return(true);
+    }
+
+    u32 error = GetLastError();
+    if (error != ERROR_IO_PENDING) {
+        CloseHandle(overlapped_writer.hEvent);
+        return false;
+    }
+
+    //wait for the pending write
+    bool wait_result = WaitForSingleObject(
+        overlapped_writer.hEvent,
+        INFINITE
+    );
+
+    bool overlapped_result = false;
+
+    switch (wait_result) {
+
+        case WAIT_OBJECT_0: {
+
+            //get the result of the overlapped write
+            bool overlapped_result = 
+                GetOverlappedResult(
+                    controller,
+                    &overlapped_writer,
+                    (LPDWORD)((void*)&bytes_written),
+                    FALSE
+            );
+
+        } break;
+
+        default: break;
+    }
+
+    CloseHandle(overlapped_writer.hEvent);
+    return(overlapped_result);
 }

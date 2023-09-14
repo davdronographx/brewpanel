@@ -1,7 +1,7 @@
 #include "brewpanel-communication.hpp"
 #include <time.h>
 #include <string.h>
-
+#include<windows.h>  
 
 #pragma once
 
@@ -11,6 +11,12 @@ brewpanel_communication_controller_read_callback(
 
     brewpanel_assert(comm_handler_payload);
     comm_handler* comm = (comm_handler*)comm_handler_payload;
+
+    memset(
+        (mem_data)comm->comm_data.write_buffer,
+        0,
+        BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE
+    );
 
     brewpanel_nop();
 }
@@ -117,16 +123,17 @@ brewpanel_communication_update(
         );
 
         // send the message
-        // if (!brewpanel_platform_controller_write(
-        //     comm_handler->comm_data.controller,
-        //     outgoing_message_buffer.buffer,
-        //     outgoing_message_buffer.buffer_size
-        // )) {
-        //     brewpanel_platform_controller_close(comm_handler->comm_data.controller);
-        //     comm_handler->comm_data.controller = NULL;
-        //     break;  
-        // }
+        if (!brewpanel_platform_controller_write(
+            comm_handler->comm_data.controller,
+            outgoing_message_buffer.buffer,
+            outgoing_message_buffer.buffer_size
+        )) {
+            brewpanel_platform_controller_close(comm_handler->comm_data.controller);
+            comm_handler->comm_data.controller = NULL;
+            break;  
+        }
 
+        Sleep(1000);
         brewpanel_nop();
     }
 }
