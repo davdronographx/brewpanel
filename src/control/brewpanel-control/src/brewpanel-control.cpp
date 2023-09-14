@@ -22,4 +22,4 @@ void loop() {
         &control.comm,
         control.temp
     );
-}
+}]

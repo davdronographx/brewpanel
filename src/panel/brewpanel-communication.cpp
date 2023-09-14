@@ -6,13 +6,25 @@
 #pragma once
 
 internal void
+brewpanel_communication_controller_read_callback(
+    mem_data comm_handler_payload) {
+
+    brewpanel_assert(comm_handler_payload);
+    comm_handler* comm = (comm_handler*)comm_handler_payload;
+
+    brewpanel_nop();
+}
+
+internal void
 brewpanel_communication_create_handler(
     BrewPanelCommunicationHandler* comm_handler,
     BrewPanelControllerInfo        controller_info) {
 
     *comm_handler = {0};
-    comm_handler->controller_info = controller_info;
-    comm_handler->read_thread     = brewpanel_platform_controller_thread_start_read(&comm_handler->comm_data);
+    comm_handler->controller_info              = controller_info;
+    comm_handler->read_thread                  = brewpanel_platform_controller_thread_start_read(&comm_handler->comm_data);
+    comm_handler->comm_data.panel_comm_handler = (mem_data)&comm_handler;
+    comm_handler->comm_data.read_callback      = brewpanel_communication_controller_read_callback;
 }
 
 internal bool
@@ -105,15 +117,15 @@ brewpanel_communication_update(
         );
 
         // send the message
-        if (!brewpanel_platform_controller_write(
-            comm_handler->comm_data.controller,
-            outgoing_message_buffer.buffer,
-            outgoing_message_buffer.buffer_size
-        )) {
-            // brewpanel_platform_controller_close(comm_handler->comm_data.controller);
-            // comm_handler->comm_data.controller = NULL;
-            // break;  
-        }
+        // if (!brewpanel_platform_controller_write(
+        //     comm_handler->comm_data.controller,
+        //     outgoing_message_buffer.buffer,
+        //     outgoing_message_buffer.buffer_size
+        // )) {
+        //     brewpanel_platform_controller_close(comm_handler->comm_data.controller);
+        //     comm_handler->comm_data.controller = NULL;
+        //     break;  
+        // }
 
         brewpanel_nop();
     }

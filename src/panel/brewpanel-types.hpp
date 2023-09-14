@@ -67,11 +67,22 @@ typedef BrewPanelMode panel_mode;
 
 #define BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE 368
 
+typedef void
+(*func_brewpanel_controller_read_callback)
+(
+    mem_data comm_data
+);
+
 struct BrewPanelControlCommData {
-    u64               bytes_read;
-    mem_byte          read_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
-    controller_handle controller;
-    thread_handle     read_thread_handle;
+    u64                                     bytes_read;
+    u64                                     bytes_written;
+    u64                                     bytes_to_write;
+    controller_handle                       controller;
+    thread_handle                           read_thread_handle;
+    mem_data                                panel_comm_handler;
+    mem_byte                                read_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
+    mem_byte                                write_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
+    func_brewpanel_controller_read_callback read_callback;
 };
 
 typedef BrewPanelControlCommData controller_comm_data;

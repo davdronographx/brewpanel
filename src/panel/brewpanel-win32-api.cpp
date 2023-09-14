@@ -385,30 +385,35 @@ brewpanel_win32_controller_read(LPVOID payload) {
                         //read event
                         if (mask & EV_RXCHAR) {
 
+                            //put the read buffer together
                             WaitCommEvent(comm_data->controller,(LPDWORD)((void*)&event_mask), &overlapped_reader) ;
                             if (WaitForSingleObject(overlapped_reader.hEvent,INFINITE) == WAIT_OBJECT_0)
                             {    
 
-                                u64 bytes_read_total = 0;
-                                char message[512] = "";
                                 u64 bytes_read = 0;
+                                char buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE] = {0};
+
                                 do
                                 {
-                                    char buffer[512] = {0};
-                                    
                                     ReadFile(
                                         comm_data->controller,
                                         buffer,
-                                        sizeof(buffer),
+                                        BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE,
                                         (LPDWORD)((void*)&bytes_read),
                                         &overlapped_reader
                                     );
 
-                                    strcat(message,buffer);
-                                    bytes_read_total += bytes_read;
-                                }while (bytes_read > 0 );    
+                                    strcat((char*)comm_data->read_buffer,buffer);
+                                    comm_data->bytes_read += bytes_read;
+                                
+                                } while (bytes_read > 0 );    
                                 brewpanel_nop();
-                            }  
+                            }
+
+                            //send the data we read to the comm handler
+                            comm_data->read_callback(comm_data->panel_comm_handler);
+
+                            //reset the overlapped event to wait for the next operation
                             ResetEvent(overlapped_reader.hEvent);
                         }
                     }
