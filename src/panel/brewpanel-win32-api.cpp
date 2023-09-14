@@ -473,38 +473,12 @@ brewpanel_win32_api_controller_write(
         return(true);
     }
 
-    u32 error = GetLastError();
-    if (error != ERROR_IO_PENDING) {
-        CloseHandle(overlapped_writer.hEvent);
-        return false;
-    }
-
     //wait for the pending write
-    bool wait_result = WaitForSingleObject(
+    WaitForSingleObject(
         overlapped_writer.hEvent,
         INFINITE
     );
 
-    bool overlapped_result = false;
-
-    switch (wait_result) {
-
-        case WAIT_OBJECT_0: {
-
-            //get the result of the overlapped write
-            bool overlapped_result = 
-                GetOverlappedResult(
-                    controller,
-                    &overlapped_writer,
-                    (LPDWORD)((void*)&bytes_written),
-                    FALSE
-            );
-
-        } break;
-
-        default: break;
-    }
-
     CloseHandle(overlapped_writer.hEvent);
-    return(overlapped_result);
+    return(true);
 }

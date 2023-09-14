@@ -76,6 +76,9 @@ brewpanel_control_communication_update(
 
     //respond to the next incoming message
     if (Serial.available()) {
+
+        Serial.write("TEST");
+
         while (Serial.available()) {
 
             //if we have data available, read until we hit a terminator or max message size

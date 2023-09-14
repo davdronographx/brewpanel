@@ -16,13 +16,13 @@ void loop() {
 
     String msg = "";
 
-    // brewpanel_control_temperature_update(&control.temp);
+    brewpanel_control_temperature_update(&control.temp);
 
-    // brewpanel_control_communication_update(
-    //     &control.comm,
-    //     control.temp
-    // );
+    brewpanel_control_communication_update(
+        &control.comm,
+        control.temp
+    );
 
-    delay(1000);
-    Serial.write("HELLO");
+    // delay(1000);
+    // Serial.write("HELLO");
 }

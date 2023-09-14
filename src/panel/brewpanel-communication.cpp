@@ -1,7 +1,6 @@
 #include "brewpanel-communication.hpp"
 #include <time.h>
 #include <string.h>
-#include<windows.h>  
 
 #pragma once
 
@@ -133,7 +132,6 @@ brewpanel_communication_update(
             break;  
         }
 
-        Sleep(1000);
         brewpanel_nop();
     }
 }
