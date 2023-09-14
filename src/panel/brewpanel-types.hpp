@@ -79,10 +79,11 @@ struct BrewPanelControlCommData {
     u64                                     bytes_to_write;
     controller_handle                       controller;
     thread_handle                           read_thread_handle;
+    thread_handle                           write_thread_handle;
     mem_data                                panel_comm_handler;
+    func_brewpanel_controller_read_callback read_callback;
     mem_byte                                read_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
     mem_byte                                write_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
-    func_brewpanel_controller_read_callback read_callback;
 };
 
 typedef BrewPanelControlCommData controller_comm_data;

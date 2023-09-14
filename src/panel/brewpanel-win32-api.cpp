@@ -446,39 +446,73 @@ brewpanel_win32_api_controller_thread_start_read(
     return(comm_data->read_thread_handle);
 }
 
-internal bool
-brewpanel_win32_api_controller_write(
-    controller_handle controller,
-    mem_data          write_buffer,
-    u64               write_buffer_size) {
+internal DWORD WINAPI
+_brewpanel_win32_api_controller_write(
+    LPVOID payload) {
+
+    controller_comm_data* comm = (controller_comm_data*)payload;
+    brewpanel_assert(comm);
 
     //create the overlapped event
     OVERLAPPED overlapped_writer = {0};
     overlapped_writer.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     brewpanel_assert(overlapped_writer.hEvent);
 
-    //write to the port
-    u64 bytes_written = 0;
-    bool write_result = 
-        WriteFile(
-            controller,
-            write_buffer,
-            write_buffer_size,
-            (LPDWORD)((void*)&bytes_written),
-            &overlapped_writer
-    );
+    while(true) {
 
-    //if it returned immediately, we're done
-    if (write_result) {
-        return(true);
+        if (comm->controller && comm->bytes_to_write > 0) {
+
+            bool write_result = 
+                WriteFile(
+                    comm->controller,
+                    comm->write_buffer,
+                    comm->bytes_to_write,
+                    (LPDWORD)((void*)&comm->bytes_written),
+                    &overlapped_writer
+            );
+
+            if (write_result) {
+                comm->bytes_to_write = 0;
+                memset(
+                    comm->write_buffer,
+                    0,
+                    BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE
+                );
+                ResetEvent(overlapped_writer.hEvent);
+                continue;
+            }
+
+            //wait for the pending write
+            WaitForSingleObject(
+                overlapped_writer.hEvent,
+                INFINITE
+            );
+
+            comm->bytes_to_write = 0;
+            memset(
+                comm->write_buffer,
+                0,
+                BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE
+            );
+            ResetEvent(overlapped_writer.hEvent);
+        }
     }
+}
 
-    //wait for the pending write
-    WaitForSingleObject(
-        overlapped_writer.hEvent,
-        INFINITE
+internal thread_handle
+brewpanel_win32_api_controller_thread_start_write(
+    controller_comm_data* comm_data) {
+    
+    SECURITY_ATTRIBUTES attributes = {0};
+
+    comm_data->read_thread_handle = CreateThread(
+        &attributes,
+        0,
+        _brewpanel_win32_api_controller_write,
+        comm_data,
+        NULL,
+        NULL
     );
 
-    CloseHandle(overlapped_writer.hEvent);
-    return(true);
+    return(comm_data->read_thread_handle);
 }

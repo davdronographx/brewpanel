@@ -181,7 +181,7 @@ typedef bool
 );
 
 typedef thread_handle
-(*func_platform_start_controller_read_thread)
+(*func_platform_start_controller_comm_thread)
 (
     BrewPanelControlCommData* controller_comm_data
 );
@@ -198,7 +198,8 @@ struct BrewpanelPlatformApi {
     func_platform_system_time                   system_time_get;
     func_platform_controller_handle             controller_handle;
     func_platform_controller_close              controller_close;
-    func_platform_start_controller_read_thread  controller_thread_start_read;
+    func_platform_start_controller_comm_thread  controller_thread_start_read;
+    func_platform_start_controller_comm_thread  controller_thread_start_write;
     func_platform_controller_write_buffer       controller_write;
 };
 
@@ -217,5 +218,6 @@ global BrewpanelPlatformApi platform_api;
 #define brewpanel_platform_controller_close(handle)                       platform_api.controller_close(handle)
 #define brewpanel_platform_controller_write(handle,buffer,size)           platform_api.controller_write(handle,buffer,size)
 #define brewpanel_platform_controller_thread_start_read(data)             platform_api.controller_thread_start_read(data)
+#define brewpanel_platform_controller_thread_start_write(data)            platform_api.controller_thread_start_write(data)
 
 #endif //BREWPANEL_PLATFORM_API_HPP
