@@ -417,6 +417,7 @@ brewpanel_win32_controller_read(LPVOID payload) {
 
                             //reset the overlapped event to wait for the next operation
                             ResetEvent(overlapped_reader.hEvent);
+                            Sleep(100);
                         }
                     }
 
@@ -495,6 +496,8 @@ _brewpanel_win32_api_controller_write(
                 BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE
             );
             ResetEvent(overlapped_writer.hEvent);
+
+            Sleep(100);
         }
     }
 }
