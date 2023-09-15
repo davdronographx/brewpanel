@@ -150,9 +150,53 @@ brewpanel_communication_message_buffer_build(
 }
 
 internal void
+brewpanel_communication_handle_messages_incoming(
+    comm_handler* comm) {
+
+    //first check our incoming messages
+    BrewPanelCommunicationMessage incoming_message = {0};
+    while (brewpanel_communication_message_queue_pop(comm,&incoming_message)) {
+
+        //TODO: handle message ACKs
+        brewpanel_nop();
+    }
+}
+
+internal void
+brewpanel_communication_handle_messages_outgoing(
+    comm_handler* comm) {
+
+    BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
+    BrewPanelCommunicationMessageBuffer incoming_message_buffer = {0};
+
+    BrewPanelCommunicationMessage outgoing_message = {0};
+    while (brewpanel_communication_message_queue_pop(comm,&outgoing_message)) {
+        
+        //wait till the buffer is free
+        // while (comm->comm_data.bytes_to_write > 0) {
+        //     brewpanel_nop();
+        // }
+
+        // build the outgoing message
+        brewpanel_communication_message_buffer_build(
+            outgoing_message,
+            &outgoing_message_buffer
+        );
+
+        //write the message to the outgoing message buffer
+        //the write thread will pick it up and clear it once its sent to the controller
+        comm->comm_data.bytes_to_write = outgoing_message_buffer.buffer_size;
+        memmove(
+            comm->comm_data.write_buffer,
+            outgoing_message_buffer.buffer,
+            outgoing_message_buffer.buffer_size
+        );
+    }
+}
+
+internal void
 brewpanel_communication_update(
     comm_handler* comm_handler) {
-
 
     //establish communication with the controller
     if (comm_handler->comm_data.controller == NULL) {
@@ -164,47 +208,16 @@ brewpanel_communication_update(
         }
     }
 
-    //first check our incoming messages
-    BrewPanelCommunicationMessage incoming_message = {0};
-    while (brewpanel_communication_message_queue_pop(comm_handler,&incoming_message)) {
-
-        //TODO: handle message ACKs
-        brewpanel_nop();
-    }
-
-
     //start by building the heartbeat message
     //it will be the last message we request to get the latest
     //data from the controller after all user requests
-    BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
-    BrewPanelCommunicationMessageBuffer incoming_message_buffer = {0};
-    BrewPanelCommunicationMessage       heartbeat_message       = {0};
-
+    BrewPanelCommunicationMessage heartbeat_message = {0};
     brewpanel_communication_message_heartbeat_build(&heartbeat_message);
     brewpanel_communication_message_queue_push(comm_handler,heartbeat_message);
-    
 
-    BrewPanelCommunicationMessage outgoing_message = {0};
-    while (brewpanel_communication_message_queue_pop(comm_handler,&outgoing_message)) {
-        
-        //wait till the buffer is free
-        while (comm_handler->comm_data.bytes_to_write > 0) {
-            brewpanel_nop();
-        }
+    //handle outgoing messages
+    brewpanel_communication_handle_messages_outgoing(comm_handler);
 
-        // build the outgoing message
-        brewpanel_communication_message_buffer_build(
-            outgoing_message,
-            &outgoing_message_buffer
-        );
-
-        //write the message to the outgoing message buffer
-        //the write thread will pick it up and clear it once its sent to the controller
-        comm_handler->comm_data.bytes_to_write = outgoing_message_buffer.buffer_size;
-        memmove(
-            comm_handler->comm_data.write_buffer,
-            outgoing_message_buffer.buffer,
-            outgoing_message_buffer.buffer_size
-        );
-    }
+    //handle incoming messages
+    brewpanel_communication_handle_messages_incoming(comm_handler);
 }

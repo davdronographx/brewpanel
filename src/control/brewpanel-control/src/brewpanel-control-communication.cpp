@@ -90,7 +90,7 @@ brewpanel_control_communication_update(
 
     //otherwise, cast the data to the message type
     if (bytes_read > 0) {
-        delay(1000);
+        delay(10);
         Serial.write("ASDF");
 
     }
