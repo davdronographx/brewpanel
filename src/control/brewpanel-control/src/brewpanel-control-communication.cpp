@@ -76,8 +76,6 @@ brewpanel_control_communication_update(
 
     while(Serial.available()) {
         
-        delay(10);
-
         if (Serial.available() > 0) {
             
             char c = Serial.read();
@@ -90,36 +88,39 @@ brewpanel_control_communication_update(
         }
     }
 
-    //if there's no actual data, just empty the incoming message
-    if (bytes_read == 0) {
-        comm->incoming_message = {0};
-        return;
-    }
-
     //otherwise, cast the data to the message type
-    comm->incoming_message = *((BrewPanelCommunicationMessage*)serial_buffer);
-    BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
-    
-    //process the request and construct a response
-    switch (comm->incoming_message.header.message_type) {
-        
-        case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT: {
-            brewpanel_control_communication_build_message_heartbeat_ack(
-                &outgoing_message_buffer,
-                temp,
-                comm->incoming_message.header.timestamp
-            );
-        } break;
+    if (bytes_read > 0) {
+        delay(1000);
+        Serial.write("ASDF");
 
-        default: {
-            brewpanel_control_communication_build_message_invalid(
-                &outgoing_message_buffer
-            );
-        }
     }
 
-    //send the response
-    Serial.write(
-        (const char*)outgoing_message_buffer.buffer
-    );
+    // //if there's no actual data, just empty the incoming message
+    // if (bytes_read == 0) {
+    //     comm->incoming_message = {0};
+    //     return;
+    // }
+
+    // //process the request and construct a response
+    // switch (comm->incoming_message.header.message_type) {
+        
+    //     case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT: {
+    //         brewpanel_control_communication_build_message_heartbeat_ack(
+    //             &outgoing_message_buffer,
+    //             temp,
+    //             comm->incoming_message.header.timestamp
+    //         );
+    //     } break;
+
+    //     default: {
+    //         brewpanel_control_communication_build_message_invalid(
+    //             &outgoing_message_buffer
+    //         );
+    //     }
+    // }
+
+    // //send the response
+    // Serial.write(
+    //     (const char*)outgoing_message_buffer.buffer
+    // );
 }

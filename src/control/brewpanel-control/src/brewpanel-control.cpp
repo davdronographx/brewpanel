@@ -22,14 +22,10 @@ void loop() {
         control.temp
     );
 
-    // delay(1000);
-    // Serial.write("HELLO");
-
     // mem_byte read_buffer[BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE];
     // u32 bytes_read = 0;
 
     // while (Serial.available()) {
-    //     delay(10);
         
     //     if (Serial.available() > 0) {
             
@@ -45,7 +41,11 @@ void loop() {
 
     // if (bytes_read > 0) {
     //     Serial.write("ASDF");
-    //     delay(100);
+    //     // delay(100);
     // }
+
+    // // Serial.write("ASDF");
+    // // delay(1000);
+
 
 }

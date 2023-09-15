@@ -274,7 +274,7 @@ brewpanel_win32_api_controller_handle(
 
                 //update the port settings
                 char mode_str[128];
-                strcpy(mode_str,"baud=9600 data=8 parity=n stop=1 xon=off to=off odsr=off dtr=on rts=on");
+                strcpy(mode_str,"baud=115200 data=8 parity=n stop=1 xon=off to=off odsr=off dtr=on rts=on");
                 DCB comm_port_settings = {0};
                 SecureZeroMemory(&comm_port_settings, sizeof(DCB));
                 comm_port_settings.DCBlength = sizeof(DCB);
@@ -405,19 +405,19 @@ brewpanel_win32_controller_read(LPVOID payload) {
                                         &overlapped_reader
                                     );
 
-                                    // strcat((char*)comm_data->read_buffer,buffer);
+                                    strcat((char*)comm_data->read_buffer,buffer);
                                     comm_data->bytes_read += bytes_read;
                                 
                                 } while (bytes_read > 0 );    
-                                brewpanel_nop();
+                            
+                                if (comm_data->bytes_read > 0) {
+                                    //send the data we read to the comm handler
+                                    comm_data->read_callback(comm_data->panel_comm_handler);
+                                }
                             }
-
-                            //send the data we read to the comm handler
-                            comm_data->read_callback(comm_data->panel_comm_handler);
 
                             //reset the overlapped event to wait for the next operation
                             ResetEvent(overlapped_reader.hEvent);
-                            Sleep(100);
                         }
                     }
 
@@ -461,7 +461,7 @@ _brewpanel_win32_api_controller_write(
 
     while(true) {
 
-        if (comm->controller && comm->bytes_to_write > 0) {
+        if (comm->controller) {
 
             bool write_result = 
                 WriteFile(
@@ -495,9 +495,9 @@ _brewpanel_win32_api_controller_write(
                 0,
                 BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE
             );
+                
             ResetEvent(overlapped_writer.hEvent);
 
-            Sleep(100);
         }
     }
 }
