@@ -40,29 +40,29 @@ brewpanel_control_communication_build_message_heartbeat_ack(
     u64 timestamp) {
 
     BrewPanelCommunicationMessage message = {0};
-    message.header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
-    message.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
-    message.header.message_size = BREWPANEL_COMMUNICATION_MESSAGE_SIZE_HEARTBEAT_ACK;
-    message.header.timestamp    = timestamp;
+    // message.header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
+    // message.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
+    // message.header.message_size = BREWPANEL_COMMUNICATION_MESSAGE_SIZE_HEARTBEAT_ACK;
+    // message.header.timestamp    = timestamp;
 
-    BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat_ack = {0};
-    heartbeat_ack.hlt_element_temp  = temp.hlt_temp;
-    heartbeat_ack.mlt_element_temp  = temp.mlt_set_temp;
-    heartbeat_ack.boil_element_temp = temp.boil_temp;
+    // BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat_ack = {0};
+    // heartbeat_ack.hlt_element_temp  = temp.hlt_temp;
+    // heartbeat_ack.mlt_element_temp  = temp.mlt_set_temp;
+    // heartbeat_ack.boil_element_temp = temp.boil_temp;
 
-    memmove(
-        message_buffer->buffer,
-        &message.header,
-        sizeof(BrewPanelCommunicationMessageHeader)
-    );
+    // memmove(
+    //     message_buffer->buffer,
+    //     &message.header,
+    //     sizeof(BrewPanelCommunicationMessageHeader)
+    // );
 
-    memmove(
-        &message_buffer->buffer[sizeof(BrewPanelCommunicationMessageHeader)],
-        &heartbeat_ack,
-        sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck)
-    );
+    // memmove(
+    //     &message_buffer->buffer[sizeof(BrewPanelCommunicationMessageHeader)],
+    //     &heartbeat_ack,
+    //     sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck)
+    // );
 
-    message_buffer->buffer[BREWPANEL_COMMUNICATION_MESSAGE_SIZE_HEARTBEAT_ACK] = '\0';
+    // message_buffer->buffer[BREWPANEL_COMMUNICATION_MESSAGE_SIZE_HEARTBEAT_ACK] = '\0';
 }
 
 
@@ -71,55 +71,20 @@ brewpanel_control_communication_update(
     BrewPanelCommunicationHandler*   comm,
     BrewpanelControlTemperatureState temp) {
 
-    mem_byte serial_buffer[BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE] = {0};
-    u32 bytes_read = 0;
-
-    while(Serial.available()) {
-        
-        delay(10);
-
-        if (Serial.available() > 0) {
-            
-            char c = Serial.read();
-            serial_buffer[bytes_read] = c;
-            ++bytes_read;
-
-            if (c == '\0') {
-                break;
-            }
-        }
-    }
-
-    //if there's no actual data, just empty the incoming message
-    if (bytes_read == 0) {
-        comm->incoming_message = {0};
-        return;
-    }
-
-    //otherwise, cast the data to the message type
-    comm->incoming_message = *((BrewPanelCommunicationMessage*)serial_buffer);
     BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
     
-    //process the request and construct a response
-    switch (comm->incoming_message.header.message_type) {
-        
-        case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT: {
-            brewpanel_control_communication_build_message_heartbeat_ack(
-                &outgoing_message_buffer,
-                temp,
-                comm->incoming_message.header.timestamp
-            );
-        } break;
-
-        default: {
-            brewpanel_control_communication_build_message_invalid(
-                &outgoing_message_buffer
-            );
-        }
-    }
-
-    //send the response
-    Serial.write(
-        (const char*)outgoing_message_buffer.buffer
+    brewpanel_control_communication_build_message_heartbeat_ack(
+        &outgoing_message_buffer,
+        temp,
+        comm->incoming_message.header.timestamp
     );
+
+    // //send the response
+    // Serial.flush();
+    // Serial.write(
+    //     (const char*)outgoing_message_buffer.buffer
+    // );
+
+    Serial.flush();
+    Serial.write("test");
 }

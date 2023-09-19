@@ -508,14 +508,14 @@ brewpanel_win32_api_controller_thread_start_write(
     
     SECURITY_ATTRIBUTES attributes = {0};
 
-    comm_data->read_thread_handle = CreateThread(
-        &attributes,
-        0,
-        _brewpanel_win32_api_controller_write,
-        comm_data,
-        NULL,
-        NULL
-    );
+    // comm_data->read_thread_handle = CreateThread(
+    //     &attributes,
+    //     0,
+    //     _brewpanel_win32_api_controller_write,
+    //     comm_data,
+    //     NULL,
+    //     NULL
+    // );
 
     return(comm_data->read_thread_handle);
 }

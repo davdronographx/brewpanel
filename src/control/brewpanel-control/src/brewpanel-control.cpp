@@ -22,6 +22,8 @@ void loop() {
         control.temp
     );
 
+    delay(1000);
+
     // delay(1000);
     // Serial.write("HELLO");
 
