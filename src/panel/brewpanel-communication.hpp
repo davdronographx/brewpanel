@@ -82,6 +82,7 @@ struct BrewPanelCommunicationMessageQueue {
 
 struct BrewPanelCommunicationHandler {
     BrewPanelCommunicationMessageQueue               outgoing_message_queue;
+    BrewPanelCommunicationMessageQueue               incoming_message_queue;
     BrewPanelControllerInfo                          controller_info;
     BrewPanelCommunicationMessagePayloadHeartBeatAck latest_heartbeat;
     thread_handle                                    read_thread;
