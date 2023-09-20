@@ -5,7 +5,7 @@
 
 #include "brewpanel-control-types.hpp"
 
-#define BREWPANEL_CONTROL_COMMUNICATION_BAUD 115200 
+#define BREWPANEL_CONTROL_COMMUNICATION_BAUD 9600 
 
 #define BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES 8
 #define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE   256
@@ -68,21 +68,24 @@ enum BrewPanelCommunicationTimerStatus : u8 {
 };
 
 struct BrewPanelCommunicationMessageBuffer {
-    u32      buffer_size;
-    mem_byte buffer[BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE];
+    u32       buffer_size;
+    mem_byte  buffer[BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE];
 };
 
 
 struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
-    u8  hlt_element_temp;
-    u8  mlt_element_temp;
-    u8  boil_element_temp;
-    u8  panel_mode;
-    u8  water_pump_status;
-    u8  wort_pump_status;
-    u8  timer_status;
-    u64 timer_set_point_ms;
-    u64 timer_elapsed_ms;
+    uint8_t  hlt_element_temp;
+    uint8_t  mlt_element_temp;
+    uint8_t  boil_element_temp;
+    uint8_t  panel_mode;
+    uint8_t  water_pump_status;
+    uint8_t  wort_pump_status;
+    uint8_t  timer_status;
+};
+
+union BufferTest {
+    char buffer[sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck)];
+    BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat;
 };
 
 struct BrewPanelCommunicationMessageQueue {

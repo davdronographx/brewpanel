@@ -30,7 +30,7 @@ brewpanel_control_communication_build_message_invalid(
         sizeof(BrewPanelCommunicationMessageHeader)
     );
 
-    message_buffer->buffer[BREWPANEL_COMMUNICATION_MESSAGE_SIZE_INVALID] = '\0';
+    // message_buffer->buffer[BREWPANEL_COMMUNICATION_MESSAGE_SIZE_INVALID] = '\0';
 }
 
 internal void
@@ -39,16 +39,24 @@ brewpanel_control_communication_build_message_heartbeat_ack(
     BrewpanelControlTemperatureState     temp,
     u64 timestamp) {
 
-    BrewPanelCommunicationMessage message = {0};
-    // message.header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
-    // message.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
-    // message.header.message_size = BREWPANEL_COMMUNICATION_MESSAGE_SIZE_HEARTBEAT_ACK;
-    // message.header.timestamp    = timestamp;
+    char mem_buffer[64];
 
-    // BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat_ack = {0};
-    // heartbeat_ack.hlt_element_temp  = temp.hlt_temp;
-    // heartbeat_ack.mlt_element_temp  = temp.mlt_set_temp;
-    // heartbeat_ack.boil_element_temp = temp.boil_temp;
+    BrewPanelCommunicationMessage message = {0};
+    message.header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
+    message.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
+    message.header.message_size = BREWPANEL_COMMUNICATION_MESSAGE_SIZE_HEARTBEAT_ACK;
+    message.header.timestamp    = timestamp;
+
+    BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat_ack = {0};
+    heartbeat_ack.hlt_element_temp  = temp.hlt_temp;
+    heartbeat_ack.mlt_element_temp  = temp.mlt_set_temp;
+    heartbeat_ack.boil_element_temp = temp.boil_temp;
+
+    u16 heartbeat_size = sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck); 
+
+    BufferTest test = {0};
+    test.heartbeat = heartbeat_ack;
+    Serial.write(test.buffer,sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck));
 
     // memmove(
     //     message_buffer->buffer,
@@ -57,7 +65,7 @@ brewpanel_control_communication_build_message_heartbeat_ack(
     // );
 
     // memmove(
-    //     &message_buffer->buffer[sizeof(BrewPanelCommunicationMessageHeader)],
+    //     message_buffer->buffer,
     //     &heartbeat_ack,
     //     sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck)
     // );
@@ -72,19 +80,18 @@ brewpanel_control_communication_update(
     BrewpanelControlTemperatureState temp) {
 
     BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
-    
+
     brewpanel_control_communication_build_message_heartbeat_ack(
         &outgoing_message_buffer,
         temp,
-        comm->incoming_message.header.timestamp
+        0L      
     );
 
     // //send the response
-    // Serial.flush();
+    Serial.flush();
     // Serial.write(
     //     (const char*)outgoing_message_buffer.buffer
     // );
 
-    Serial.flush();
     Serial.write("test");
 }

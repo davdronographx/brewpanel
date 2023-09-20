@@ -274,7 +274,7 @@ brewpanel_win32_api_controller_handle(
 
                 //update the port settings
                 char mode_str[128];
-                strcpy(mode_str,"baud=115200 data=8 parity=n stop=1 xon=off to=off odsr=off dtr=on rts=on");
+                strcpy(mode_str,"baud=19200 data=8 parity=n stop=1 xon=off to=off odsr=off dtr=on rts=on");
                 DCB comm_port_settings = {0};
                 SecureZeroMemory(&comm_port_settings, sizeof(DCB));
                 comm_port_settings.DCBlength = sizeof(DCB);
@@ -395,22 +395,19 @@ brewpanel_win32_controller_read(LPVOID payload) {
                                 u64 bytes_read = 0;
                                 char buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE] = {0};
 
-                                do
-                                {
-                                    ReadFile(
-                                        comm_data->controller,
-                                        buffer,
-                                        BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE,
-                                        (LPDWORD)((void*)&bytes_read),
-                                        &overlapped_reader
-                                    );
-
-                                    strcat((char*)comm_data->read_buffer,buffer);
-                                    comm_data->bytes_read += bytes_read;
-                                
-                                } while (bytes_read > 0 );    
+                                ReadFile(
+                                    comm_data->controller,
+                                    buffer,
+                                    BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE,
+                                    (LPDWORD)((void*)&bytes_read),
+                                    &overlapped_reader
+                                );
                             
-                                if (comm_data->bytes_read > 0) {
+                                if (bytes_read > 0) {
+    
+                                    comm_data->bytes_read = bytes_read;
+                                    strcat((char*)comm_data->read_buffer,buffer);
+
                                     //send the data we read to the comm handler
                                     comm_data->read_callback(comm_data->panel_comm_handler);
                                 }

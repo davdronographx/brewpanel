@@ -15,12 +15,19 @@ void setup() {
 void loop() {
 
 
-    brewpanel_control_temperature_update(&control.temp);
+    // brewpanel_control_temperature_update(&control.temp);
 
-    brewpanel_control_communication_update(
-        &control.comm,
-        control.temp
-    );
+    // brewpanel_control_communication_update(
+    //     &control.comm,
+    //     control.temp
+    // );
+
+    BufferTest test = {0};
+    test.heartbeat.boil_element_temp = 111;
+    test.heartbeat.hlt_element_temp = 222;
+    test.heartbeat.mlt_element_temp = 222;
+
+    Serial.write(test.buffer,sizeof(test.heartbeat));
 
     delay(1000);
 
