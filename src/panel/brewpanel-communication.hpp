@@ -31,7 +31,7 @@ enum BrewPanelCommunicationMessageType : u8 {
 struct BrewPanelCommunicationMessageHeader {
     u8  sender;
     u8  message_type;
-    u32 message_size;
+    u16 message_size;
     u64 timestamp;
 };
 

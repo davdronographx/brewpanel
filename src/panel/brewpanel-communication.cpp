@@ -1,4 +1,5 @@
 #include "brewpanel-communication.hpp"
+#include "brewpanel-temp-control.hpp"
 #include <time.h>
 #include <string.h>
 
@@ -151,7 +152,8 @@ brewpanel_communication_message_buffer_build(
 
 internal void
 brewpanel_communication_handle_messages_incoming(
-    comm_handler* comm) {
+    comm_handler* comm,
+    temp_control* temp) {
 
     //first check our incoming messages
     BrewPanelCommunicationMessage incoming_message = {0};
@@ -159,6 +161,14 @@ brewpanel_communication_handle_messages_incoming(
 
         switch (incoming_message.header.message_type) {
             case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK: {
+
+                BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat;
+                heartbeat = *((BrewPanelCommunicationMessagePayloadHeartBeatAck*)incoming_message.payload_data);
+
+                temp->hlt_temp_panel.values.value  = heartbeat.hlt_element_temp;
+                temp->mlt_temp_panel.values.value  = heartbeat.mlt_element_temp;
+                temp->boil_temp_panel.values.value = heartbeat.boil_element_temp;
+
                 brewpanel_nop();
             } break;
         }
@@ -202,7 +212,9 @@ brewpanel_communication_handle_messages_outgoing(
 
 internal void
 brewpanel_communication_update(
-    comm_handler* comm_handler) {
+    comm_handler* comm_handler,
+    temp_control* temp
+    ) {
 
     //establish communication with the controller
     if (comm_handler->comm_data.controller == NULL) {
@@ -225,5 +237,8 @@ brewpanel_communication_update(
     // brewpanel_communication_handle_messages_outgoing(comm_handler);
 
     //handle incoming messages
-    brewpanel_communication_handle_messages_incoming(comm_handler);
+    brewpanel_communication_handle_messages_incoming(comm_handler,temp);
+
+    
+
 }
