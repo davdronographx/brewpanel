@@ -7,7 +7,7 @@ brewpanel_control_message_heartbeat_build() {
 }
 
 void setup() {
-    Serial.begin(9600,SERIAL_8N1);
+    Serial.begin(115200,SERIAL_8N1);
     Serial.setTimeout(1000);
 }
 
@@ -17,7 +17,7 @@ void loop() {
     heartbeat.header.data.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
     heartbeat.header.data.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
     heartbeat.header.data.message_size = sizeof(BrewPanelCommunicationMessagePayloadHeartbeat);
-    heartbeat.header.data.timestamp    = 0xFFFFFFFF;
+    heartbeat.header.data.timestamp    = 0;
     
     heartbeat.payload.data.heartbeat.hlt_element_temp  = 111;
     heartbeat.payload.data.heartbeat.mlt_element_temp  = 222;
@@ -39,9 +39,10 @@ void loop() {
         sizeof(comm_payload_heartbeat)
     );
 
-    Serial.write(message_buffer.buffer,message_buffer.buffer_size);
+    message_buffer.buffer[BREWPANEL_COMMUNICATION_MESSAGE_HEADER_SIZE + sizeof(comm_payload_heartbeat)] = '\0';
 
-    delay(1000);
+    Serial.write(message_buffer.buffer,message_buffer.buffer_size);
+    delay(2000);
 }
 
 void serialEvent() {

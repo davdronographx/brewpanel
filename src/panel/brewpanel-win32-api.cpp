@@ -274,7 +274,7 @@ brewpanel_win32_api_controller_handle(
 
                 //update the port settings
                 char mode_str[128];
-                strcpy(mode_str,"baud=19200 data=8 parity=n stop=1 xon=off to=off odsr=off dtr=on rts=on");
+                strcpy(mode_str,"baud=115200 data=8 parity=n stop=1 xon=off to=off odsr=off dtr=on rts=on");
                 DCB comm_port_settings = {0};
                 SecureZeroMemory(&comm_port_settings, sizeof(DCB));
                 comm_port_settings.DCBlength = sizeof(DCB);
@@ -362,7 +362,6 @@ brewpanel_win32_controller_read(LPVOID payload) {
                 }
             }
 
-
             bool wait_result = WaitForMultipleObjects(
                 2,event_handles,FALSE,INFINITE
             );
@@ -388,33 +387,45 @@ brewpanel_win32_controller_read(LPVOID payload) {
                         if (mask & EV_RXCHAR) {
 
                             //put the read buffer together
-                            WaitCommEvent(comm_data->controller,(LPDWORD)((void*)&event_mask), &overlapped_reader) ;
-                            if (WaitForSingleObject(overlapped_reader.hEvent,INFINITE) == WAIT_OBJECT_0)
-                            {    
-
+                            OVERLAPPED ov_read = {0};
+                            ov_read.hEvent = CreateEvent(0,true,0,0);
+                            // WaitCommEvent(comm_data->controller,(LPDWORD)((void*)&event_mask), &ov_read) ;
+                            // if (WaitForSingleObject(ov_read.hEvent,INFINITE) == WAIT_OBJECT_0)
+                            // {    
                                 u64 bytes_read = 0;
                                 char buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE] = {0};
 
-                                ReadFile(
-                                    comm_data->controller,
-                                    buffer,
-                                    BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE,
-                                    (LPDWORD)((void*)&bytes_read),
-                                    &overlapped_reader
-                                );
-                            
-                                if (bytes_read > 0) {
-    
-                                    comm_data->bytes_read = bytes_read;
-                                    strcat((char*)comm_data->read_buffer,buffer);
+                                do {
+
+                                    //reset the overlapped event to wait for the next operation
+                                    ResetEvent(ov_read.hEvent);
+
+                                    ReadFile(
+                                        comm_data->controller,
+                                        buffer,
+                                        BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE,
+                                        (LPDWORD)((void*)&bytes_read),
+                                        &ov_read
+                                    );
+
+                                    if (bytes_read > 0) {
+                                        memmove (
+                                            &comm_data->read_buffer[comm_data->bytes_read],
+                                            buffer,
+                                            bytes_read
+                                        );
+                                        comm_data->bytes_read += bytes_read;
+                                    }
+
+                                } while (bytes_read > 0);
+                                CloseHandle(ov_read.hEvent);
+
+                                if (comm_data->bytes_read > 0) {
 
                                     //send the data we read to the comm handler
                                     comm_data->read_callback(comm_data->panel_comm_handler);
                                 }
-                            }
-
-                            //reset the overlapped event to wait for the next operation
-                            ResetEvent(overlapped_reader.hEvent);
+                            // }
                         }
                     }
 

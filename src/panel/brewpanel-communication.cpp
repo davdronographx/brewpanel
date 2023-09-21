@@ -157,6 +157,12 @@ brewpanel_communication_handle_messages_incoming(
     BrewPanelCommunicationMessage incoming_message = {0};
     while (brewpanel_communication_message_queue_pop(comm,&incoming_message)) {
 
+        switch (incoming_message.header.message_type) {
+            case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK: {
+                brewpanel_nop();
+            } break;
+        }
+
         //TODO: handle message ACKs
         brewpanel_nop();
     }
@@ -212,11 +218,11 @@ brewpanel_communication_update(
     //it will be the last message we request to get the latest
     //data from the controller after all user requests
     BrewPanelCommunicationMessage heartbeat_message = {0};
-    brewpanel_communication_message_heartbeat_build(&heartbeat_message);
-    brewpanel_communication_message_queue_push(comm_handler,heartbeat_message);
+    // brewpanel_communication_message_heartbeat_build(&heartbeat_message);
+    // brewpanel_communication_message_queue_push(comm_handler,heartbeat_message);
 
-    //handle outgoing messages
-    brewpanel_communication_handle_messages_outgoing(comm_handler);
+    // //handle outgoing messages
+    // brewpanel_communication_handle_messages_outgoing(comm_handler);
 
     //handle incoming messages
     brewpanel_communication_handle_messages_incoming(comm_handler);
