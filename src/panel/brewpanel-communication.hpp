@@ -5,7 +5,7 @@
 
 #define BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES 8
 #define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE   256
-#define BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE        368
+#define BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE        512
 #define BREWPANEL_COMMUNICATION_MESSAGE_HEARTBEAT_ACK_SIZE (sizeof(BrewPanelCommunicationMessageHeader) + sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck) + 1)
 
 enum BrewPanelCommunicationMessageSender : u8 {
@@ -69,8 +69,8 @@ struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
     u8  water_pump_status;
     u8  wort_pump_status;
     u8  timer_status;
-    u64 timer_set_point_ms;
-    u64 timer_elapsed_ms;
+    u16 timer_set_point_ms;
+    u16 timer_elapsed_ms;
 };
 
 struct BrewPanelCommunicationMessage {
@@ -93,6 +93,8 @@ struct BrewPanelCommunicationHandler {
     thread_handle                                    read_thread;
     thread_handle                                    write_thread;
     BrewPanelControlCommData                         comm_data;
+    BrewPanelCommunicationMessageBuffer              incoming_data_buffer;
+
 };
 
 typedef BrewPanelCommunicationMessageType   comm_message_type;

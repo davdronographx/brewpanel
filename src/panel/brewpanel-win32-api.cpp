@@ -398,10 +398,6 @@ brewpanel_win32_controller_read(LPVOID payload) {
                             if (WaitForSingleObject(ov_read.hEvent,INFINITE) == WAIT_OBJECT_0)
                             {    
                                 u64 bytes_read = 0;
-                                char byte = '\0';
-
-                                u64 total_bytes_read = 0;
-                                char tmp_msg_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE] = {0};
                                 do {
 
                                     //reset the overlapped event to wait for the next operation
@@ -409,30 +405,20 @@ brewpanel_win32_controller_read(LPVOID payload) {
 
                                     ReadFile(
                                         comm_data->controller,
-                                        &byte,
+                                        &comm_data->read_buffer[comm_data->bytes_read],
                                         1,
                                         (LPDWORD)((void*)&bytes_read),
                                         &ov_read
                                     );
 
-                                    if (bytes_read == 1) {
-
-                                        tmp_msg_buffer[total_bytes_read] = byte;
-                                        ++total_bytes_read;
-
-                                    }
+                                    ++comm_data->bytes_read;
 
                                 } while (bytes_read > 0);
                                 
                                 CloseHandle(ov_read.hEvent);
 
-                                if (total_bytes_read > 0) {
-
-                                    brewpanel_nop();
-
-                                    //send the data we read to the comm handler
-                                
-                                    // comm_data->read_callback(comm_data->panel_comm_handler);
+                                if (comm_data->bytes_read > 0) {
+                                    comm_data->read_callback(comm_data->panel_comm_handler);
                                 }
                             }
                         }

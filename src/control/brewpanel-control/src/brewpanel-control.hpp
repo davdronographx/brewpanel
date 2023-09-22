@@ -52,7 +52,6 @@ struct BrewPanelCommunicationMessageHeader {
     u8  sender;
     u8  message_type;
     u16 message_size;
-    u64 timestamp;
 };
 
 struct BrewPanelCommunicationMessagePayloadHeartbeat {
@@ -63,8 +62,8 @@ struct BrewPanelCommunicationMessagePayloadHeartbeat {
     u8  water_pump_status;
     u8  wort_pump_status;
     u8  timer_status;
-    u64 timer_set_point_ms;
-    u64 timer_elapsed_ms;
+    u16 timer_set_point_ms;
+    u16 timer_elapsed_ms;
 };
 
 

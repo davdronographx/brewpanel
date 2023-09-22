@@ -65,7 +65,7 @@ enum BrewPanelMode : u8 {
 };
 typedef BrewPanelMode panel_mode;
 
-#define BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE 368
+#define BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE 512
 
 typedef void
 (*func_brewpanel_controller_read_callback)
@@ -82,6 +82,7 @@ struct BrewPanelControlCommData {
     thread_handle                           write_thread_handle;
     mem_data                                panel_comm_handler;
     func_brewpanel_controller_read_callback read_callback;
+    bool                                    read_buffer_lock;
     mem_byte                                read_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
     mem_byte                                write_buffer[BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE];
 };

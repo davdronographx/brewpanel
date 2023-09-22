@@ -55,43 +55,40 @@ brewpanel_communication_controller_read_callback(
     brewpanel_assert(comm_handler_payload);
     comm_handler* comm = (comm_handler*)comm_handler_payload;
 
-    //if we have an appropriately sized message
-    //we will push it onto the incoming message queue
-    if (comm->comm_data.bytes_read > sizeof(BrewPanelCommunicationMessageHeader) &&
-        comm->comm_data.bytes_read <= BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE) {
-        
-        BrewPanelCommunicationMessage incoming_message = *(BrewPanelCommunicationMessage*)comm->comm_data.read_buffer;
+    //wait until we can add to the read buffer
+    while (comm->comm_data.read_buffer_lock) {};
 
-        brewpanel_nop();
+    //first, if the buffer size is greater than the allocation space, we need to fix that
+    u32 bytes_to_copy = 
+        (comm->comm_data.bytes_read > BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE)
+        ? BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE 
+        : comm->comm_data.bytes_read; 
 
-        //copy the header
-        // memmove(
-        //     &incoming_message,
-        //     comm->comm_data.read_buffer,
-        //     comm->comm_data.bytes_read
-        // );
+    //lock the read buffer
+    comm->comm_data.read_buffer_lock = true;
 
-        //push the message onto the queue
-        // brewpanel_communication_message_queue_push(
-        //     comm,
-        //     incoming_message
-        // );
-    }
+    //calculate how much of the original buffer we are preserving
+    u32 buffer_copy_length = 
+        (bytes_to_copy + comm->incoming_data_buffer.buffer_size > BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE) 
+        ? BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE - bytes_to_copy
+        : comm->incoming_data_buffer.buffer_size;
 
-    //reset the buffers
-    memset(
-        (mem_data)comm->comm_data.read_buffer,
-        0,
-        BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE
+    //shift the read buffer
+    memmove(
+        &comm->incoming_data_buffer.buffer[bytes_to_copy], //the size of the bytes to copy is also the index of where we shift
+        comm->incoming_data_buffer.buffer,                 //we shift starting at the beginning
+        buffer_copy_length                                 //how much we are preserving
     );
 
-    memset(
-        (mem_data)comm->comm_data.write_buffer,
-        0,
-        BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE
+    //copy the new message to the read buffer
+    memmove(
+        comm->incoming_data_buffer.buffer,
+        comm->comm_data.read_buffer,
+        bytes_to_copy
     );
-    comm->comm_data.bytes_read     = 0;
-    comm->comm_data.bytes_written  = 0;
+
+    //unlock the read buffer
+    comm->comm_data.read_buffer_lock = false;
 }
 
 internal void
