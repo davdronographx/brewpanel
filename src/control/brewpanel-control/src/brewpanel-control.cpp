@@ -12,37 +12,42 @@ void setup() {
 }
 
 void loop() {
+
+    comm_message_buffer message_buffer = {0};
     
     char msg_start[3] ="<<<";
     char msg_end[3] = ">>>";
 
     comm_message heartbeat = {0};
-    heartbeat.header.data.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
-    heartbeat.header.data.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
-    heartbeat.header.data.message_size = sizeof(BrewPanelCommunicationMessagePayloadHeartbeat);
-    heartbeat.header.data.timestamp    = 0;
+    heartbeat.header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
+    heartbeat.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
+    heartbeat.header.message_size = sizeof(BrewPanelCommunicationMessagePayloadHeartbeat);
+    heartbeat.header.timestamp    = 0;
     
-    heartbeat.payload.data.heartbeat.hlt_element_temp  = 111;
-    heartbeat.payload.data.heartbeat.mlt_element_temp  = 222;
-    heartbeat.payload.data.heartbeat.boil_element_temp = 121;
-    heartbeat.payload.type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
+    heartbeat.payload.heartbeat.hlt_element_temp  = 111;
+    heartbeat.payload.heartbeat.mlt_element_temp  = 222;
+    heartbeat.payload.heartbeat.boil_element_temp = 121;
 
-    comm_message_buffer message_buffer = {0};
-    strcat(message_buffer.buffer,msg_start);
-    message_buffer.buffer_size = BREWPANEL_COMMUNICATION_MESSAGE_HEADER_SIZE + sizeof(comm_payload_heartbeat) + 6;
+    message_buffer.buffer_size = comm_message_size(heartbeat.header.message_type) + 6; 
+
+    memmove(
+        message_buffer.buffer,
+        msg_start,
+        3
+    );
 
     memmove(
         &message_buffer.buffer[3],
-        heartbeat.header.buffer,
-        BREWPANEL_COMMUNICATION_MESSAGE_HEADER_SIZE
+        &heartbeat,
+        comm_message_size(heartbeat.header.message_type)
     );
 
     memmove(
-        &message_buffer.buffer[BREWPANEL_COMMUNICATION_MESSAGE_HEADER_SIZE],
-        heartbeat.payload.data.payload_buffer,
-        sizeof(comm_payload_heartbeat)
+        &message_buffer.buffer[3 + comm_message_size(heartbeat.header.message_type)],
+        msg_end,
+        3
     );
-    strcat(message_buffer.buffer,msg_end);
+
 
     Serial.write(message_buffer.buffer,message_buffer.buffer_size);
     delay(2000);
