@@ -60,27 +60,22 @@ brewpanel_communication_controller_read_callback(
     if (comm->comm_data.bytes_read > sizeof(BrewPanelCommunicationMessageHeader) &&
         comm->comm_data.bytes_read <= BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE) {
         
-        BrewPanelCommunicationMessage incoming_message = {0};
-        
-        //copy the header
-        memmove(
-            (mem_data)&incoming_message.header,
-            comm->comm_data.read_buffer,
-            sizeof(BrewPanelCommunicationMessageHeader)
-        );
+        BrewPanelCommunicationMessage incoming_message = *(BrewPanelCommunicationMessage*)comm->comm_data.read_buffer;
 
-        //copy the payload
-        memmove(
-            incoming_message.payload_data,
-            &comm->comm_data.read_buffer[sizeof(BrewPanelCommunicationMessageHeader)],
-            comm->comm_data.bytes_read - sizeof(BrewPanelCommunicationMessageHeader)
-        );
+        brewpanel_nop();
+
+        //copy the header
+        // memmove(
+        //     &incoming_message,
+        //     comm->comm_data.read_buffer,
+        //     comm->comm_data.bytes_read
+        // );
 
         //push the message onto the queue
-        brewpanel_communication_message_queue_push(
-            comm,
-            incoming_message
-        );
+        // brewpanel_communication_message_queue_push(
+        //     comm,
+        //     incoming_message
+        // );
     }
 
     //reset the buffers
@@ -124,8 +119,6 @@ brewpanel_communication_message_heartbeat_build(
     message->header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT;
     message->header.message_size = sizeof(BrewPanelCommunicationMessageHeader) + 1;
     message->header.timestamp    = (u64)time(NULL);
-    message->payload_data[0]     = '\0';
-    message->payload_size_bytes  = 1;
 }
 
 internal void
@@ -135,19 +128,13 @@ brewpanel_communication_message_buffer_build(
 
     *message_buffer = {0};
     
+    message_buffer->buffer_size = comm_message_size(message.header.message_type);
+
     memmove(
         message_buffer->buffer,
-        &message.header,
-        sizeof(BrewPanelCommunicationMessageHeader)
+        &message,
+        message_buffer->buffer_size
     );
-
-    memmove(
-        &message_buffer->buffer[sizeof(BrewPanelCommunicationMessageHeader)],
-        message.payload_data,
-        message.payload_size_bytes
-    );
-
-    message_buffer->buffer_size = sizeof(BrewPanelCommunicationMessageHeader) + message.payload_size_bytes;
 }
 
 internal void
@@ -162,12 +149,6 @@ brewpanel_communication_handle_messages_incoming(
         switch (incoming_message.header.message_type) {
             case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK: {
 
-                BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat;
-                heartbeat = *((BrewPanelCommunicationMessagePayloadHeartBeatAck*)incoming_message.payload_data);
-
-                temp->hlt_temp_panel.values.value  = heartbeat.hlt_element_temp;
-                temp->mlt_temp_panel.values.value  = heartbeat.mlt_element_temp;
-                temp->boil_temp_panel.values.value = heartbeat.boil_element_temp;
 
                 brewpanel_nop();
             } break;

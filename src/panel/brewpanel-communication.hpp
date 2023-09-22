@@ -14,6 +14,7 @@ enum BrewPanelCommunicationMessageSender : u8 {
 };
 
 enum BrewPanelCommunicationMessageType : u8 {
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID           = 0x00,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT         = 0x01,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK     = 0x02,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE       = 0x03,
@@ -26,6 +27,7 @@ enum BrewPanelCommunicationMessageType : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TEMP_CONTROL_ACK  = 0x09,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PID_TUNE          = 0x0A,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PID_TUNE_ACK      = 0x0B,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT             = 0x0C,
 };
 
 struct BrewPanelCommunicationMessageHeader {
@@ -35,11 +37,7 @@ struct BrewPanelCommunicationMessageHeader {
     u64 timestamp;
 };
 
-struct BrewPanelCommunicationMessage {
-    BrewPanelCommunicationMessageHeader header;
-    u32                                 payload_size_bytes;
-    mem_byte                            payload_data[BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE];
-};
+
 
 struct BrewPanelCommunicationMessageBuffer {
     u32      buffer_size;
@@ -75,6 +73,13 @@ struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
     u64 timer_elapsed_ms;
 };
 
+struct BrewPanelCommunicationMessage {
+    BrewPanelCommunicationMessageHeader header;
+    union PayloadData  {
+        BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat_ack;
+    } payload;
+};
+
 struct BrewPanelCommunicationMessageQueue {
     u8                            message_count;
     BrewPanelCommunicationMessage messages[BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES]; 
@@ -99,5 +104,13 @@ typedef BrewPanelCommunicationPumpStatus    comm_pump_status;
 typedef BrewPanelCommunicationTimerStatus   comm_timer_status;
 typedef BrewPanelCommunicationMessageQueue  comm_message_queue;
 typedef BrewPanelCommunicationHandler       comm_handler;
+typedef BrewPanelCommunicationMessagePayloadHeartBeatAck comm_payload_heartbeat_ack;
+
+u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
+    sizeof(comm_message_header) + 1,
+    sizeof(comm_message_header) + sizeof(comm_payload_heartbeat_ack) + 1
+};
+
+#define comm_message_size(type) ((BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID < 0 || type > BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT) ? 0 : comm_message_sizes[type])
 
 #endif //BREWPANEL_COMMUNICATION_HPP
