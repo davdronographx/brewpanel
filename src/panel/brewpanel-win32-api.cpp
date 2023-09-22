@@ -406,8 +406,14 @@ brewpanel_win32_controller_read(LPVOID payload) {
                                     BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE
                                 );
 
+                                bool message_started = false;
+                                bool message_end = false;
+                                char msg_start[3] = {0};
+                                char msg_end[3] = {0};
                                 do {
 
+                                    char previous_byte = '\0';
+                                    
                                     //reset the overlapped event to wait for the next operation
                                     ResetEvent(ov_read.hEvent);
 
@@ -420,11 +426,31 @@ brewpanel_win32_controller_read(LPVOID payload) {
                                     );
 
                                     if (bytes_read == 1) {
-                                        comm_data->read_buffer[comm_data->bytes_read] = byte;
-                                        ++comm_data->bytes_read;
+
+                                        if (!message_started) {
+                                            msg_start[2] = msg_start[1];
+                                            msg_start[1] = msg_start[0];
+                                            msg_start[0] = byte;
+                                 
+                                            message_started = msg_start[2] == '<' && msg_start[1] == '<' && msg_start[0] == '<';
+                                            previous_byte = byte;
+                                            continue;
+                                        }
+
+                                        msg_end[2] = msg_end[1];
+                                        msg_end[1] = msg_end[0];
+                                        msg_end[0] = byte;
+                                        message_end = msg_end[2] == '>' && msg_end[1] == '>' && msg_end[0] == '>';
+                                                                            
+                                        if (byte != '>') {
+                                            comm_data->read_buffer[comm_data->bytes_read] = byte;
+                                            ++comm_data->bytes_read;
+                                        }
+
+                                        previous_byte = byte;
                                     }
 
-                                } while (bytes_read > 0);
+                                } while (bytes_read > 0 || message_end);
                                 CloseHandle(ov_read.hEvent);
 
                                 if (comm_data->bytes_read > 0) {
