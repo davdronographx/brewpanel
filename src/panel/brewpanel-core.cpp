@@ -99,9 +99,12 @@ brewpanel_core_update_and_render(
 
     bool redraw = false;
 
-    brewpanel_communication_update(
-        &brewpanel_state->comm_handler,
-        &brewpanel_state->temp_control);
+    brewpanel_communication_update(&brewpanel_state->comm_handler);
+
+    brewpanel_state->temp_control.hlt_temp_panel.values.value  = brewpanel_state->comm_handler.latest_heartbeat.hlt_element_temp;
+    brewpanel_state->temp_control.mlt_temp_panel.values.value  = brewpanel_state->comm_handler.latest_heartbeat.mlt_element_temp;
+    brewpanel_state->temp_control.boil_temp_panel.values.value = brewpanel_state->comm_handler.latest_heartbeat.boil_element_temp;
+    brewpanel_state->temp_control.redraw = true;
 
     brewpanel_buttons_update(
         input,

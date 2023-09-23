@@ -20,6 +20,11 @@ typedef mem_byte* mem_data;
 #define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE 256
 #define BREWPANEL_COMMUNICATION_MESSAGE_HEADER_SIZE      sizeof(BrewPanelCommunicationMessageHeaderData)
 
+struct BrewPanelControlState {
+    u8 hlt_temp;
+    u8 mlt_temp;
+    u8 boil_temp;
+};
 
 struct BrewPanelMessageBuffer {
     u16      buffer_size;    

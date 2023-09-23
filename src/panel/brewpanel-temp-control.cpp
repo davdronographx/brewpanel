@@ -25,21 +25,11 @@ brewpanel_temp_control_update_temp_values(
     u8 temp_ones     = temp_values->value - (temp_hundreds * 100) - (temp_tens * 10);
 
     //calculate the new temp digits
-    image_id previous_temp_hundreds_digit = images->image_instances[temp_values->temp_hundreds_digit].image_id;
-    image_id previous_temp_tens_digit     = images->image_instances[temp_values->temp_tens_digit].image_id;
-    image_id previous_temp_ones_digit     = images->image_instances[temp_values->temp_ones_digit].image_id;
-
     images->image_instances[temp_values->temp_hundreds_digit].image_id = brewpanel_temp_glyph_table[temp_hundreds];
     images->image_instances[temp_values->temp_tens_digit].image_id     = brewpanel_temp_glyph_table[temp_tens];
     images->image_instances[temp_values->temp_ones_digit].image_id     = brewpanel_temp_glyph_table[temp_ones];
 
-    if (images->image_instances[temp_values->temp_hundreds_digit].image_id != previous_temp_hundreds_digit ||
-        images->image_instances[temp_values->temp_tens_digit].image_id != previous_temp_tens_digit ||
-        images->image_instances[temp_values->temp_ones_digit].image_id != previous_temp_ones_digit) {
-
-        return(true);
-    }
-    return(false);
+    return(true);
 }
 
 internal void
@@ -290,6 +280,7 @@ brewpanel_temp_control_update(
     redraw |= brewpanel_temp_control_update_temp_read(&control->hlt_temp_panel,images);
 
     previous_mode = mode;
+
 
     return(redraw);
 }

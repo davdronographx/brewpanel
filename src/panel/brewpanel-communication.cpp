@@ -1,5 +1,4 @@
 #include "brewpanel-communication.hpp"
-#include "brewpanel-temp-control.hpp"
 #include <time.h>
 #include <string.h>
 
@@ -21,30 +20,6 @@ brewpanel_communication_message_queue_push(
     return(false);
 }
 
-internal bool
-brewpanel_communication_message_queue_pop(
-    BrewPanelCommunicationMessageQueue* message_queue,
-    BrewPanelCommunicationMessage*      dequeued_message) {
-
-    if (message_queue->message_count == 0) {
-        dequeued_message = NULL;
-        return(false);
-    }
-
-    *dequeued_message = message_queue->messages[0];
-    --message_queue->message_count;
-
-    for (
-        u32 message_index = 0;
-        message_index < message_queue->message_count;
-        ++message_index
-    ) {
-        message_queue->messages[message_index] = message_queue->messages[message_index+1];
-        message_queue[message_index+1] = {0};
-    }
-
-    return(true);
-}
 
 internal void
 brewpanel_communication_controller_read_callback(
@@ -145,27 +120,35 @@ brewpanel_communication_message_buffer_build(
 
 internal void
 brewpanel_communication_handle_messages_incoming(
-    comm_handler* comm,
-    temp_control* temp) {
+    comm_handler* comm) {
 
     //first check our incoming messages
     BrewPanelCommunicationMessage incoming_message = {0};
-    while (brewpanel_communication_message_queue_pop(&comm->incoming_message_queue,&incoming_message)) {
+    
+    for (
+        u32 message_index = 0;
+        message_index < comm->incoming_message_queue.message_count;
+        ++message_index
+    ) {
+        incoming_message = comm->incoming_message_queue.messages[message_index];
 
         switch (incoming_message.header.message_type) {
 
             case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK: {
 
-                // temp->hlt_temp_panel.values.value  = incoming_message.payload.heartbeat_ack.hlt_element_temp; 
-                // temp->mlt_temp_panel.values.value  = incoming_message.payload.heartbeat_ack.mlt_element_temp; 
-                // temp->boil_temp_panel.values.value = incoming_message.payload.heartbeat_ack.boil_element_temp; 
+                comm->latest_heartbeat.hlt_element_temp  = incoming_message.payload.heartbeat_ack.hlt_element_temp;
+                comm->latest_heartbeat.mlt_element_temp  = incoming_message.payload.heartbeat_ack.mlt_element_temp;
+                comm->latest_heartbeat.boil_element_temp = incoming_message.payload.heartbeat_ack.boil_element_temp;
 
             } break;
         }
 
+
         //TODO: handle message ACKs
         brewpanel_nop();
     }
+
+    comm->incoming_message_queue = {0};
 }
 
 internal void
@@ -175,34 +158,39 @@ brewpanel_communication_handle_messages_outgoing(
     BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
     BrewPanelCommunicationMessageBuffer incoming_message_buffer = {0};
 
-    BrewPanelCommunicationMessage outgoing_message = {0};
-    while (brewpanel_communication_message_queue_pop(&comm->outgoing_message_queue,&outgoing_message)) {
+    // BrewPanelCommunicationMessage outgoing_message = {0};
+    // while (brewpanel_communication_message_queue_pop(&comm->outgoing_message_queue,&outgoing_message)) {
         
-        //wait till the buffer is free
-        // while (comm->comm_data.bytes_to_write > 0) {
-        //     brewpanel_nop();
-        // }
+    //     //wait till the buffer is free
+    //     // while (comm->comm_data.bytes_to_write > 0) {
+    //     //     brewpanel_nop();
+    //     // }
 
-        // build the outgoing message
-        brewpanel_communication_message_buffer_build(
-            outgoing_message,
-            &outgoing_message_buffer
-        );
+    //     // build the outgoing message
+    //     brewpanel_communication_message_buffer_build(
+    //         outgoing_message,
+    //         &outgoing_message_buffer
+    //     );
 
-        //write the message to the outgoing message buffer
-        //the write thread will pick it up and clear it once its sent to the controller
-        comm->comm_data.bytes_to_write = outgoing_message_buffer.buffer_size;
-        memmove(
-            comm->comm_data.write_buffer,
-            outgoing_message_buffer.buffer,
-            outgoing_message_buffer.buffer_size
-        );
-    }
+    //     //write the message to the outgoing message buffer
+    //     //the write thread will pick it up and clear it once its sent to the controller
+    //     comm->comm_data.bytes_to_write = outgoing_message_buffer.buffer_size;
+    //     memmove(
+    //         comm->comm_data.write_buffer,
+    //         outgoing_message_buffer.buffer,
+    //         outgoing_message_buffer.buffer_size
+    //     );
+    // }
 }
 
 internal void
 brewpanel_communication_parse_incoming_message_buffer(
     comm_handler* comm_handler) {
+
+    //wait until we can remove from the read buffer
+    while (comm_handler->comm_data.read_buffer_lock) {
+        brewpanel_nop();
+    }
 
     comm_handler->comm_data.read_buffer_lock = true;
 
@@ -213,6 +201,7 @@ brewpanel_communication_parse_incoming_message_buffer(
     mem_byte message_end_buffer[8]   = {0};
 
     BrewPanelCommunicationMessageBuffer message_buffer = {0};
+
 
     for (
         u32 buffer_index = 0;
@@ -298,8 +287,9 @@ brewpanel_communication_parse_incoming_message_buffer(
 
         //we have a complete message
         if (message_start && message_end) {
-
-            BrewPanelCommunicationMessage message = *(BrewPanelCommunicationMessage*)message_buffer.buffer;
+    
+            BrewPanelCommunicationMessageHeader* header = (BrewPanelCommunicationMessageHeader*)message_buffer.buffer; 
+            BrewPanelCommunicationMessage message = *(BrewPanelCommunicationMessage*)message_buffer.buffer; 
 
             brewpanel_communication_message_queue_push(&comm_handler->incoming_message_queue,message);
 
@@ -323,9 +313,7 @@ brewpanel_communication_parse_incoming_message_buffer(
 
 internal void
 brewpanel_communication_update(
-    comm_handler* comm_handler,
-    temp_control* temp
-    ) {
+    comm_handler* comm_handler) {
 
     //establish communication with the controller
     if (comm_handler->comm_data.controller == NULL) {
@@ -341,10 +329,5 @@ brewpanel_communication_update(
     brewpanel_communication_parse_incoming_message_buffer(comm_handler);
 
     //handle incoming messages
-    brewpanel_communication_handle_messages_incoming(
-        comm_handler,
-        temp
-    );
-    
-
+    brewpanel_communication_handle_messages_incoming(comm_handler);
 }

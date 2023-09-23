@@ -109,6 +109,7 @@ typedef BrewPanelCommunicationMessagePayloadHeartBeatAck comm_payload_heartbeat_
 
 u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
     sizeof(comm_message_header) + 1,
+    sizeof(comm_message_header) + 1,
     sizeof(comm_message_header) + sizeof(comm_payload_heartbeat_ack) + 1
 };
 
