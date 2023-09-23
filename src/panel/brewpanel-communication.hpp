@@ -34,7 +34,6 @@ struct BrewPanelCommunicationMessageHeader {
     u8  sender;
     u8  message_type;
     u16 message_size;
-    u64 timestamp;
 };
 
 

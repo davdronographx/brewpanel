@@ -7,13 +7,13 @@
 
 internal bool
 brewpanel_communication_message_queue_push(
-    comm_handler*                 comm_handler,
-    BrewPanelCommunicationMessage message) {
+    BrewPanelCommunicationMessageQueue* queue,
+    BrewPanelCommunicationMessage       message) {
 
-    if (comm_handler->outgoing_message_queue.message_count < BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES) {
+    if (queue->message_count < BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES) {
 
-        comm_handler->outgoing_message_queue.messages[comm_handler->outgoing_message_queue.message_count] = message;
-        ++comm_handler->outgoing_message_queue.message_count;
+        queue->messages[queue->message_count] = message;
+        ++queue->message_count;
 
         return(true);
     }
@@ -23,10 +23,8 @@ brewpanel_communication_message_queue_push(
 
 internal bool
 brewpanel_communication_message_queue_pop(
-    comm_handler*                  comm,
-    BrewPanelCommunicationMessage* dequeued_message) {
-
-    BrewPanelCommunicationMessageQueue* message_queue = &comm->outgoing_message_queue;
+    BrewPanelCommunicationMessageQueue* message_queue,
+    BrewPanelCommunicationMessage*      dequeued_message) {
 
     if (message_queue->message_count == 0) {
         dequeued_message = NULL;
@@ -127,7 +125,6 @@ brewpanel_communication_message_heartbeat_build(
     message->header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
     message->header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT;
     message->header.message_size = sizeof(BrewPanelCommunicationMessageHeader) + 1;
-    message->header.timestamp    = (u64)time(NULL);
 }
 
 internal void
@@ -153,13 +150,16 @@ brewpanel_communication_handle_messages_incoming(
 
     //first check our incoming messages
     BrewPanelCommunicationMessage incoming_message = {0};
-    while (brewpanel_communication_message_queue_pop(comm,&incoming_message)) {
+    while (brewpanel_communication_message_queue_pop(&comm->incoming_message_queue,&incoming_message)) {
 
         switch (incoming_message.header.message_type) {
+
             case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK: {
 
+                // temp->hlt_temp_panel.values.value  = incoming_message.payload.heartbeat_ack.hlt_element_temp; 
+                // temp->mlt_temp_panel.values.value  = incoming_message.payload.heartbeat_ack.mlt_element_temp; 
+                // temp->boil_temp_panel.values.value = incoming_message.payload.heartbeat_ack.boil_element_temp; 
 
-                brewpanel_nop();
             } break;
         }
 
@@ -176,7 +176,7 @@ brewpanel_communication_handle_messages_outgoing(
     BrewPanelCommunicationMessageBuffer incoming_message_buffer = {0};
 
     BrewPanelCommunicationMessage outgoing_message = {0};
-    while (brewpanel_communication_message_queue_pop(comm,&outgoing_message)) {
+    while (brewpanel_communication_message_queue_pop(&comm->outgoing_message_queue,&outgoing_message)) {
         
         //wait till the buffer is free
         // while (comm->comm_data.bytes_to_write > 0) {
@@ -290,8 +290,7 @@ brewpanel_communication_parse_incoming_message_buffer(
                 }
             }
 
-            //otherwise, we have message characters
-            else {
+            if (!message_end) {
                 message_buffer.buffer[message_buffer.buffer_size] = byte;
                 ++message_buffer.buffer_size;
             }
@@ -300,7 +299,9 @@ brewpanel_communication_parse_incoming_message_buffer(
         //we have a complete message
         if (message_start && message_end) {
 
-            brewpanel_nop();
+            BrewPanelCommunicationMessage message = *(BrewPanelCommunicationMessage*)message_buffer.buffer;
+
+            brewpanel_communication_message_queue_push(&comm_handler->incoming_message_queue,message);
 
             message_start = false;
             message_end = false;
@@ -338,6 +339,12 @@ brewpanel_communication_update(
 
     //parse the incoming message buffer
     brewpanel_communication_parse_incoming_message_buffer(comm_handler);
+
+    //handle incoming messages
+    brewpanel_communication_handle_messages_incoming(
+        comm_handler,
+        temp
+    );
     
 
 }
