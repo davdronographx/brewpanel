@@ -8,7 +8,7 @@ brewpanel_control_message_heartbeat_build() {
 }
 
 void setup() {
-    Serial.begin(9600,SERIAL_8N1);
+    Serial.begin(115200,SERIAL_8N1);
     Serial.setTimeout(1000);
     control_state = {0};
 }
@@ -62,7 +62,7 @@ void loop() {
 
 
     Serial.write(message_buffer.buffer,message_buffer.buffer_size);
-    delay(1000);
+    delay(250);
 }
 
 void serialEvent() {

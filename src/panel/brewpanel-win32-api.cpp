@@ -281,7 +281,7 @@ brewpanel_win32_api_controller_handle(
                 }
 
                 comm_port_settings.DCBlength       = sizeof(DCB);
-                comm_port_settings.BaudRate        = 9600;
+                comm_port_settings.BaudRate        = 115200;
                 comm_port_settings.ByteSize        = 8;
                 comm_port_settings.Parity          = NOPARITY;
                 comm_port_settings.StopBits        = ONESTOPBIT;
