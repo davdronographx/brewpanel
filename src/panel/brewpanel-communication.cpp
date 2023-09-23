@@ -58,14 +58,14 @@ brewpanel_communication_controller_read_callback(
     //wait until we can add to the read buffer
     while (comm->comm_data.read_buffer_lock) {};
 
+    //lock the read buffer
+    comm->comm_data.read_buffer_lock = true;
+
     //first, if the buffer size is greater than the allocation space, we need to fix that
     u32 bytes_to_copy = 
         (comm->comm_data.bytes_read > BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE)
         ? BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE 
         : comm->comm_data.bytes_read; 
-
-    //lock the read buffer
-    comm->comm_data.read_buffer_lock = true;
 
     //calculate how much of the original buffer we are preserving
     u32 buffer_copy_length = 
@@ -73,13 +73,17 @@ brewpanel_communication_controller_read_callback(
         ? BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE - bytes_to_copy
         : comm->incoming_data_buffer.buffer_size;
 
-    //shift the read buffer
-    memmove(
-        &comm->incoming_data_buffer.buffer[bytes_to_copy], //the size of the bytes to copy is also the index of where we shift
-        comm->incoming_data_buffer.buffer,                 //we shift starting at the beginning
-        buffer_copy_length                                 //how much we are preserving
-    );
+    //ensure our new buffer data will fit
+    brewpanel_assert(buffer_copy_length + bytes_to_copy <= BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE);
 
+    //if the new message data is overwriting the entire buffer, we don't need to preseve anything
+    if (bytes_to_copy < BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE) {
+        memmove(
+            &comm->incoming_data_buffer.buffer[bytes_to_copy],  //the size of the bytes to copy is also the index of where we shift
+            comm->incoming_data_buffer.buffer,                  //we shift starting at the beginning
+            buffer_copy_length                                  //how much we are preserving
+        );
+    }
     //copy the new message to the read buffer
     memmove(
         comm->incoming_data_buffer.buffer,
@@ -89,6 +93,12 @@ brewpanel_communication_controller_read_callback(
 
     //unlock the read buffer
     comm->comm_data.read_buffer_lock = false;
+    memset(
+        comm->comm_data.read_buffer,
+        0,
+        BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE
+    );
+    comm->comm_data.bytes_read = 0;
 }
 
 internal void

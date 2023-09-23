@@ -412,6 +412,9 @@ brewpanel_win32_controller_read(LPVOID payload) {
                                     );
 
                                     ++comm_data->bytes_read;
+                                    if(comm_data->bytes_read == BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE) {
+                                        break;
+                                    }
 
                                 } while (bytes_read > 0);
                                 

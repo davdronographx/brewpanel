@@ -15,8 +15,8 @@ void loop() {
 
     comm_message_buffer message_buffer = {0};
     
-    char msg_start[3] ="<<<";
-    char msg_end[3] = ">>>";
+    char msg_start[9] ="<<<<<<<<";
+    char msg_end[9] = ">>>>>>>>";
 
     comm_message heartbeat = {0};
     heartbeat.header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
@@ -28,24 +28,24 @@ void loop() {
     heartbeat.payload.heartbeat.boil_element_temp = 121;
     heartbeat.payload.heartbeat.timer_set_point_ms = 0xAAAA;
     heartbeat.payload.heartbeat.timer_elapsed_ms = 0xBBBB;
-    message_buffer.buffer_size = comm_message_size(heartbeat.header.message_type) + 6; 
+    message_buffer.buffer_size = comm_message_size(heartbeat.header.message_type) + 16; 
 
     memmove(
         message_buffer.buffer,
         msg_start,
-        3
+        8
     );
 
     memmove(
-        &message_buffer.buffer[3],
+        &message_buffer.buffer[8],
         &heartbeat,
         comm_message_size(heartbeat.header.message_type)
     );
 
     memmove(
-        &message_buffer.buffer[3 + comm_message_size(heartbeat.header.message_type)],
+        &message_buffer.buffer[8 + comm_message_size(heartbeat.header.message_type)],
         msg_end,
-        3
+        8
     );
 
 
