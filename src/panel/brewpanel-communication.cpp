@@ -91,6 +91,8 @@ brewpanel_communication_controller_read_callback(
         bytes_to_copy
     );
 
+    comm->incoming_data_buffer.buffer_size = buffer_copy_length + bytes_to_copy; 
+
     //unlock the read buffer
     comm->comm_data.read_buffer_lock = false;
     memset(
@@ -199,6 +201,126 @@ brewpanel_communication_handle_messages_outgoing(
 }
 
 internal void
+brewpanel_communication_parse_incoming_message_buffer(
+    comm_handler* comm_handler) {
+
+    comm_handler->comm_data.read_buffer_lock = true;
+
+    bool message_start = false;
+    bool message_end = false;
+
+    mem_byte message_start_buffer[8] = {0};
+    mem_byte message_end_buffer[8]   = {0};
+
+    BrewPanelCommunicationMessageBuffer message_buffer = {0};
+
+    for (
+        u32 buffer_index = 0;
+        buffer_index < comm_handler->incoming_data_buffer.buffer_size;
+        ++buffer_index
+    ) {
+        //get the next byte
+        mem_byte byte = comm_handler->incoming_data_buffer.buffer[buffer_index];
+
+        //look for the message start characters
+        if (!message_start) {
+
+            message_start_buffer[7] = message_start_buffer[6]; 
+            message_start_buffer[6] = message_start_buffer[5]; 
+            message_start_buffer[5] = message_start_buffer[4]; 
+            message_start_buffer[4] = message_start_buffer[3]; 
+            message_start_buffer[3] = message_start_buffer[2]; 
+            message_start_buffer[2] = message_start_buffer[1]; 
+            message_start_buffer[1] = message_start_buffer[0]; 
+            message_start_buffer[0] = byte;
+
+            message_start = 
+                message_start_buffer[7] == '<' &&
+                message_start_buffer[6] == '<' &&
+                message_start_buffer[5] == '<' &&
+                message_start_buffer[4] == '<' &&
+                message_start_buffer[3] == '<' &&
+                message_start_buffer[2] == '<' &&
+                message_start_buffer[1] == '<' &&
+                message_start_buffer[0] == '<';
+
+            if (message_start) {
+                memset(
+                    message_start_buffer,
+                    0,
+                    8
+                );
+            }
+
+            continue;
+        }
+
+        //we have started a new message
+        if (message_start && !message_end) {
+
+            brewpanel_nop();
+
+            //check if we have started message end
+            if (byte == '>') {
+                message_end_buffer[7] = message_end_buffer[6]; 
+                message_end_buffer[6] = message_end_buffer[5]; 
+                message_end_buffer[5] = message_end_buffer[4]; 
+                message_end_buffer[4] = message_end_buffer[3]; 
+                message_end_buffer[3] = message_end_buffer[2]; 
+                message_end_buffer[2] = message_end_buffer[1]; 
+                message_end_buffer[1] = message_end_buffer[0]; 
+                message_end_buffer[0] = byte;
+
+                message_end = 
+                    message_end_buffer[7] == '>' &&
+                    message_end_buffer[6] == '>' &&
+                    message_end_buffer[5] == '>' &&
+                    message_end_buffer[4] == '>' &&
+                    message_end_buffer[3] == '>' &&
+                    message_end_buffer[2] == '>' &&
+                    message_end_buffer[1] == '>' &&
+                    message_end_buffer[0] == '>';
+
+                if (message_end) {
+                    memset(
+                        message_end_buffer,
+                        0,
+                        8
+                    );
+                }
+            }
+
+            //otherwise, we have message characters
+            else {
+                message_buffer.buffer[message_buffer.buffer_size] = byte;
+                ++message_buffer.buffer_size;
+            }
+        }
+
+        //we have a complete message
+        if (message_start && message_end) {
+
+            brewpanel_nop();
+
+            message_start = false;
+            message_end = false;
+            message_buffer = {0};
+        }
+
+    }
+
+    //clear the incoming data buffer
+    memset(
+        comm_handler->incoming_data_buffer.buffer,
+        0,
+        comm_handler->incoming_data_buffer.buffer_size
+    );
+    comm_handler->incoming_data_buffer.buffer_size = 0;
+
+    comm_handler->comm_data.read_buffer_lock = false;
+}
+
+internal void
 brewpanel_communication_update(
     comm_handler* comm_handler,
     temp_control* temp
@@ -214,19 +336,8 @@ brewpanel_communication_update(
         }
     }
 
-    //start by building the heartbeat message
-    //it will be the last message we request to get the latest
-    //data from the controller after all user requests
-    BrewPanelCommunicationMessage heartbeat_message = {0};
-    // brewpanel_communication_message_heartbeat_build(&heartbeat_message);
-    // brewpanel_communication_message_queue_push(comm_handler,heartbeat_message);
-
-    // //handle outgoing messages
-    // brewpanel_communication_handle_messages_outgoing(comm_handler);
-
-    //handle incoming messages
-    brewpanel_communication_handle_messages_incoming(comm_handler,temp);
-
+    //parse the incoming message buffer
+    brewpanel_communication_parse_incoming_message_buffer(comm_handler);
     
 
 }

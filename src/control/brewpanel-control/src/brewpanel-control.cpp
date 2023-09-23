@@ -50,7 +50,7 @@ void loop() {
 
 
     Serial.write(message_buffer.buffer,message_buffer.buffer_size);
-    delay(250);
+    delay(10);
 }
 
 void serialEvent() {
