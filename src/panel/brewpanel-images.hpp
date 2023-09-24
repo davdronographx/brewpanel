@@ -162,7 +162,24 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT             = 137,
     BREWPANEL_IMAGES_ID_OFF_TEMP_PANEL                     = 138,
     BREWPANEL_IMAGES_ID_TIMER_PANEL_OFF                    = 139,
-    BREWPANEL_IMAGES_ID_COUNT                              = 140
+    BREWPANEL_IMAGES_ID_PUMPS_PANEL                        = 140,
+    BREWPANEL_IMAGES_ID_WATER_OFF_IDLE                     = 141, 
+    BREWPANEL_IMAGES_ID_WATER_OFF_HOVER                    = 142, 
+    BREWPANEL_IMAGES_ID_WATER_OFF_CLICKED                  = 143, 
+    BREWPANEL_IMAGES_ID_WATER_OFF_DISABLED                 = 144, 
+    BREWPANEL_IMAGES_ID_WATER_ON_IDLE                      = 145, 
+    BREWPANEL_IMAGES_ID_WATER_ON_HOVER                     = 146, 
+    BREWPANEL_IMAGES_ID_WATER_ON_CLICKED                   = 147, 
+    BREWPANEL_IMAGES_ID_WATER_ON_DISABLED                  = 148,
+    BREWPANEL_IMAGES_ID_WORT_OFF_IDLE                      = 149, 
+    BREWPANEL_IMAGES_ID_WORT_OFF_HOVER                     = 150, 
+    BREWPANEL_IMAGES_ID_WORT_OFF_CLICKED                   = 151, 
+    BREWPANEL_IMAGES_ID_WORT_OFF_DISABLED                  = 152, 
+    BREWPANEL_IMAGES_ID_WORT_ON_IDLE                       = 153, 
+    BREWPANEL_IMAGES_ID_WORT_ON_HOVER                      = 154, 
+    BREWPANEL_IMAGES_ID_WORT_ON_CLICKED                    = 155, 
+    BREWPANEL_IMAGES_ID_WORT_ON_DISABLED                   = 156, 
+    BREWPANEL_IMAGES_ID_COUNT                              = 157
 };
 
 typedef s16 image_id;
@@ -307,7 +324,24 @@ global str brewpanel_images_file_paths[] = {
     "mash-timer-panel-input.png",
     "boil-timer-panel-input.png",
     "off-element-panel.png",
-    "off-timer-panel.png"
+    "off-timer-panel.png",
+    "pumps-panel.png",
+    "water-off-idle.png",
+    "water-off-hover.png",
+    "water-off-clicked.png",
+    "water-off-disabled.png",
+    "water-on-idle.png",
+    "water-on-hover.png",
+    "water-on-clicked.png",
+    "water-on-disabled.png",
+    "wort-off-idle.png",
+    "wort-off-hover.png",
+    "wort-off-clicked.png",
+    "wort-off-disabled.png",
+    "wort-on-idle.png",
+    "wort-on-hover.png",
+    "wort-on-clicked.png",
+    "wort-on-disabled.png"
 };
 
 global str brewpanel_images_image_names[] = {
@@ -450,7 +484,24 @@ global str brewpanel_images_image_names[] = {
     "mash-timer-panel-input",
     "boil-timer-panel-input",
     "off-element-panel",
-    "off-timer-panel"
+    "off-timer-panel",
+    "pumps-panel",
+    "water-off-idle",
+    "water-off-hover",
+    "water-off-clicked",
+    "water-off-disabled",
+    "water-on-idle",
+    "water-on-hover",
+    "water-on-clicked",
+    "water-on-disabled",
+    "wort-off-idle",
+    "wort-off-hover",
+    "wort-off-clicked",
+    "wort-off-disabled",
+    "wort-on-idle",
+    "wort-on-hover",
+    "wort-on-clicked",
+    "wort-on-disabled"
 };
 
 struct BrewPanelImagesFileIndex {
