@@ -178,8 +178,11 @@ enum BrewPanelImagesId : s16 {
     BREWPANEL_IMAGES_ID_WORT_ON_IDLE                       = 153, 
     BREWPANEL_IMAGES_ID_WORT_ON_HOVER                      = 154, 
     BREWPANEL_IMAGES_ID_WORT_ON_CLICKED                    = 155, 
-    BREWPANEL_IMAGES_ID_WORT_ON_DISABLED                   = 156, 
-    BREWPANEL_IMAGES_ID_COUNT                              = 157
+    BREWPANEL_IMAGES_ID_WORT_ON_DISABLED                   = 156,
+    BREWPANEL_IMAGES_ID_CONTROLLER_PANEL                   = 157,
+    BREWPANEL_IMAGES_ID_CONTROLLER_CONNECTED               = 158,
+    BREWPANEL_IMAGES_ID_CONTROLLER_DISCONNECTED            = 159,
+    BREWPANEL_IMAGES_ID_COUNT                              = 160
 };
 
 typedef s16 image_id;
@@ -341,7 +344,10 @@ global str brewpanel_images_file_paths[] = {
     "wort-on-idle.png",
     "wort-on-hover.png",
     "wort-on-clicked.png",
-    "wort-on-disabled.png"
+    "wort-on-disabled.png",
+    "controller-panel.png",
+    "connected.png",
+    "not-connected.png"
 };
 
 global str brewpanel_images_image_names[] = {
@@ -501,7 +507,10 @@ global str brewpanel_images_image_names[] = {
     "wort-on-idle",
     "wort-on-hover",
     "wort-on-clicked",
-    "wort-on-disabled"
+    "wort-on-disabled",
+    "controller-panel",
+    "connected",
+    "not-connected"
 };
 
 struct BrewPanelImagesFileIndex {
