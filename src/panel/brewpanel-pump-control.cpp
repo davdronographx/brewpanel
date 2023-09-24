@@ -5,6 +5,31 @@
 #include "brewpanel-buttons.cpp"
 
 internal void
+brewpanel_pump_control_water_off_button_click(
+    mem_data payload) {
+
+}
+
+internal void
+brewpanel_pump_control_water_on_button_click(
+    mem_data payload) {
+
+}
+
+internal void
+brewpanel_pump_control_wort_off_button_click(
+    mem_data payload) {
+
+}
+
+internal void
+brewpanel_pump_control_wort_on_button_click(
+    mem_data payload) {
+
+}
+
+
+internal void
 brewpanel_pump_control_create(
     pump_control* pumps,
     images_store* images,
@@ -19,6 +44,35 @@ brewpanel_pump_control_create(
             BREWPANEL_PUMPS_PANEL_X_OFFSET,
             BREWPANEL_PUMPS_PANEL_Y_OFFSET
     );
+
+    pumps->water_off_button = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_pump_control_water_off_button_click,
+            (mem_data)pumps,
+            BREWPANEL_IMAGES_ID_WATER_OFF_IDLE,
+            BREWPANEL_IMAGES_ID_WATER_OFF_HOVER,
+            BREWPANEL_IMAGES_ID_WATER_OFF_CLICKED,
+            BREWPANEL_IMAGES_ID_WATER_OFF_DISABLED,
+            BREWPANEL_PUMPS_BUTTONS_X_OFFSET,
+            BREWPANEL_PUMPS_WATER_BUTTON_Y_OFFSET
+    );
+
+    pumps->wort_off_button = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_pump_control_water_off_button_click,
+            (mem_data)pumps,
+            BREWPANEL_IMAGES_ID_WORT_OFF_IDLE,
+            BREWPANEL_IMAGES_ID_WORT_OFF_HOVER,
+            BREWPANEL_IMAGES_ID_WORT_OFF_CLICKED,
+            BREWPANEL_IMAGES_ID_WORT_OFF_DISABLED,
+            BREWPANEL_PUMPS_BUTTONS_X_OFFSET,
+            BREWPANEL_PUMPS_WORT_BUTTON_Y_OFFSET
+    );
+
 
     pumps->redraw = true;
 }
@@ -37,7 +91,6 @@ brewpanel_pump_control_update(
         );
         redraw = true;
     }
-
 
     return(redraw);
 }
