@@ -12,6 +12,7 @@
 #include "brewpanel-temp-control.hpp"
 #include "brewpanel-mode-control.hpp"
 #include "brewpanel-keypad.hpp"
+#include "brewpanel-pump-control.hpp"
 
 struct BrewPanelBackBuffer {
     RGBAPixel pixels[BREW_PANEL_PIXEL_COUNT];
@@ -27,6 +28,7 @@ struct BrewPanelState{
     comm_handler            comm_handler;
     temp_control            temp_control;
     mode_control            mode_control;
+    pump_control            pump_control;
     keypad                  keypad;
     image_instance_id       main_screen;
 };

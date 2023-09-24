@@ -10,6 +10,8 @@
 #include "brewpanel-temp-control.cpp"
 #include "brewpanel-mode-control.cpp"
 #include "brewpanel-keypad.cpp"
+#include "brewpanel-pump-control.cpp"
+
 
 internal void
 brewpanel_core_init(BrewPanelControllerInfo controller_info) {
@@ -89,6 +91,12 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
         &brewpanel_state->button_store
     );
 
+    brewpanel_pump_control_create(
+        &brewpanel_state->pump_control,
+        &brewpanel_state->images,
+        &brewpanel_state->button_store
+    );
+
     //render the main background
     brewpanel_images_draw_image_instance(&brewpanel_state->images,brewpanel_state->main_screen);
 }
@@ -147,6 +155,12 @@ brewpanel_core_update_and_render(
         &brewpanel_state->keypad,
         brewpanel_state->mode_control.mode,
         (mem_data)brewpanel_state->back_buffer.pixels
+    );
+
+    redraw |= brewpanel_pump_control_update(
+        &brewpanel_state->pump_control,
+        &brewpanel_state->images,
+        &brewpanel_state->button_store
     );
 
     //draw the buttons
