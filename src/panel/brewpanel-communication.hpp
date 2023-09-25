@@ -7,6 +7,9 @@
 #define BREWPANEL_COMMUNICATION_PANEL_X_OFFSET 740
 #define BREWPANEL_COMMUNICATION_PANEL_Y_OFFSET 355
 
+#define BREWPANEL_COMMUNICATION_LABEL_X_OFFSET (BREWPANEL_COMMUNICATION_PANEL_X_OFFSET + 25)
+#define BREWPANEL_COMMUNICATION_LABEL_Y_OFFSET (BREWPANEL_COMMUNICATION_PANEL_Y_OFFSET + 35)
+
 #define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE   256
 #define BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE        512
 #define BREWPANEL_COMMUNICATION_MESSAGE_HEARTBEAT_ACK_SIZE (sizeof(BrewPanelCommunicationMessageHeader) + sizeof(BrewPanelCommunicationMessagePayloadHeartBeatAck) + 1)
@@ -96,6 +99,8 @@ struct BrewPanelCommunicationHandler {
     BrewPanelControlCommData                         comm_data;
     BrewPanelCommunicationMessageBuffer              incoming_data_buffer;
     image_instance_id                                controller_status_panel;
+    image_instance_id                                controller_connected_label;
+    image_instance_id                                controller_disconnected_label;
     bool                                             redraw;
 };
 

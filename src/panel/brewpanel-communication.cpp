@@ -95,7 +95,13 @@ brewpanel_communication_create_handler(
         BREWPANEL_IMAGES_ID_CONTROLLER_PANEL,
         BREWPANEL_COMMUNICATION_PANEL_X_OFFSET,
         BREWPANEL_COMMUNICATION_PANEL_Y_OFFSET
-    ) ;
+    );
+    comm_handler->controller_disconnected_label = brewpanel_images_create_image_instance(
+        images,
+        BREWPANEL_IMAGES_ID_CONTROLLER_DISCONNECTED,
+        BREWPANEL_COMMUNICATION_LABEL_X_OFFSET,
+        BREWPANEL_COMMUNICATION_LABEL_Y_OFFSET
+    );
 }
 
 
@@ -329,6 +335,10 @@ brewpanel_communication_update(
         brewpanel_images_draw_image_instance(
             images,
             comm_handler->controller_status_panel
+        );
+        brewpanel_images_draw_image_instance(
+            images,
+            comm_handler->controller_disconnected_label
         );
     }
 
