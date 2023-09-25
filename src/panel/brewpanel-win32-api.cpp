@@ -346,12 +346,20 @@ brewpanel_win32_controller_read(LPVOID payload) {
     event_handles[0] = comm_data->read_thread_handle;
     event_handles[1] = overlapped_reader.hEvent; 
 
-    //TODO: not sure if i'm supposed to set this
     u64 event_mask = EV_TXEMPTY | EV_RXCHAR; 
+
+    DCB port_settings = {0};
 
     while (true) {
 
         if (comm_data->controller) {
+
+            //first, we are going to see if we can read the USB  setttings
+            if (!GetCommState(comm_data->controller, &port_settings)) {
+                CloseHandle(comm_data->controller);
+                comm_data->controller = NULL;
+                continue;
+            }
 
             bool comm_event_result = 
                 WaitCommEvent(
