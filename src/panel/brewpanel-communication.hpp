@@ -89,6 +89,11 @@ struct BrewPanelCommunicationMessageQueue {
     BrewPanelCommunicationMessage messages[BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES]; 
 };
 
+enum BrewPanelCommunicationControllerStatus: u8 {
+    BREWPANEL_COMMUNICATION_CONTROLLER_STATUS_NOT_CONNECTED = 0,
+    BREWPANEL_COMMUNICATION_CONTROLLER_STATUS_CONNECTED     = 1
+};
+
 struct BrewPanelCommunicationHandler {
     BrewPanelCommunicationMessageQueue               outgoing_message_queue;
     BrewPanelCommunicationMessageQueue               incoming_message_queue;
@@ -102,6 +107,7 @@ struct BrewPanelCommunicationHandler {
     image_instance_id                                controller_connected_label;
     image_instance_id                                controller_disconnected_label;
     bool                                             redraw;
+    BrewPanelCommunicationControllerStatus           controller_status;
 };
 
 typedef BrewPanelCommunicationMessageType                comm_message_type;

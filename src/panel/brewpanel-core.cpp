@@ -108,10 +108,6 @@ brewpanel_core_update_and_render(
 
     bool redraw = false;
 
-    brewpanel_communication_update(
-        &brewpanel_state->comm_handler,
-        &brewpanel_state->images);
-
     brewpanel_state->temp_control.hlt_temp_panel.values.value  = brewpanel_state->comm_handler.latest_heartbeat.hlt_element_temp;
     brewpanel_state->temp_control.mlt_temp_panel.values.value  = brewpanel_state->comm_handler.latest_heartbeat.mlt_element_temp;
     brewpanel_state->temp_control.boil_temp_panel.values.value = brewpanel_state->comm_handler.latest_heartbeat.boil_element_temp;
@@ -122,7 +118,11 @@ brewpanel_core_update_and_render(
         &brewpanel_state->button_store
     );
 
-    //update the clock
+    redraw |= brewpanel_communication_update(
+        &brewpanel_state->comm_handler,
+        &brewpanel_state->images
+    );
+    
     redraw |= brewpanel_clock_update(
         &brewpanel_state->clock,
         &brewpanel_state->images,
@@ -144,7 +144,6 @@ brewpanel_core_update_and_render(
         brewpanel_state->keypad.input_reference != NULL
     );
 
-    //draw the keypad
     redraw |= brewpanel_keypad_update(
         &brewpanel_state->keypad,
         &brewpanel_state->images,
@@ -166,7 +165,6 @@ brewpanel_core_update_and_render(
         &brewpanel_state->button_store
     );
 
-    //draw the buttons
     redraw |= brewpanel_buttons_draw(
         &brewpanel_state->button_store,
         &brewpanel_state->images,

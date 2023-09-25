@@ -102,9 +102,15 @@ brewpanel_communication_create_handler(
         BREWPANEL_COMMUNICATION_LABEL_X_OFFSET,
         BREWPANEL_COMMUNICATION_LABEL_Y_OFFSET
     );
+    comm_handler->controller_connected_label = brewpanel_images_create_image_instance(
+        images,
+        BREWPANEL_IMAGES_ID_CONTROLLER_CONNECTED,
+        BREWPANEL_COMMUNICATION_LABEL_X_OFFSET,
+        BREWPANEL_COMMUNICATION_LABEL_Y_OFFSET
+    );
+
+    comm_handler->controller_status = BREWPANEL_COMMUNICATION_CONTROLLER_STATUS_NOT_CONNECTED;
 }
-
-
 
 internal void
 brewpanel_communication_message_heartbeat_build(
@@ -326,21 +332,41 @@ brewpanel_communication_parse_incoming_message_buffer(
     comm_handler->comm_data.read_buffer_lock = false;
 }
 
-internal void
+internal bool
 brewpanel_communication_update(
     comm_handler* comm_handler,
     images_store* images) {
+
+    BrewPanelCommunicationControllerStatus previous_controller_status = BREWPANEL_COMMUNICATION_CONTROLLER_STATUS_NOT_CONNECTED;
 
     if (comm_handler->redraw) {
         brewpanel_images_draw_image_instance(
             images,
             comm_handler->controller_status_panel
         );
-        brewpanel_images_draw_image_instance(
-            images,
-            comm_handler->controller_disconnected_label
-        );
+
+        if (comm_handler->controller_status == BREWPANEL_COMMUNICATION_CONTROLLER_STATUS_CONNECTED) {
+
+            brewpanel_images_draw_image_instance(
+                images,
+                comm_handler->controller_connected_label
+            );
+        } 
+        else {
+
+            brewpanel_images_draw_image_instance(
+                images,
+                comm_handler->controller_disconnected_label
+            );
+        }
     }
+
+    if (comm_handler->controller_status != previous_controller_status) {
+        
+        comm_handler->redraw = true;
+    
+        previous_controller_status = comm_handler->controller_status;
+    } 
 
     //establish communication with the controller
     if (comm_handler->comm_data.controller == NULL) {
@@ -348,13 +374,18 @@ brewpanel_communication_update(
         comm_handler->comm_data.controller = brewpanel_platform_controller_handle(comm_handler->controller_info);
         
         if (comm_handler->comm_data.controller == NULL) {
-            return;
+            comm_handler->controller_status = BREWPANEL_COMMUNICATION_CONTROLLER_STATUS_NOT_CONNECTED;
+            return(comm_handler->redraw);
         }
     }
+    comm_handler->controller_status = BREWPANEL_COMMUNICATION_CONTROLLER_STATUS_CONNECTED;
+
 
     //parse the incoming message buffer
     brewpanel_communication_parse_incoming_message_buffer(comm_handler);
 
     //handle incoming messages
     brewpanel_communication_handle_messages_incoming(comm_handler);
+
+    return(comm_handler->redraw);
 }
