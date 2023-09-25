@@ -51,7 +51,8 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     //create the message handler
     brewpanel_communication_create_handler(
         &brewpanel_state->comm_handler,
-        controller_info
+        controller_info,
+        &brewpanel_state->images
     );
     
     //initialize the clock
@@ -107,7 +108,9 @@ brewpanel_core_update_and_render(
 
     bool redraw = false;
 
-    brewpanel_communication_update(&brewpanel_state->comm_handler);
+    brewpanel_communication_update(
+        &brewpanel_state->comm_handler,
+        &brewpanel_state->images);
 
     brewpanel_state->temp_control.hlt_temp_panel.values.value  = brewpanel_state->comm_handler.latest_heartbeat.hlt_element_temp;
     brewpanel_state->temp_control.mlt_temp_panel.values.value  = brewpanel_state->comm_handler.latest_heartbeat.mlt_element_temp;

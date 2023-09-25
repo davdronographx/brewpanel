@@ -2,6 +2,10 @@
 #define BREWPANEL_COMMUNICATION_HPP
 
 #include "brewpanel-types.hpp"
+#include "brewpanel-images.hpp"
+
+#define BREWPANEL_COMMUNICATION_PANEL_X_OFFSET 740
+#define BREWPANEL_COMMUNICATION_PANEL_Y_OFFSET 355
 
 #define BREWPANEL_COMMUNICATION_MESSAGE_PAYLOAD_MAX_SIZE   256
 #define BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE        512
@@ -35,8 +39,6 @@ struct BrewPanelCommunicationMessageHeader {
     u8  message_type;
     u16 message_size;
 };
-
-
 
 struct BrewPanelCommunicationMessageBuffer {
     u32      buffer_size;
@@ -93,24 +95,25 @@ struct BrewPanelCommunicationHandler {
     thread_handle                                    write_thread;
     BrewPanelControlCommData                         comm_data;
     BrewPanelCommunicationMessageBuffer              incoming_data_buffer;
-
+    image_instance_id                                controller_status_panel;
+    bool                                             redraw;
 };
 
-typedef BrewPanelCommunicationMessageType   comm_message_type;
-typedef BrewPanelCommunicationMessageSender comm_message_sender;
-typedef BrewPanelCommunicationMessageHeader comm_message_header; 
-typedef BrewPanelCommunicationMessage       comm_message;
-typedef BrewPanelCommunicationMode          comm_panel_mode;
-typedef BrewPanelCommunicationPumpStatus    comm_pump_status;
-typedef BrewPanelCommunicationTimerStatus   comm_timer_status;
-typedef BrewPanelCommunicationMessageQueue  comm_message_queue;
-typedef BrewPanelCommunicationHandler       comm_handler;
+typedef BrewPanelCommunicationMessageType                comm_message_type;
+typedef BrewPanelCommunicationMessageSender              comm_message_sender;
+typedef BrewPanelCommunicationMessageHeader              comm_message_header; 
+typedef BrewPanelCommunicationMessage                    comm_message;
+typedef BrewPanelCommunicationMode                       comm_panel_mode;
+typedef BrewPanelCommunicationPumpStatus                 comm_pump_status;
+typedef BrewPanelCommunicationTimerStatus                comm_timer_status;
+typedef BrewPanelCommunicationMessageQueue               comm_message_queue;
+typedef BrewPanelCommunicationHandler                    comm_handler;
 typedef BrewPanelCommunicationMessagePayloadHeartBeatAck comm_payload_heartbeat_ack;
 
 u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
-    sizeof(comm_message_header) + 1,
-    sizeof(comm_message_header) + 1,
-    sizeof(comm_message_header) + sizeof(comm_payload_heartbeat_ack) + 1
+    sizeof(comm_message_header),
+    sizeof(comm_message_header),
+    sizeof(comm_message_header) + sizeof(comm_payload_heartbeat_ack)
 };
 
 #define comm_message_size(type) ((BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID < 0 || type > BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT) ? 0 : comm_message_sizes[type])

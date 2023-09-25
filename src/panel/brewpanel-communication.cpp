@@ -79,7 +79,9 @@ brewpanel_communication_controller_read_callback(
 internal void
 brewpanel_communication_create_handler(
     BrewPanelCommunicationHandler* comm_handler,
-    BrewPanelControllerInfo        controller_info) {
+    BrewPanelControllerInfo        controller_info,
+    images_store*                  images
+    ) {
 
     *comm_handler = {0};
     comm_handler->controller_info              = controller_info;
@@ -87,6 +89,13 @@ brewpanel_communication_create_handler(
     comm_handler->write_thread                 = brewpanel_platform_controller_thread_start_write(&comm_handler->comm_data);
     comm_handler->comm_data.panel_comm_handler = (mem_data)comm_handler;
     comm_handler->comm_data.read_callback      = brewpanel_communication_controller_read_callback;
+    comm_handler->redraw                       = true;  
+    comm_handler->controller_status_panel      = brewpanel_images_create_image_instance(
+        images,
+        BREWPANEL_IMAGES_ID_CONTROLLER_PANEL,
+        BREWPANEL_COMMUNICATION_PANEL_X_OFFSET,
+        BREWPANEL_COMMUNICATION_PANEL_Y_OFFSET
+    ) ;
 }
 
 
@@ -313,7 +322,15 @@ brewpanel_communication_parse_incoming_message_buffer(
 
 internal void
 brewpanel_communication_update(
-    comm_handler* comm_handler) {
+    comm_handler* comm_handler,
+    images_store* images) {
+
+    if (comm_handler->redraw) {
+        brewpanel_images_draw_image_instance(
+            images,
+            comm_handler->controller_status_panel
+        );
+    }
 
     //establish communication with the controller
     if (comm_handler->comm_data.controller == NULL) {
