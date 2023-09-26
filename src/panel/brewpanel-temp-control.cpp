@@ -61,6 +61,44 @@ brewpanel_temp_control_heating_element_keypad_callback(
 }
 
 internal bool
+_brewpanel_temp_control_update_heating_element_control(
+    temp_control*            temp,
+    images_store*            images,
+    button_store*            buttons,
+    keypad*                  keypad,
+    panel_mode               mode,
+    image_instance_id        off_panel_id) {
+
+    local bool redraw = false;
+
+    heating_element_control* heating_element;
+
+    switch(mode) {
+
+        case BREWPANEL_MODE_MASH: {
+
+            heating_element = &temp->mlt_element;
+        } break;
+
+        case BREWPANEL_MODE_BOIL: {
+            heating_element = &temp->boil_element;
+        } break;
+
+        default: {
+            brewpanel_images_draw_image_instance(images,off_panel_id);
+            brewpanel_buttons_hide(temp->mlt_element.set_button_id);
+            brewpanel_buttons_hide(temp->mlt_element.off_button_id);
+            brewpanel_buttons_hide(temp->boil_element.set_button_id);
+            brewpanel_buttons_hide(temp->boil_element.off_button_id);
+            return(true);
+        } break;
+    }
+
+
+    return(redraw);
+}
+
+internal bool
 brewpanel_temp_control_update_heating_element_control(
     heating_element_control* heating_element,
     images_store*            images,
@@ -192,6 +230,25 @@ brewpanel_temp_control_update_temp_read(
 
         redraw = true;
     }
+
+    return(redraw);
+}
+
+internal bool
+_brewpanel_temp_control_update(
+    panel_mode    mode,
+    temp_control* control,
+    images_store* images,
+    button_store* buttons,
+    keypad*       keypad) {
+
+    local bool redraw = false;
+
+    //draw controls
+    redraw |= _brewpanel_temp_control_update_heating_element_control(control,images,buttons,keypad,mode,control->off_panel);
+    redraw |= brewpanel_temp_control_update_temp_read(&control->boil_temp_panel,images);
+    redraw |= brewpanel_temp_control_update_temp_read(&control->mlt_temp_panel,images);
+    redraw |= brewpanel_temp_control_update_temp_read(&control->hlt_temp_panel,images);
 
     return(redraw);
 }

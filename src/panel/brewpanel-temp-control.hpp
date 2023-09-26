@@ -44,10 +44,11 @@ struct BrewPanelTempRead {
 };
 typedef BrewPanelTempRead temp_read;
 
-enum BrewPanelTempHeatingElementState {
-    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF     = 0,
-    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET     = 1,
-    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING = 2
+enum BrewPanelTempHeatingElementState : u8 {
+    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_DISABLED = 0,
+    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF      = 1,
+    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET      = 2,
+    BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING  = 3
 };
 typedef BrewPanelTempHeatingElementState heating_element_state;
 

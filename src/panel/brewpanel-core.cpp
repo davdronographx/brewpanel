@@ -129,7 +129,7 @@ brewpanel_core_update_and_render(
         (mem_data)brewpanel_state->back_buffer.pixels
     );
 
-    redraw |= brewpanel_temp_control_update(
+    redraw |= _brewpanel_temp_control_update(
         brewpanel_state->mode_control.mode,
         &brewpanel_state->temp_control,
         &brewpanel_state->images,
