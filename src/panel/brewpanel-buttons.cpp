@@ -332,9 +332,10 @@ brewpanel_buttons_show(
     button_store* button_store,
     button_id button_id,
     images_store* images) {
-        
-    button_store->visibility[button_id] = BREWPANEL_BUTTON_VISIBILITY_SHOWN;
+    
     brewpanel_buttons_enable(button_store,button_id,images);
+
+    button_store->visibility[button_id] = BREWPANEL_BUTTON_VISIBILITY_SHOWN;
     brewpanel_buttons_draw_button(
         button_store,
         images,
