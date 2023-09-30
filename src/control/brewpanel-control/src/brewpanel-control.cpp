@@ -72,13 +72,6 @@ brewpanel_control_message_heartbeat_build_and_send() {
     Serial.write(message_buffer.buffer,message_buffer.buffer_size);
 }
 
-void brewpanel_control_incoming_message_queue_push(
-    BrewPanelCommunicationMessage message) {
-
-    
-
-}
-
 void brewpanel_control_parse_incoming_message_buffer() {
 
     if (control_state.read_buffer_lock) {
@@ -180,10 +173,14 @@ void brewpanel_control_parse_incoming_message_buffer() {
     
             BrewPanelCommunicationMessage message = *(BrewPanelCommunicationMessage*)message_buffer.buffer; 
 
-            brewpanel_control_incoming_message_queue_push(message);
+            if (control_state.message_queue.message_count < BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES) {
 
-            message_start = false;
-            message_end = false;
+                control_state.message_queue.messages[control_state.message_queue.message_count] = message;
+                ++control_state.message_queue.message_count;
+            }
+
+            message_start  = false;
+            message_end    = false;
             message_buffer = {0};
         }
     }
@@ -237,11 +234,30 @@ void brewpanel_control_handle_incoming_messages() {
     control_state.message_queue = {0};
 }
 
+void brewpanel_control_update_outputs() {
+
+    //pumps
+    if (control_state.water_pump_state) {
+        brewpanel_control_water_pump_on();
+    } 
+    else {
+        brewpanel_control_water_pump_off();
+    }
+    if (control_state.wort_pump_state) {
+        brewpanel_control_wort_pump_on();
+    } 
+    else {
+        brewpanel_control_wort_pump_off();
+    }
+}
+
 void loop() {
 
     brewpanel_control_parse_incoming_message_buffer();
 
     brewpanel_control_handle_incoming_messages();
+
+    brewpanel_control_update_outputs();
 
     brewpanel_control_message_heartbeat_build_and_send();
 }
