@@ -81,8 +81,9 @@ void brewpanel_control_incoming_message_queue_push(
 
 void brewpanel_control_parse_incoming_message_buffer() {
 
-    //wait until we can remove from the read buffer
-    // while (control_state.read_buffer_lock) { }
+    if (control_state.read_buffer_lock) {
+        return;
+    }
 
     control_state.read_buffer_lock = true;
 
@@ -195,13 +196,45 @@ void brewpanel_control_parse_incoming_message_buffer() {
     );
 
     control_state.incoming_data_buffer.buffer_size = 0;
-    control_state.read_buffer_lock = true;
+
+    control_state.read_buffer_lock = false;
 }
 
 void brewpanel_control_handle_incoming_messages() {
 
+    BrewPanelCommunicationMessage incoming_message = {0};
 
+    for (
+        u8 message_index = 0;
+        message_index < control_state.message_queue.message_count;
+        ++message_index
+    ) {
 
+        incoming_message = control_state.message_queue.messages[message_index];
+
+        switch (incoming_message.header.message_type) {
+
+            case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL: {
+
+                auto pump_payload = &incoming_message.payload.pump_control;
+
+                switch(pump_payload->pump_id) {
+                    
+                    case BREWPANEL_COMMUNICATION_PUMP_ID_WATER: {
+                        control_state.water_pump_state = pump_payload->pump_status == BREWPANEL_COMMUNICATION_PUMP_STATUS_ON;
+                    } break;
+                    
+                    case BREWPANEL_COMMUNICATION_PUMP_ID_WORT: {
+                        control_state.wort_pump_state = pump_payload->pump_status == BREWPANEL_COMMUNICATION_PUMP_STATUS_ON;
+                    } break;
+
+                    default: break;
+                }
+            } break;
+        }
+    }
+
+    control_state.message_queue = {0};
 }
 
 void loop() {
@@ -209,8 +242,6 @@ void loop() {
     brewpanel_control_parse_incoming_message_buffer();
 
     brewpanel_control_handle_incoming_messages();
-
-
 
     brewpanel_control_message_heartbeat_build_and_send();
 }
@@ -239,6 +270,7 @@ void serialEvent() {
 
     //if we can't fit the data into the buffer, we're done - try again next time we get a read
     if (bytes_to_preserve + read_buffer_size > BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE) {
+        control_state.read_buffer_lock = false;
         return;
     }
 
@@ -265,5 +297,6 @@ void serialEvent() {
         0,
         read_buffer_size
     );
+
     control_state.read_buffer_lock = false;
 }
