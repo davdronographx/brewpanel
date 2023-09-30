@@ -4,6 +4,7 @@
 #include "brewpanel-types.hpp"
 #include "brewpanel-images.hpp"
 #include "brewpanel-buttons.hpp"
+#include "brewpanel-communication.hpp"
 
 #define BREWPANEL_PUMPS_PANEL_X_OFFSET 527
 #define BREWPANEL_PUMPS_PANEL_Y_OFFSET 25
@@ -26,6 +27,7 @@ struct BrewPanelPumpControl {
     button_id                  wort_off_button;
     BrewPanelPumpControlStatus water_pump_status;
     BrewPanelPumpControlStatus wort_pump_status;
+    comm_handler*              comm;
 };
 
 typedef BrewPanelPumpControl pump_control;

@@ -95,7 +95,8 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     brewpanel_pump_control_create(
         &brewpanel_state->pump_control,
         &brewpanel_state->images,
-        &brewpanel_state->button_store
+        &brewpanel_state->button_store,
+        &brewpanel_state->comm_handler
     );
 
     //render the main background

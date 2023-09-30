@@ -3,6 +3,7 @@
 #include "brewpanel-pump-control.hpp"
 #include "brewpanel-images.cpp"
 #include "brewpanel-buttons.cpp"
+#include "brewpanel-communication.cpp"
 
 //NOTE: these functions seem backwards, because the pump buttons work like toggles
 //you are seeing the off button, but when you click it, the button switches to ON
@@ -13,6 +14,11 @@ brewpanel_pump_control_water_off_button_click(
 
     pump_control* pumps = (pump_control*)payload;
     pumps->water_pump_status = BREWPANEL_PUMP_CONTROL_STATUS_ON;
+    brewpanel_communication_send_message_pump_control(
+        pumps->comm,
+        BREWPANEL_COMMUNICATION_PUMP_ID_WATER,
+        BREWPANEL_COMMUNICATION_PUMP_STATUS_ON
+    );
 }
 
 internal void
@@ -21,6 +27,11 @@ brewpanel_pump_control_water_on_button_click(
 
     pump_control* pumps = (pump_control*)payload;
     pumps->water_pump_status = BREWPANEL_PUMP_CONTROL_STATUS_OFF;
+    brewpanel_communication_send_message_pump_control(
+        pumps->comm,
+        BREWPANEL_COMMUNICATION_PUMP_ID_WATER,
+        BREWPANEL_COMMUNICATION_PUMP_STATUS_OFF
+    );
 }
 
 internal void
@@ -29,6 +40,11 @@ brewpanel_pump_control_wort_off_button_click(
 
     pump_control* pumps = (pump_control*)payload;
     pumps->wort_pump_status = BREWPANEL_PUMP_CONTROL_STATUS_ON;
+    brewpanel_communication_send_message_pump_control(
+        pumps->comm,
+        BREWPANEL_COMMUNICATION_PUMP_ID_WORT,
+        BREWPANEL_COMMUNICATION_PUMP_STATUS_ON
+    );
 }
 
 internal void
@@ -37,16 +53,22 @@ brewpanel_pump_control_wort_on_button_click(
 
     pump_control* pumps = (pump_control*)payload;
     pumps->wort_pump_status = BREWPANEL_PUMP_CONTROL_STATUS_OFF;
+    brewpanel_communication_send_message_pump_control(
+        pumps->comm,
+        BREWPANEL_COMMUNICATION_PUMP_ID_WORT,
+        BREWPANEL_COMMUNICATION_PUMP_STATUS_OFF
+    );
 }
 
 internal void
 brewpanel_pump_control_create(
     pump_control* pumps,
     images_store* images,
-    button_store* buttons) {
+    button_store* buttons,
+    comm_handler* comm) {
 
     *pumps = {0};
-
+    pumps->comm = comm;
     pumps->water_pump_status = BREWPANEL_PUMP_CONTROL_STATUS_OFF;
     pumps->wort_on_button    = BREWPANEL_PUMP_CONTROL_STATUS_OFF;
 

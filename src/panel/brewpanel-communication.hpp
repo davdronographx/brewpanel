@@ -53,6 +53,12 @@ enum BrewPanelCommunicationMode : u8 {
     BREWPANEL_COMMUNICATION_MODE_BOIL = 0x02,
 };
 
+enum BrewPanelCommunicationPumpId : u8 {
+    BREWPANEL_COMMUNICATION_PUMP_ID_WATER = 0,
+    BREWPANEL_COMMUNICATION_PUMP_ID_WORT = 1,
+};
+
+
 enum BrewPanelCommunicationPumpStatus : u8 {
     BREWPANEL_COMMUNICATION_PUMP_STATUS_ON  = 0x01,
     BREWPANEL_COMMUNICATION_PUMP_STATUS_OFF = 0x02,

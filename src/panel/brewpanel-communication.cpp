@@ -4,6 +4,15 @@
 
 #pragma once
 
+internal void
+brewpanel_communication_send_message_pump_control(
+    BrewPanelCommunicationHandler*   comm,
+    BrewPanelCommunicationPumpId     pump_id,
+    BrewPanelCommunicationPumpStatus pump_status) {
+
+    brewpanel_nop();
+}
+
 internal bool
 brewpanel_communication_message_queue_push(
     BrewPanelCommunicationMessageQueue* queue,
@@ -113,17 +122,6 @@ brewpanel_communication_create_handler(
 }
 
 internal void
-brewpanel_communication_message_heartbeat_build(
-    BrewPanelCommunicationMessage* message) {
-
-    *message = {0};
-
-    message->header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
-    message->header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT;
-    message->header.message_size = sizeof(BrewPanelCommunicationMessageHeader) + 1;
-}
-
-internal void
 brewpanel_communication_message_buffer_build(
     BrewPanelCommunicationMessage        message,
     BrewPanelCommunicationMessageBuffer* message_buffer) {
@@ -170,38 +168,6 @@ brewpanel_communication_handle_messages_incoming(
     }
 
     comm->incoming_message_queue = {0};
-}
-
-internal void
-brewpanel_communication_handle_messages_outgoing(
-    comm_handler* comm) {
-
-    BrewPanelCommunicationMessageBuffer outgoing_message_buffer = {0};
-    BrewPanelCommunicationMessageBuffer incoming_message_buffer = {0};
-
-    // BrewPanelCommunicationMessage outgoing_message = {0};
-    // while (brewpanel_communication_message_queue_pop(&comm->outgoing_message_queue,&outgoing_message)) {
-        
-    //     //wait till the buffer is free
-    //     // while (comm->comm_data.bytes_to_write > 0) {
-    //     //     brewpanel_nop();
-    //     // }
-
-    //     // build the outgoing message
-    //     brewpanel_communication_message_buffer_build(
-    //         outgoing_message,
-    //         &outgoing_message_buffer
-    //     );
-
-    //     //write the message to the outgoing message buffer
-    //     //the write thread will pick it up and clear it once its sent to the controller
-    //     comm->comm_data.bytes_to_write = outgoing_message_buffer.buffer_size;
-    //     memmove(
-    //         comm->comm_data.write_buffer,
-    //         outgoing_message_buffer.buffer,
-    //         outgoing_message_buffer.buffer_size
-    //     );
-    // }
 }
 
 internal void
