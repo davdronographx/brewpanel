@@ -83,10 +83,16 @@ struct BrewPanelCommunicationMessagePayloadHeartBeatAck {
     u16 timer_elapsed_ms;
 };
 
+struct BrewPanelCommunicationMessagePayloadPumpControl {
+    u8 pump_id;
+    u8 pump_status;
+};
+
 struct BrewPanelCommunicationMessage {
     BrewPanelCommunicationMessageHeader header;
     union PayloadData  {
         BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat_ack;
+        BrewPanelCommunicationMessagePayloadPumpControl  pump_control;
     } payload;
 };
 

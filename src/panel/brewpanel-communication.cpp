@@ -5,12 +5,60 @@
 #pragma once
 
 internal void
+brewpanel_communication_message_buffer_build(
+    BrewPanelCommunicationMessage*       message,
+    BrewPanelCommunicationMessageBuffer* message_buffer) {
+
+    
+    char message_start[9] = "<<<<<<<<";
+    char message_end[9]   = ">>>>>>>>";
+
+    message_buffer->buffer_size = 16 + sizeof(BrewPanelCommunicationMessageHeader) + message->header.message_size;
+
+    //start
+    memmove(
+        message_buffer->buffer,
+        message_start,
+        8
+    );
+
+    //message
+    memmove(
+        &message_buffer->buffer[8],
+        message,
+        message_buffer->buffer_size - 16
+    );
+
+    //end
+    memmove(
+        &message_buffer->buffer[message_buffer->buffer_size - 8],
+        message_end,
+        8
+    );
+}
+
+internal void
 brewpanel_communication_send_message_pump_control(
     BrewPanelCommunicationHandler*   comm,
     BrewPanelCommunicationPumpId     pump_id,
     BrewPanelCommunicationPumpStatus pump_status) {
 
-    brewpanel_nop();
+
+    BrewPanelCommunicationMessage message = {0};
+    message.header.sender                    = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
+    message.header.message_type              = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL;
+    message.header.message_size              = sizeof(BrewPanelCommunicationMessagePayloadPumpControl);
+    message.payload.pump_control.pump_id     = pump_id;
+    message.payload.pump_control.pump_status = pump_status;
+
+    BrewPanelCommunicationMessageBuffer message_buffer = {0};
+    brewpanel_communication_message_buffer_build(
+        &message,
+        &message_buffer
+    );
+
+    
+
 }
 
 internal bool
