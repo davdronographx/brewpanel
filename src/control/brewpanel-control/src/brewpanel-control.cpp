@@ -14,11 +14,6 @@ void setup() {
     pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
-
-    // brewpanel_control_water_pump_off();
-    // brewpanel_control_wort_pump_off();
-    // brewpanel_control_hlt_contactor_off();
-    // brewpanel_control_boil_contactor_off();
 }
 
 void
