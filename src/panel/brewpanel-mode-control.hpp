@@ -4,6 +4,7 @@
 #include "brewpanel-types.hpp"
 #include "brewpanel-images.hpp"
 #include "brewpanel-buttons.hpp"
+#include "brewpanel-communication.hpp"
 
 #define BREWPANEL_MODE_PANEL_X_OFFSET 299
 #define BREWPANEL_MODE_PANEL_Y_OFFSET 25
@@ -18,6 +19,7 @@ struct BrewPanelModeControl {
     button_id           mash_mode_button;
     button_id           boil_mode_button;
     panel_mode          mode;
+    comm_handler*       comm;
 };
 typedef BrewPanelModeControl mode_control;
 

@@ -82,7 +82,8 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     brewpanel_mode_control_create(
         &brewpanel_state->mode_control,
         &brewpanel_state->images,
-        &brewpanel_state->button_store
+        &brewpanel_state->button_store,
+        &brewpanel_state->comm_handler
     );
 
     //keypad

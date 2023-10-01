@@ -3,8 +3,6 @@
 
 BrewPanelControlState control_state;
 
-bool io_test;
-
 void setup() {
 
     Serial.begin(115200,SERIAL_8N1);
@@ -16,8 +14,6 @@ void setup() {
     pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
-
-    io_test = false;
 }
 
 void
@@ -80,7 +76,6 @@ void brewpanel_control_handle_incoming_message() {
 
     BrewPanelCommunicationMessage incoming_message = control_state.incoming_message.parsed_message;
     
-
     switch (incoming_message.header.message_type) {
 
         case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL: {
@@ -100,6 +95,10 @@ void brewpanel_control_handle_incoming_message() {
                 default: break;
             }
         } break;
+
+        case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE: {
+            control_state.mode = incoming_message.payload.mode_change.mode;
+        } break;
     }
 
     control_state.incoming_message.message_ready = false;
@@ -110,6 +109,28 @@ void brewpanel_control_update_outputs() {
     //pumps
     brewpanel_control_water_pump(control_state.water_pump_state ? ON : OFF);
     brewpanel_control_wort_pump(control_state.wort_pump_state ? ON : OFF);
+
+    //mode/element contactors
+    switch (control_state.mode)
+    {
+        case BREWPANEL_COMMUNICATION_MODE_MASH: {
+            brewpanel_control_hlt_contactor_on();
+            brewpanel_control_boil_contactor_off();
+        } break;
+        
+        case BREWPANEL_COMMUNICATION_MODE_BOIL: {
+            brewpanel_control_hlt_contactor_off();
+            brewpanel_control_boil_contactor_on();
+        } break;
+
+        //default is off
+        case BREWPANEL_COMMUNICATION_MODE_OFF: {
+            brewpanel_control_hlt_contactor_off();
+            brewpanel_control_boil_contactor_off();
+        } 
+        default: break;
+    }
+
     delay(10);
 }
 

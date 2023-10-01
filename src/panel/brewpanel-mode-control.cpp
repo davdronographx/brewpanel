@@ -1,6 +1,7 @@
 #include "brewpanel-mode-control.hpp"
 #include "brewpanel-images.cpp"
 #include "brewpanel-buttons.cpp"
+#include "brewpanel-communication.cpp"
 
 #pragma once
 
@@ -14,6 +15,11 @@ brewpanel_mode_control_mash_button_click(
         control->mode == BREWPANEL_MODE_OFF
             ? BREWPANEL_MODE_MASH
             : BREWPANEL_MODE_OFF;
+
+    brewpanel_communication_send_message_mode_change(
+        control->comm,
+        control->mode == BREWPANEL_MODE_OFF ? BREWPANEL_COMMUNICATION_MODE_OFF : BREWPANEL_COMMUNICATION_MODE_MASH
+    );
 }
 
 internal void
@@ -26,16 +32,23 @@ brewpanel_mode_control_boil_button_click(
         control->mode == BREWPANEL_MODE_OFF
             ? BREWPANEL_MODE_BOIL
             : BREWPANEL_MODE_OFF;
+    
+    brewpanel_communication_send_message_mode_change(
+        control->comm,
+        control->mode == BREWPANEL_MODE_OFF ? BREWPANEL_COMMUNICATION_MODE_OFF : BREWPANEL_COMMUNICATION_MODE_BOIL
+    );
 }
 
 internal void
 brewpanel_mode_control_create(
     mode_control* mode,
     images_store* images,
-    button_store* buttons) {
+    button_store* buttons,
+    comm_handler* comm) {
 
     *mode = {0};
     mode->mode = BREWPANEL_MODE_OFF;
+    mode->comm = comm;
 
     mode->panel_id =
         brewpanel_images_create_image_instance(

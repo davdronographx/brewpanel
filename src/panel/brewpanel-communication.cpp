@@ -38,6 +38,30 @@ brewpanel_communication_message_buffer_build(
 }
 
 internal void
+brewpanel_communication_send_message_mode_change(
+    BrewPanelCommunicationHandler*   comm,
+    BrewPanelCommunicationMode       mode) {
+    
+    BrewPanelCommunicationMessage message = {0};
+    message.header.sender                    = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
+    message.header.message_type              = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE;
+    message.header.message_size              = sizeof(BrewPanelCommunicationMessagePayloadModeChange);
+    message.payload.mode_change.mode         = mode;
+
+    BrewPanelCommunicationMessageBuffer message_buffer = {0};
+    brewpanel_communication_message_buffer_build(
+        &message,
+        &message_buffer
+    );
+
+    brewpanel_platform_controller_write(
+        comm->comm_data.controller,
+        message_buffer.buffer,
+        message_buffer.buffer_size
+    );
+}
+
+internal void
 brewpanel_communication_send_message_pump_control(
     BrewPanelCommunicationHandler*   comm,
     BrewPanelCommunicationPumpId     pump_id,

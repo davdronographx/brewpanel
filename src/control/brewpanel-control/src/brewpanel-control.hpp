@@ -36,15 +36,10 @@ enum BrewPanelCommunicationMessageType : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT         = 0x01,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK     = 0x02,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE       = 0x03,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_ACK          = 0x03,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL      = 0x04,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL_ACK  = 0x05,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TIMER_CONTROL     = 0x06,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TIMER_CONTROL_ACK = 0x07,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TEMP_CONTROL      = 0x08,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TEMP_CONTROL_ACK  = 0x09,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PID_TUNE          = 0x0A,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PID_TUNE_ACK      = 0x0B,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT             = 0x0C,
 };
 
@@ -67,13 +62,13 @@ struct BrewPanelCommunicationMessagePayloadHeartbeat {
 };
 
 enum BREWPANEL_COMMUNICATION_PUMP_ID : u8 {
-    BREWPANEL_COMMUNICATION_PUMP_ID_WATER = 0,
-    BREWPANEL_COMMUNICATION_PUMP_ID_WORT = 1,
+    BREWPANEL_COMMUNICATION_PUMP_ID_WATER = 0x00,
+    BREWPANEL_COMMUNICATION_PUMP_ID_WORT  = 0x01,
 };
 
 enum BREWPANEL_COMMUNICATION_PUMP_STATUS : u8 {
-    BREWPANEL_COMMUNICATION_PUMP_STATUS_ON  = 1,
-    BREWPANEL_COMMUNICATION_PUMP_STATUS_OFF = 2
+    BREWPANEL_COMMUNICATION_PUMP_STATUS_ON  = 0x01,
+    BREWPANEL_COMMUNICATION_PUMP_STATUS_OFF = 0x02
 };
 
 struct BrewPanelCommunicationMessagePayloadPumpControl {
@@ -81,9 +76,22 @@ struct BrewPanelCommunicationMessagePayloadPumpControl {
     u8 pump_status;
 };
 
+
+enum BrewPanelCommunicationMode : u8 {
+    BREWPANEL_COMMUNICATION_MODE_OFF  = 0x01,
+    BREWPANEL_COMMUNICATION_MODE_MASH = 0x02,
+    BREWPANEL_COMMUNICATION_MODE_BOIL = 0x03,
+};
+
+struct BrewPanelCommunicationMessagePayloadModeChange {
+    BrewPanelCommunicationMode mode;
+};
+
+
 union BrewPanelCommunicationMessagePayload {
     BrewPanelCommunicationMessagePayloadHeartbeat   heartbeat;
     BrewPanelCommunicationMessagePayloadPumpControl pump_control;
+    BrewPanelCommunicationMessagePayloadModeChange  mode_change;
 };
 
 struct BrewPanelCommunicationMessage {
@@ -115,6 +123,7 @@ struct BrewPanelControlState {
     BrewPanelMessageBuffer          incoming_data_buffer;
     BrewPanelMessageQueue           message_queue;
     BrewPanelControlIncomingMessage incoming_message;
+    BrewPanelCommunicationMode      mode;
 };
 
 typedef BrewPanelCommunicationMessageHeader           comm_message_header;
@@ -132,8 +141,8 @@ u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
 
 #define BREWPANEL_CONTROL_PIN_WATER_PUMP     2
 #define BREWPANEL_CONTROL_PIN_WORT_PUMP      3
-#define BREWPANEL_CONTROL_PIN_HLT_CONTACTOR  10
-#define BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR 11
+#define BREWPANEL_CONTROL_PIN_HLT_CONTACTOR  4
+#define BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR 5
 
 #define brewpanel_control_water_pump_on()      if (digitalRead(BREWPANEL_CONTROL_PIN_WATER_PUMP)     == LOW)  {digitalWrite(BREWPANEL_CONTROL_PIN_WATER_PUMP,HIGH);}
 #define brewpanel_control_water_pump_off()     if (digitalRead(BREWPANEL_CONTROL_PIN_WATER_PUMP)     == HIGH) {digitalWrite(BREWPANEL_CONTROL_PIN_WATER_PUMP,LOW);}
