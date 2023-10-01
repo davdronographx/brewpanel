@@ -125,13 +125,13 @@ u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
 #define BREWPANEL_CONTROL_PIN_HLT_CONTACTOR  10
 #define BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR 11
 
-#define brewpanel_control_water_pump_on()      digitalWrite(BREWPANEL_CONTROL_PIN_WATER_PUMP,HIGH)
-#define brewpanel_control_water_pump_off()     digitalWrite(BREWPANEL_CONTROL_PIN_WATER_PUMP,LOW)
-#define brewpanel_control_wort_pump_on()       digitalWrite(BREWPANEL_CONTROL_PIN_WORT_PUMP,HIGH)
-#define brewpanel_control_wort_pump_off()      digitalWrite(BREWPANEL_CONTROL_PIN_WORT_PUMP,LOW)
-#define brewpanel_control_hlt_contactor_on()   digitalWrite(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,HIGH)
-#define brewpanel_control_hlt_contactor_off()  digitalWrite(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,LOW)
-#define brewpanel_control_boil_contactor_on()  digitalWrite(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,HIGH)
-#define brewpanel_control_boil_contactor_off() digitalWrite(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,LOW)
+#define brewpanel_control_water_pump_on()      if (digitalRead(BREWPANEL_CONTROL_PIN_WATER_PUMP)     == LOW)  {digitalWrite(BREWPANEL_CONTROL_PIN_WATER_PUMP,HIGH);}
+#define brewpanel_control_water_pump_off()     if (digitalRead(BREWPANEL_CONTROL_PIN_WATER_PUMP)     == HIGH) {digitalWrite(BREWPANEL_CONTROL_PIN_WATER_PUMP,LOW);}
+#define brewpanel_control_wort_pump_on()       if (digitalRead(BREWPANEL_CONTROL_PIN_WORT_PUMP)      == LOW)  {digitalWrite(BREWPANEL_CONTROL_PIN_WORT_PUMP,HIGH);}
+#define brewpanel_control_wort_pump_off()      if (digitalRead(BREWPANEL_CONTROL_PIN_WORT_PUMP)      == HIGH) {digitalWrite(BREWPANEL_CONTROL_PIN_WORT_PUMP,LOW);}
+#define brewpanel_control_hlt_contactor_on()   if (digitalRead(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR)  == LOW)  {digitalWrite(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,HIGH);}
+#define brewpanel_control_hlt_contactor_off()  if (digitalRead(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR)  == HIGH) {digitalWrite(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,LOW);}
+#define brewpanel_control_boil_contactor_on()  if (digitalRead(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR) == LOW)  {digitalWrite(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,HIGH);}
+#define brewpanel_control_boil_contactor_off() if (digitalRead(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR) == HIGH) {digitalWrite(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,LOW);}
 
 #endif //BREWPANEL_CONTROL _HPP

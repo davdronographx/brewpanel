@@ -16,6 +16,8 @@ void setup() {
     pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
+
+    io_test = false;
 }
 
 void
@@ -261,8 +263,6 @@ void loop() {
 
 void serialEvent() {
 
-    brewpanel_control_water_pump_on();
-
     //read from the port
     mem_byte read_buffer[128];
     u8       read_buffer_size = 0;
@@ -271,6 +271,16 @@ void serialEvent() {
 
         read_buffer[read_buffer_size] = Serial.read();
         ++read_buffer_size;
+    }
+
+    if (read_buffer_size == 22) {
+        brewpanel_control_water_pump_on();
+        brewpanel_control_wort_pump_on();
+        delay(1000);
+        brewpanel_control_water_pump_off();
+        brewpanel_control_wort_pump_off();
+        delay(1000);
+
     }
 
     //wait until we can move the data to the incoming message buffer

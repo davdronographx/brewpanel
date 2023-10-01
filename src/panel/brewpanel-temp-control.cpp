@@ -52,7 +52,7 @@ brewpanel_temp_control_heating_element_keypad_callback(
             brewpanel_temp_control_change_element_state(heating_element,heating_element->previous_state);
         } break;
 
-        default: {
+        default: {  
 
         } break;
     }
