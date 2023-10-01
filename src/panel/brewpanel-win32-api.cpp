@@ -470,11 +470,6 @@ brewpanel_win32_api_controller_write(
 
     brewpanel_assert(controller_handle);
 
-    //create the overlapped event
-    OVERLAPPED overlapped_writer = {0};
-    overlapped_writer.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    brewpanel_assert(overlapped_writer.hEvent);
-
     DWORD bytes_written = 0;
 
     bool write_result = 
@@ -483,20 +478,8 @@ brewpanel_win32_api_controller_write(
             write_buffer,
             write_buffer_size,
             &bytes_written,
-            &overlapped_writer
+            NULL
     );
 
-
-    if (write_result) {
-        CloseHandle(overlapped_writer.hEvent);
-        return;
-    }
-
-    //wait for the pending write
-    WaitForSingleObject(
-        overlapped_writer.hEvent,
-        1000
-    );
-
-    CloseHandle(overlapped_writer.hEvent);
+    brewpanel_nop();
 }
