@@ -72,8 +72,8 @@ enum BREWPANEL_COMMUNICATION_PUMP_ID : u8 {
 };
 
 enum BREWPANEL_COMMUNICATION_PUMP_STATUS : u8 {
-    BREWPANEL_COMMUNICATION_PUMP_STATUS_ON  = 0,
-    BREWPANEL_COMMUNICATION_PUMP_STATUS_OFF = 1
+    BREWPANEL_COMMUNICATION_PUMP_STATUS_ON  = 1,
+    BREWPANEL_COMMUNICATION_PUMP_STATUS_OFF = 2
 };
 
 struct BrewPanelCommunicationMessagePayloadPumpControl {
@@ -96,15 +96,25 @@ struct BrewPanelMessageQueue {
     BrewPanelCommunicationMessage messages[BREWPANEL_COMMUNICATION_MESSAGE_QUEUE_MAX_MESSAGES];
 };
 
+struct BrewPanelControlIncomingMessage{
+    bool                          message_start;
+    bool                          message_end;
+    bool                          message_ready;
+    u8                            message_size;
+    u8                            message_buffer[BREWPANEL_COMMUNICATION_MESSAGE_BUFFER_SIZE];
+    BrewPanelCommunicationMessage parsed_message;
+};
+
 struct BrewPanelControlState {
-    u8                     hlt_temp;
-    u8                     mlt_temp;
-    u8                     boil_temp;
-    bool                   water_pump_state;
-    bool                   wort_pump_state;
-    bool                   read_buffer_lock;
-    BrewPanelMessageBuffer incoming_data_buffer;
-    BrewPanelMessageQueue  message_queue;
+    u8                              hlt_temp;
+    u8                              mlt_temp;
+    u8                              boil_temp;
+    bool                            water_pump_state;
+    bool                            wort_pump_state;
+    bool                            read_buffer_lock;
+    BrewPanelMessageBuffer          incoming_data_buffer;
+    BrewPanelMessageQueue           message_queue;
+    BrewPanelControlIncomingMessage incoming_message;
 };
 
 typedef BrewPanelCommunicationMessageHeader           comm_message_header;
@@ -133,5 +143,13 @@ u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
 #define brewpanel_control_hlt_contactor_off()  if (digitalRead(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR)  == HIGH) {digitalWrite(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,LOW);}
 #define brewpanel_control_boil_contactor_on()  if (digitalRead(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR) == LOW)  {digitalWrite(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,HIGH);}
 #define brewpanel_control_boil_contactor_off() if (digitalRead(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR) == HIGH) {digitalWrite(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,LOW);}
+
+#define ON  HIGH
+#define OFF LOW
+
+#define brewpanel_control_water_pump(state)     digitalWrite(BREWPANEL_CONTROL_PIN_WATER_PUMP,state)
+#define brewpanel_control_wort_pump(state)      digitalWrite(BREWPANEL_CONTROL_PIN_WORT_PUMP,state)
+#define brewpanel_control_hlt_contactor(state)  digitalWrite(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,state)
+#define brewpanel_control_boil_contactor(state) digitalWrite(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,state)
 
 #endif //BREWPANEL_CONTROL _HPP
