@@ -172,7 +172,7 @@ typedef void
     controller_handle handle
 );
 
-typedef bool
+typedef void
 (*func_platform_controller_write_buffer)
 (
     controller_handle controller_handle,
@@ -199,7 +199,6 @@ struct BrewpanelPlatformApi {
     func_platform_controller_handle             controller_handle;
     func_platform_controller_close              controller_close;
     func_platform_start_controller_comm_thread  controller_thread_start_read;
-    func_platform_start_controller_comm_thread  controller_thread_start_write;
     func_platform_controller_write_buffer       controller_write;
 };
 

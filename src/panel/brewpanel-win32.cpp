@@ -246,7 +246,7 @@ wWinMain(
     platform_api.controller_handle             = brewpanel_win32_api_controller_handle;
     platform_api.controller_close              = brewpanel_win32_api_controller_close;
     platform_api.controller_thread_start_read  = brewpanel_win32_api_controller_thread_start_read;
-    platform_api.controller_thread_start_write = brewpanel_win32_api_controller_thread_start_write;
+    platform_api.controller_write              = brewpanel_win32_api_controller_write;
 
     //open the window
     WNDCLASS window_class      = {0};

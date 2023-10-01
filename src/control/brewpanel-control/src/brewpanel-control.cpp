@@ -3,6 +3,8 @@
 
 BrewPanelControlState control_state;
 
+bool io_test;
+
 void setup() {
 
     Serial.begin(115200,SERIAL_8N1);
@@ -258,6 +260,8 @@ void loop() {
 }
 
 void serialEvent() {
+
+    brewpanel_control_water_pump_on();
 
     //read from the port
     mem_byte read_buffer[128];

@@ -57,8 +57,11 @@ brewpanel_communication_send_message_pump_control(
         &message_buffer
     );
 
-    
-
+    brewpanel_platform_controller_write(
+        comm->comm_data.controller,
+        message_buffer.buffer,
+        message_buffer.buffer_size
+    );
 }
 
 internal bool
@@ -143,7 +146,6 @@ brewpanel_communication_create_handler(
     *comm_handler = {0};
     comm_handler->controller_info              = controller_info;
     comm_handler->read_thread                  = brewpanel_platform_controller_thread_start_read(&comm_handler->comm_data);
-    comm_handler->write_thread                 = brewpanel_platform_controller_thread_start_write(&comm_handler->comm_data);
     comm_handler->comm_data.panel_comm_handler = (mem_data)comm_handler;
     comm_handler->comm_data.read_callback      = brewpanel_communication_controller_read_callback;
     comm_handler->redraw                       = true;  

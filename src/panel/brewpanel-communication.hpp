@@ -112,7 +112,6 @@ struct BrewPanelCommunicationHandler {
     BrewPanelControllerInfo                          controller_info;
     BrewPanelCommunicationMessagePayloadHeartBeatAck latest_heartbeat;
     thread_handle                                    read_thread;
-    thread_handle                                    write_thread;
     BrewPanelControlCommData                         comm_data;
     BrewPanelCommunicationMessageBuffer              incoming_data_buffer;
     image_instance_id                                controller_status_panel;
