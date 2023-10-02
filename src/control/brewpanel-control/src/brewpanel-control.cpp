@@ -1,7 +1,15 @@
 #include <Arduino.h>
+#include <Adafruit_MAX31865.h>
 #include "brewpanel-control.hpp"
 
+
 BrewPanelControlState control_state;
+
+
+#define RREF      430.0
+#define RNOMINAL  100.0
+
+Adafruit_MAX31865 thermo = Adafruit_MAX31865(10, 11, 12, 13);
 
 void setup() {
 
@@ -14,6 +22,8 @@ void setup() {
     pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
+
+    thermo.begin(MAX31865_3WIRE);  // set to 2WIRE or 4WIRE as necessary
 }
 
 void
@@ -189,12 +199,27 @@ void brewpanel_control_read_and_parse_incoming_data() {
     }
 }
 
+void brewpanel_control_update_temperatures() {
+
+}
+
 void loop() {
+
+    uint16_t rtd = thermo.readRTD();
+    float ratio = rtd;
+    ratio /= 32768;
+    u16 tmp_long =  (u16)((thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+    if (tmp_long > 212) {
+        tmp_long = 212;
+    }
+    u8 tmp = tmp_long;
+
+    control_state.hlt_temp = tmp;
 
     brewpanel_control_read_and_parse_incoming_data();
 
     brewpanel_control_handle_incoming_message();
-
+    
     brewpanel_control_update_outputs();
 
     brewpanel_control_message_heartbeat_build_and_send();
