@@ -2,13 +2,7 @@
 #include <Adafruit_MAX31865.h>
 #include "brewpanel-control.hpp"
 
-
 BrewPanelControlState control_state;
-
-#define RREF      430.0
-#define RNOMINAL  100.0
-
-Adafruit_MAX31865 thermo = Adafruit_MAX31865(10, 11, 12, 13);
 
 Adafruit_MAX31865 hlt_thermo = 
     Adafruit_MAX31865(
@@ -32,20 +26,21 @@ Adafruit_MAX31865 boil_thermo =
         BREWPANEL_CONTROL_THERMO_PIN_CLK
 );
 
-
 void setup() {
+
+    control_state = {0};
 
     Serial.begin(115200,SERIAL_8N1);
     Serial.setTimeout(1000);
-
-    control_state = {0};
 
     pinMode(BREWPANEL_CONTROL_PIN_WATER_PUMP,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
 
-    thermo.begin(MAX31865_3WIRE);  // set to 2WIRE or 4WIRE as necessary
+    hlt_thermo.begin(MAX31865_3WIRE);
+    mlt_thermo.begin(MAX31865_3WIRE);
+    boil_thermo.begin(MAX31865_3WIRE);
 }
 
 void
@@ -223,28 +218,35 @@ void brewpanel_control_read_and_parse_incoming_data() {
 
 void brewpanel_control_update_temperatures() {
 
-    u16 hlt_temp  = (u16)((hlt_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
-    u16 mlt_temp  = (u16)((mlt_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+    u16 hlt_temp  = (u16)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
+    u16 mlt_temp  = (u16)((mlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
     u16 boil_temp = (u16)((boil_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
 
+    if (hlt_temp > 212) {
+        hlt_temp = 212;
+    }
 
+    if (mlt_temp > 212) {
+        mlt_temp = 212;
+    }
+
+    if (boil_temp > 212) {
+        boil_temp = 212;
+    }
+
+    control_state.hlt_temp  = (u8)hlt_temp;
+    control_state.mlt_temp  = (u8)mlt_temp;
+    control_state.boil_temp = (u8)boil_temp;
 }
 
 void loop() {
 
-    // uint16_t rtd = thermo.readRTD();
-    // u16 tmp_long =  (u16)((thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
-    // if (tmp_long > 212) {
-    //     tmp_long = 212;
-    // }
-    // u8 tmp = tmp_long;
-
-    // control_state.hlt_temp = tmp;
-
     brewpanel_control_read_and_parse_incoming_data();
 
     brewpanel_control_handle_incoming_message();
-    
+
+    brewpanel_control_update_temperatures();
+
     brewpanel_control_update_outputs();
 
     brewpanel_control_message_heartbeat_build_and_send();

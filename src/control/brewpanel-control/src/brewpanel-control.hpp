@@ -132,12 +132,6 @@ typedef BrewPanelCommunicationMessagePayloadHeartbeat comm_payload_heartbeat_ack
 typedef BrewPanelCommunicationMessage                 comm_message;
 typedef BrewPanelMessageBuffer                        comm_message_buffer;
 
-u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
-    sizeof(comm_message_header) + 1,
-    0,
-    sizeof(comm_message_header) + sizeof(comm_payload_heartbeat_ack) + 1
-};
-
 #define comm_message_size(type) ((BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID < 0 || type > BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT) ? 0 : comm_message_sizes[type])
 
 #define BREWPANEL_CONTROL_PIN_WATER_PUMP     2
@@ -168,5 +162,8 @@ u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_HLT  11
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_MLT  12
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_BOIL 13
+
+#define RREF      430.0
+#define RNOMINAL  100.0
 
 #endif //BREWPANEL_CONTROL _HPP
