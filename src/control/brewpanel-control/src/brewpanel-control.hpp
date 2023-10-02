@@ -1,6 +1,7 @@
 #ifndef BREWPANEL_CONTROL_HPP
 #define BREWPANEL_CONTROL_HPP
 
+
 typedef char  s8;
 typedef short s16;
 typedef int   s32;
@@ -160,5 +161,12 @@ u16 comm_message_sizes[BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT] = {
 #define brewpanel_control_wort_pump(state)      digitalWrite(BREWPANEL_CONTROL_PIN_WORT_PUMP,state)
 #define brewpanel_control_hlt_contactor(state)  digitalWrite(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,state)
 #define brewpanel_control_boil_contactor(state) digitalWrite(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,state)
+
+#define BREWPANEL_CONTROL_THERMO_PIN_CLK     8
+#define BREWPANEL_CONTROL_THERMO_PIN_SDO     9
+#define BREWPANEL_CONTROL_THERMO_PIN_SDI     10
+#define BREWPANEL_CONTROL_THERMO_PIN_CS_HLT  11
+#define BREWPANEL_CONTROL_THERMO_PIN_CS_MLT  12
+#define BREWPANEL_CONTROL_THERMO_PIN_CS_BOIL 13
 
 #endif //BREWPANEL_CONTROL _HPP

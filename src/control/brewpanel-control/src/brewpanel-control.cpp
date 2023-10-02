@@ -5,11 +5,33 @@
 
 BrewPanelControlState control_state;
 
-
 #define RREF      430.0
 #define RNOMINAL  100.0
 
 Adafruit_MAX31865 thermo = Adafruit_MAX31865(10, 11, 12, 13);
+
+Adafruit_MAX31865 hlt_thermo = 
+    Adafruit_MAX31865(
+        BREWPANEL_CONTROL_THERMO_PIN_CS_HLT, 
+        BREWPANEL_CONTROL_THERMO_PIN_SDI, 
+        BREWPANEL_CONTROL_THERMO_PIN_SDO, 
+        BREWPANEL_CONTROL_THERMO_PIN_CLK
+);
+Adafruit_MAX31865 mlt_thermo = 
+    Adafruit_MAX31865(
+        BREWPANEL_CONTROL_THERMO_PIN_CS_MLT, 
+        BREWPANEL_CONTROL_THERMO_PIN_SDI, 
+        BREWPANEL_CONTROL_THERMO_PIN_SDO, 
+        BREWPANEL_CONTROL_THERMO_PIN_CLK
+);
+Adafruit_MAX31865 boil_thermo = 
+    Adafruit_MAX31865(
+        BREWPANEL_CONTROL_THERMO_PIN_CS_BOIL, 
+        BREWPANEL_CONTROL_THERMO_PIN_SDI, 
+        BREWPANEL_CONTROL_THERMO_PIN_SDO, 
+        BREWPANEL_CONTROL_THERMO_PIN_CLK
+);
+
 
 void setup() {
 
@@ -201,20 +223,23 @@ void brewpanel_control_read_and_parse_incoming_data() {
 
 void brewpanel_control_update_temperatures() {
 
+    u16 hlt_temp  = (u16)((hlt_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+    u16 mlt_temp  = (u16)((mlt_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+    u16 boil_temp = (u16)((boil_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+
+
 }
 
 void loop() {
 
-    uint16_t rtd = thermo.readRTD();
-    float ratio = rtd;
-    ratio /= 32768;
-    u16 tmp_long =  (u16)((thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
-    if (tmp_long > 212) {
-        tmp_long = 212;
-    }
-    u8 tmp = tmp_long;
+    // uint16_t rtd = thermo.readRTD();
+    // u16 tmp_long =  (u16)((thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+    // if (tmp_long > 212) {
+    //     tmp_long = 212;
+    // }
+    // u8 tmp = tmp_long;
 
-    control_state.hlt_temp = tmp;
+    // control_state.hlt_temp = tmp;
 
     brewpanel_control_read_and_parse_incoming_data();
 
