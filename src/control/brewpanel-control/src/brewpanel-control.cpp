@@ -41,6 +41,7 @@ void setup() {
     hlt_thermo.begin(MAX31865_3WIRE);
     mlt_thermo.begin(MAX31865_3WIRE);
     boil_thermo.begin(MAX31865_3WIRE);
+
 }
 
 void
@@ -208,39 +209,20 @@ void brewpanel_control_read_and_parse_incoming_data() {
 }
 
 
-void brewpanel_control_update_temperatures_async() {
-
-    //hlt
-    uint16_t hlt_rtd    = 0;
-    if (hlt_thermo.readRTDAsync(hlt_rtd)) {
-        u16 hlt_temp  = (u16)((hlt_thermo.temperatureAsync(hlt_rtd,RNOMINAL,  RREF) * 1.8) + 32);
-        control_state.hlt_temp  = (u8)hlt_temp;
-        delay(10);
-    }    
-
-    //mlt
-    uint16_t mlt_rtd    = 0;
-    if (mlt_thermo.readRTDAsync(mlt_rtd)) {
-        u16 mlt_temp = (u16)((mlt_thermo.temperatureAsync(mlt_rtd,RNOMINAL,  RREF) * 1.8) + 32);
-        control_state.mlt_temp  = (u8)mlt_temp;
-        delay(10);
-    }
-    
-    //boil
-    uint16_t boil_rtd    = 0;
-    if (boil_thermo.readRTDAsync(boil_rtd)) {
-        u16 boil_temp = (u16)((boil_thermo.temperatureAsync(boil_rtd,RNOMINAL, RREF) * 1.8) + 32);
-        control_state.boil_temp = (u8)boil_temp;
-        delay(10);
-    }
-}
-
 u16 thermo_index = 0;
 
 void brewpanel_control_update_temperatures() {
 
-    static unsigned long chrono         = millis();
-    unsigned long elapsed = millis();
+    static unsigned long chrono = millis();
+    unsigned long elapsed       = millis();
+
+    static u16 hlt_temp  = 0;
+    static u16 mlt_temp  = 0;
+    static u16 boil_temp = 0;
+
+    control_state.mlt_temp  = (u8)mlt_temp;
+    control_state.hlt_temp  = (u8)hlt_temp;
+    control_state.boil_temp = (u8)boil_temp;
 
     if (elapsed - chrono < 1000) {
         return;
@@ -251,27 +233,24 @@ void brewpanel_control_update_temperatures() {
     switch (thermo_index) {
 
         case 0: {
-            u16 hlt_temp  = (u16)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
+            hlt_temp = (u16)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
             if (hlt_temp > 212) {
                hlt_temp = 212;
             }
-            control_state.hlt_temp  = (u8)hlt_temp;
         } break;
 
         case 1: {
-            u16 mlt_temp  = (u16)((mlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
+            mlt_temp = (u16)((mlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
             if (mlt_temp > 212) {
                 mlt_temp = 212;
             }
-            control_state.mlt_temp  = (u8)mlt_temp;
         } break;
 
         case 2: {
-            u16 boil_temp = (u16)((boil_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+            boil_temp = (u16)((boil_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
             if (boil_temp > 212) {
                 boil_temp = 212;
             }
-            control_state.boil_temp = (u8)boil_temp;
         } break;
     }
 
