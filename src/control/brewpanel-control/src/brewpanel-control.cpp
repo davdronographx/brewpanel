@@ -51,16 +51,6 @@ brewpanel_control_message_heartbeat_build_and_send() {
     char msg_start[9] ="<<<<<<<<";
     char msg_end[9] = ">>>>>>>>";
 
-    control_state.hlt_temp++;
-    control_state.mlt_temp++;
-    control_state.boil_temp++;
-
-    if (control_state.boil_temp > 212) {
-        control_state.hlt_temp = 0;
-        control_state.mlt_temp = 0;
-        control_state.boil_temp = 0;
-    }
-
     comm_message heartbeat = {0};
     heartbeat.header.sender       = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_PLC;
     heartbeat.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
@@ -71,7 +61,7 @@ brewpanel_control_message_heartbeat_build_and_send() {
     heartbeat.payload.heartbeat.boil_element_temp = control_state.boil_temp;
     heartbeat.payload.heartbeat.timer_set_point_ms = 0xAAAA;
     heartbeat.payload.heartbeat.timer_elapsed_ms = 0xBBBB;
-    message_buffer.buffer_size = comm_message_size(heartbeat.header.message_type) + 16; 
+    message_buffer.buffer_size = sizeof(comm_message_header) + sizeof(comm_payload_heartbeat_ack) + 16; 
 
     memmove(
         message_buffer.buffer,
@@ -82,11 +72,12 @@ brewpanel_control_message_heartbeat_build_and_send() {
     memmove(
         &message_buffer.buffer[8],
         &heartbeat,
-        comm_message_size(heartbeat.header.message_type)
+        
+        message_buffer.buffer_size
     );
 
     memmove(
-        &message_buffer.buffer[8 + comm_message_size(heartbeat.header.message_type)],
+        &message_buffer.buffer[8 + message_buffer.buffer_size],
         msg_end,
         8
     );
@@ -216,36 +207,86 @@ void brewpanel_control_read_and_parse_incoming_data() {
     }
 }
 
+
+void brewpanel_control_update_temperatures_async() {
+
+    //hlt
+    uint16_t hlt_rtd    = 0;
+    if (hlt_thermo.readRTDAsync(hlt_rtd)) {
+        u16 hlt_temp  = (u16)((hlt_thermo.temperatureAsync(hlt_rtd,RNOMINAL,  RREF) * 1.8) + 32);
+        control_state.hlt_temp  = (u8)hlt_temp;
+        delay(10);
+    }    
+
+    //mlt
+    uint16_t mlt_rtd    = 0;
+    if (mlt_thermo.readRTDAsync(mlt_rtd)) {
+        u16 mlt_temp = (u16)((mlt_thermo.temperatureAsync(mlt_rtd,RNOMINAL,  RREF) * 1.8) + 32);
+        control_state.mlt_temp  = (u8)mlt_temp;
+        delay(10);
+    }
+    
+    //boil
+    uint16_t boil_rtd    = 0;
+    if (boil_thermo.readRTDAsync(boil_rtd)) {
+        u16 boil_temp = (u16)((boil_thermo.temperatureAsync(boil_rtd,RNOMINAL, RREF) * 1.8) + 32);
+        control_state.boil_temp = (u8)boil_temp;
+        delay(10);
+    }
+}
+
+u16 thermo_index = 0;
+
 void brewpanel_control_update_temperatures() {
 
-    u16 hlt_temp  = (u16)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
-    u16 mlt_temp  = (u16)((mlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
-    u16 boil_temp = (u16)((boil_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+    static unsigned long chrono         = millis();
+    unsigned long elapsed = millis();
 
-    if (hlt_temp > 212) {
-        hlt_temp = 212;
+    if (elapsed - chrono < 1000) {
+        return;
     }
 
-    if (mlt_temp > 212) {
-        mlt_temp = 212;
+    chrono = millis();
+
+    switch (thermo_index) {
+
+        case 0: {
+            u16 hlt_temp  = (u16)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
+            if (hlt_temp > 212) {
+               hlt_temp = 212;
+            }
+            control_state.hlt_temp  = (u8)hlt_temp;
+        } break;
+
+        case 1: {
+            u16 mlt_temp  = (u16)((mlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
+            if (mlt_temp > 212) {
+                mlt_temp = 212;
+            }
+            control_state.mlt_temp  = (u8)mlt_temp;
+        } break;
+
+        case 2: {
+            u16 boil_temp = (u16)((boil_thermo.temperature(RNOMINAL, RREF) * 1.8) + 32);
+            if (boil_temp > 212) {
+                boil_temp = 212;
+            }
+            control_state.boil_temp = (u8)boil_temp;
+        } break;
     }
 
-    if (boil_temp > 212) {
-        boil_temp = 212;
+    thermo_index++;
+    if (thermo_index > 2) {
+        thermo_index = 0;
     }
-
-    control_state.hlt_temp  = (u8)hlt_temp;
-    control_state.mlt_temp  = (u8)mlt_temp;
-    control_state.boil_temp = (u8)boil_temp;
 }
 
 void loop() {
+    brewpanel_control_update_temperatures();
 
     brewpanel_control_read_and_parse_incoming_data();
 
     brewpanel_control_handle_incoming_message();
-
-    brewpanel_control_update_temperatures();
 
     brewpanel_control_update_outputs();
 
