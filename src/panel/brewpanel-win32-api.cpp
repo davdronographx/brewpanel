@@ -23,7 +23,7 @@ brewpanel_win32_api_free_memory(
     VirtualFree(memory,size,MEM_RELEASE);
 }
 
-internal file_handle
+internal brewpanel_file_handle
 brewpanel_win32_api_open_file(
     str file_path) {
 
@@ -45,7 +45,7 @@ brewpanel_win32_api_open_file(
 
 internal u64
 brewpanel_win32_api_get_file_size(
-    file_handle file) {
+    brewpanel_file_handle file) {
 
     u64 file_size = 
         file != INVALID_HANDLE_VALUE 
@@ -55,7 +55,7 @@ brewpanel_win32_api_get_file_size(
     return(file_size);
 } 
 
-internal file_handle
+internal brewpanel_file_handle
 brewpanel_win32_api_create_file(
     str file_path) {
 
@@ -77,7 +77,7 @@ brewpanel_win32_api_create_file(
 
 internal void
 brewpanel_win32_api_close_file(
-    file_handle file) {
+    brewpanel_file_handle file) {
     
     CloseHandle(file);
 }
@@ -96,7 +96,7 @@ brewpanel_win32_api_file_io_completion_routine(
 
 internal void
 brewpanel_win32_api_read_file(
-    file_handle file_handle,
+    brewpanel_file_handle file_handle,
     mem_data    file_buffer,
     u64         file_buffer_size,
     u64         file_offset) {
@@ -124,7 +124,7 @@ brewpanel_win32_api_read_file(
 
 internal void
 brewpanel_win32_api_write_file(
-    file_handle file_handle,
+    brewpanel_file_handle file_handle,
     mem_data    write_buffer,
     u64         write_buffer_size,
     u64         file_offset) {
