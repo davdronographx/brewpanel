@@ -39,7 +39,45 @@
 				"$msCompile"
 			],
 			"group": "build"
+		},
+		{
+			"label": "BrewPanel Build Linux Arm",
+			"command": "./build-scripts/brewpanel-build-linux-arm.sh",
+			"args":[
+            ],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "BrewPanel Build Linux ",
+			"command": "./build-scripts/brewpanel-build-linux.sh",
+			"args":[
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "BrewPanel Build X11 ",
+			"command": "./build-scripts/brewpanel-build-linux-x11.sh",
+			"args":[
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
 		}
-
 	]
 }

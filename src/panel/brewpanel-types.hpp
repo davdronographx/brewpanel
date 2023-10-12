@@ -27,7 +27,7 @@ typedef double f64;
 typedef u8        mem_byte;
 typedef mem_byte* mem_data;
 
-typedef void* file_handle;
+typedef void* brewpanel_file_handle;
 typedef void* controller_handle;
 typedef void* thread_handle;
 

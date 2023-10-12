@@ -532,7 +532,7 @@ struct BrewPanelImagesFileHeader {
 };
 
 struct BrewPanelImagesFile {
-    file_handle               file_handle;
+    brewpanel_file_handle     file_handle;
     BrewPanelImagesFileHeader file_header;
     BrewPanelImage            temp_image;
     mem_data                  image_data;

@@ -136,6 +136,9 @@ int main(int argc, char** argv) {
     platform_api.file_write        = brewpanel_sdl2_api_file_write;
     platform_api.system_time_get   = brewpanel_sdl2_api_system_time;
     platform_api.controller_handle = brewpanel_sdl2_api_controller_handle;
+    platform_api.controller_close  = brewpanel_sdl2_api_controller_close;
+    platform_api.controller_write  = brewpanel_sdl2_api_controller_write_buffer;
+    platform_api.controller_thread_start_read = brewpanel_sdl2_api_controller_start_read_thread;
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -164,7 +167,7 @@ int main(int argc, char** argv) {
     input = {0};
 
     brewpanel_sdl2_resize_bitmap();
-
+    
     while (running) {
 
         brewpanel_sd2_poll_events(&sdl_event);

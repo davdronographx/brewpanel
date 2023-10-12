@@ -112,7 +112,7 @@ typedef void
     mem_data memory
 );
 
-typedef file_handle
+typedef brewpanel_file_handle
 (*func_platform_file_open)
 (
     str file_path
@@ -121,10 +121,10 @@ typedef file_handle
 typedef u64
 (*func_platform_file_get_size)
 (
-    file_handle file
+    brewpanel_file_handle file
 );
 
-typedef file_handle
+typedef brewpanel_file_handle
 (*func_platform_file_create)
 (
     str file_path
@@ -133,25 +133,25 @@ typedef file_handle
 typedef void
 (*func_platform_file_close)
 (
-    file_handle file
+    brewpanel_file_handle file
 );
 
 typedef void
 (*func_platform_file_read)
 (
-    file_handle file_handle,
-    mem_data    read_buffer,
-    u64         read_buffer_size,
-    u64         file_offset
+    brewpanel_file_handle file,
+    mem_data              read_buffer,
+    u64                   read_buffer_size,
+    u64                   file_offset
 );
 
 typedef void
 (*func_platform_file_write)
 (
-    file_handle file_handle,
-    mem_data    write_buffer,
-    u64         write_buffer_size,
-    u64         file_offset
+    brewpanel_file_handle file,
+    mem_data              write_buffer,
+    u64                   write_buffer_size,
+    u64                   file_offset
 );
 
 typedef BrewPanelSystemTime

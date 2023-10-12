@@ -26,7 +26,7 @@ brewpanel_images_build_file(
 
         //get the file handle and make sure its valid
         str image_path = brewpanel_images_file_paths[image_index];
-        file_handle image_file_handle = brewpanel_platform_file_open(image_path);
+        brewpanel_file_handle image_file_handle = brewpanel_platform_file_open(image_path);
         brewpanel_assert(image_file_handle != NULL);
         
         u32 file_size = brewpanel_platform_file_get_size(image_file_handle);
