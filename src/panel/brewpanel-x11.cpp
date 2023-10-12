@@ -16,7 +16,7 @@ unsigned long black, white, red, blue;
 void init();
 void close();
 void draw();
-unsigned long RGB(int r, int g, int b);
+unsigned long RGB(int r, int g, int b);g
 
 struct coord
 {
@@ -33,7 +33,7 @@ int main()
     {
         XNextEvent(dis, &event);
         if (event.type == Expose && event.xexpose.count == 0)
-        {g
+        {
             draw();
         }
         if (event.type == KeyPress && XLookupString(&event.xkey, text, 255, &key, 0) == 1)
