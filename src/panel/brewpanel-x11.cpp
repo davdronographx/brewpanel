@@ -56,6 +56,33 @@ brewpanel_x11_process_event(
 
 int main(int argc, char** argv)
 {
+    //initialize the controller info
+    brewpanel_assert(argc == 4);
+
+    BrewPanelControllerInfo controller_info = {0};
+    controller_info.vendor_id     = argv[1];
+    controller_info.product_id    = argv[2];
+    controller_info.serial_number = argv[3];
+
+    //initialize the api
+    platform_api = {0};
+    platform_api.memory_allocate              = brewpanel_x11_api_memory_allocate;
+    platform_api.memory_free                  = brewpanel_x11_api_memory_free;
+    platform_api.file_open                    = brewpanel_x11_api_file_open;
+    platform_api.file_get_size                = brewpanel_x11_api_file_get_size;
+    platform_api.file_create                  = brewpanel_x11_api_file_create;
+    platform_api.file_close                   = brewpanel_x11_api_file_close;
+    platform_api.file_read                    = brewpanel_x11_api_file_read; 
+    platform_api.file_write                   = brewpanel_x11_api_file_write; 
+    platform_api.system_time_get              = brewpanel_x11_api_system_time;
+    platform_api.controller_handle            = brewpanel_x11_api_controller_handle;
+    platform_api.controller_close             = brewpanel_x11_api_controller_close;
+    platform_api.controller_write             = brewpanel_x11_api_controller_write_buffer;
+    platform_api.controller_thread_start_read = brewpanel_x11_api_start_controller_comm_thread;
+
+    //initialize the brewpanel
+    brewpanel_core_init(controller_info);
+
     //create the window
     BrewPanelX11Window x11_window = {0};
     

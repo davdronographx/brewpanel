@@ -125,7 +125,8 @@ brewpanel_images_state_create(
             BREWPANEL_IMAGES_FILE
     );
 
-    if (images_state->images_file.file_handle == NULL) {
+    if (images_state->images_file.file_handle == NULL) {    //TODO
+
     
         //the file doesn't exist, so we need to create it
         images_state->images_file.file_handle = 
