@@ -3,55 +3,70 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "brewpanel-x11-api.cpp"
 #include "brewpanel-core.cpp"
+#include "brewpanel-x11.h"
 
 struct BrewPanelX11Window {
-    bool     running;
-    Display* display;
-    int      screen;
-    Window   window;
-    GC       gc;
-    XEvent   event;
+    bool            running;
+    Display*        display;
+    int             screen;
+    Window          window;
+    GC              gc;
+    XEvent          event;
+    BrewPanelInput  input;
+    XImage          bitmap;
 };  
 
 unsigned long black, white;
-
-
-struct coord
-{
-    int x, y;
-} dot;
 
 internal void
 brewpanel_x11_process_event(
     BrewPanelX11Window* x11_window) {
 
-    local char text[255];
-    local KeySym   key;
-
     XNextEvent(x11_window->display, &x11_window->event);
-    if (x11_window->event.type == Expose && x11_window->event.xexpose.count == 0)
-    {
-        XClearWindow(x11_window->display, x11_window->window);
-    }
-    if (x11_window->event.type == KeyPress && XLookupString(&x11_window->event.xkey, text, 255, &key, 0) == 1)
-    {
-        if (text[0] == 'q')
-        {
-            x11_window->running = false;
+    
+    switch(x11_window->event.type) {
+
+        case Expose: {
+
+            if (x11_window->event.xexpose.count == 0) {
+                XClearWindow(x11_window->display, x11_window->window);
+            }
+        } break;
+
+        case ButtonPress: {
+
+            x11_window->input.click = true;
+            x11_window->input.mouse_x_pos = x11_window->event.xbutton.x;
+            x11_window->input.mouse_y_pos = x11_window->event.xbutton.y;
+        } break;
+
+        case ButtonRelease: {
+
+            x11_window->input.click = false;
+            x11_window->input.mouse_x_pos = x11_window->event.xbutton.x;
+            x11_window->input.mouse_y_pos = x11_window->event.xbutton.y;
+        } break;
+
+        case MotionNotify: {
+
+            x11_window->input.mouse_x_pos = x11_window->event.xbutton.x;
+            x11_window->input.mouse_y_pos = x11_window->event.xbutton.y;
+        } break;
+    
+        default: {
+            break;
         }
     }
-    if (x11_window->event.type == ButtonPress)
-    {
-        int x = x11_window->event.xbutton.x, y = x11_window->event.xbutton.y;
-        dot.x = x;
-        dot.y = y;
-    }
+}
+
+internal void
+brewpanel_x11_draw_bitmap() {
+
 }
 
 int main(int argc, char** argv)
@@ -82,6 +97,7 @@ int main(int argc, char** argv)
 
     //initialize the brewpanel
     brewpanel_core_init(controller_info);
+    brewpanel_assert(brewpanel_state);
 
     //create the window
     BrewPanelX11Window x11_window = {0};
@@ -109,13 +125,11 @@ int main(int argc, char** argv)
     x11_window.gc      = XCreateGC(x11_window.display, x11_window.window, 0, 0);
     x11_window.running = true;
 
-    dot.x = 100;
-    dot.y = 100;
     black = BlackPixel(x11_window.display, x11_window.screen);
     white = WhitePixel(x11_window.display, x11_window.screen);
 
     XSetStandardProperties(x11_window.display, x11_window.window, "Brewpanel", "Brewpanel", None, NULL, 0, NULL);
-    XSelectInput(x11_window.display, x11_window.window, ExposureMask | ButtonPressMask | KeyPressMask);
+    XSelectInput(x11_window.display, x11_window.window, ExposureMask | ButtonPressMask | KeyPressMask | PointerMotionMask);
     XSetBackground(x11_window.display, x11_window.gc, white);
     XSetForeground(x11_window.display, x11_window.gc, black);
     XClearWindow(x11_window.display, x11_window.window);
@@ -124,6 +138,10 @@ int main(int argc, char** argv)
     while (x11_window.running)
     {
         brewpanel_x11_process_event(&x11_window);
+
+        if (brewpanel_core_update_and_render(&x11_window.input)) {
+            brewpanel_x11_draw_bitmap();
+        }
     }
 
     XFreeGC(x11_window.display, x11_window.gc);

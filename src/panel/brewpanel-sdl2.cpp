@@ -116,7 +116,6 @@ brewpanel_sd2_poll_events(
 
 int main(int argc, char** argv) {
 
-
     brewpanel_assert(argc == 4);
 
     BrewPanelControllerInfo controller_info = {0};
