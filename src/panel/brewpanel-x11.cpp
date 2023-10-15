@@ -66,9 +66,56 @@ brewpanel_x11_process_event(
 }
 
 internal void
-brewpanel_x11_draw_bitmap() {
+brewpanel_x11_draw_bitmap(BrewPanelX11Window* x11_window) {
 
-//https://stackoverflow.com/questions/6609281/how-to-draw-an-image-from-file-on-window-with-xlib
+    //https://stackoverflow.com/questions/6609281/how-to-draw-an-image-from-file-on-window-with-xlib
+
+    // XPutImage(
+    //     x11_window->display,
+    //     x11_window->window,
+    //     x11_window->gc,
+    //     x11_window->bitmap,
+    //     0,0,
+    //     0,0,
+    //     BREW_PANEL_WIDTH_PIXELS,
+    //     BREW_PANEL_HEIGHT_PIXELS
+    // );
+
+
+    Visual* default_visual = 
+        DefaultVisual(
+            x11_window->display, 
+            x11_window->screen
+    );
+
+    XImage* image = XCreateImage(
+        x11_window->display,
+        default_visual,
+        8,
+        ZPixmap,
+        0,
+        brewpanel_back_buffer_data(),
+        BREW_PANEL_WIDTH_PIXELS,
+        BREW_PANEL_HEIGHT_PIXELS,
+        XBitmapPad(x11_window->display),
+        BREW_PANEL_WIDTH_PIXELS
+    );
+
+    if (image == NULL) {
+        return;
+    }
+
+    XPutImage(
+        x11_window->display,
+        x11_window->window,
+        x11_window->gc,
+        image,
+        0,0,0,0,
+        BREW_PANEL_WIDTH_PIXELS,
+        BREW_PANEL_HEIGHT_PIXELS
+    );
+
+    XFree(image);
 }
 
 int main(int argc, char** argv)
@@ -126,32 +173,24 @@ int main(int argc, char** argv)
             black);
     x11_window.gc      = XCreateGC(x11_window.display, x11_window.window, 0, 0);
     x11_window.running = true;
-    
-    Visual bitmap_visual = {0};
-    bitmap_visual.bits_per_rgb = 32;
 
-    mem_data pixel_data = brewpanel_back_buffer_data(); 
+    // Visual* bitmap_visual = DefaultVisual(x11_window.display,DefaultScreen(x11_window.display));
 
-    x11_window.bitmap = XCreateImage(
-        x11_window.display,
-        &bitmap_visual,
-        XYBitmap,
-        32,
-        0,
-        pixel_data,
-        BREW_PANEL_WIDTH_PIXELS,
-        BREW_PANEL_HEIGHT_PIXELS,
-        32,
-        0
-    );
+    // mem_data pixel_data = brewpanel_back_buffer_data(); 
 
-    x11_window.pixmap = XCreatePixmap(
-        x11_window.display,
-        x11_window.screen,
-        BREW_PANEL_WIDTH_PIXELS,
-        BREW_PANEL_HEIGHT_PIXELS,
-        32
-    );
+    // x11_window.bitmap = XCreateImage(
+    //     x11_window.display,
+    //     bitmap_visual,
+    //     8,
+    //     ZPixmap,
+    //     0,
+    //     pixel_data,
+    //     BREW_PANEL_WIDTH_PIXELS,
+    //     BREW_PANEL_HEIGHT_PIXELS,
+    //     XBitmapPad(x11_window.display),
+    //     BREW_PANEL_WIDTH_PIXELS * 4
+    // );
+
 
     black = BlackPixel(x11_window.display, x11_window.screen);
     white = WhitePixel(x11_window.display, x11_window.screen);
@@ -168,7 +207,7 @@ int main(int argc, char** argv)
         brewpanel_x11_process_event(&x11_window);
 
         if (brewpanel_core_update_and_render(&x11_window.input)) {
-            brewpanel_x11_draw_bitmap();
+            brewpanel_x11_draw_bitmap(&x11_window);
         }
     }
 
