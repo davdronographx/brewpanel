@@ -18,7 +18,8 @@ struct BrewPanelX11Window {
     GC              gc;
     XEvent          event;
     BrewPanelInput  input;
-    XImage          bitmap;
+    XImage*         bitmap;
+    Pixmap*         pixmap;
 };  
 
 unsigned long black, white;
@@ -67,6 +68,7 @@ brewpanel_x11_process_event(
 internal void
 brewpanel_x11_draw_bitmap() {
 
+//https://stackoverflow.com/questions/6609281/how-to-draw-an-image-from-file-on-window-with-xlib
 }
 
 int main(int argc, char** argv)
@@ -124,6 +126,32 @@ int main(int argc, char** argv)
             black);
     x11_window.gc      = XCreateGC(x11_window.display, x11_window.window, 0, 0);
     x11_window.running = true;
+    
+    Visual bitmap_visual = {0};
+    bitmap_visual.bits_per_rgb = 32;
+
+    mem_data pixel_data = brewpanel_back_buffer_data(); 
+
+    x11_window.bitmap = XCreateImage(
+        x11_window.display,
+        &bitmap_visual,
+        XYBitmap,
+        32,
+        0,
+        pixel_data,
+        BREW_PANEL_WIDTH_PIXELS,
+        BREW_PANEL_HEIGHT_PIXELS,
+        32,
+        0
+    );
+
+    x11_window.pixmap = XCreatePixmap(
+        x11_window.display,
+        x11_window.screen,
+        BREW_PANEL_WIDTH_PIXELS,
+        BREW_PANEL_HEIGHT_PIXELS,
+        32
+    );
 
     black = BlackPixel(x11_window.display, x11_window.screen);
     white = WhitePixel(x11_window.display, x11_window.screen);
