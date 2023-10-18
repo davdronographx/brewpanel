@@ -140,4 +140,5 @@
         "xtree": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only",
+    "cmake.configureOnOpen": false,
 }

@@ -90,6 +90,8 @@ brewpanel_images_build_file(
 
         offset += image_data_size; 
         images_file->file_header.image_data_size += image_data_size;
+
+        brewpanel_platform_file_close(image_file_handle);
     }
 
     //now we can write the header

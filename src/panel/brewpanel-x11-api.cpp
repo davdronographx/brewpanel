@@ -36,7 +36,12 @@ brewpanel_x11_api_file_open(
     //but I'm lazy and want my damn beer
     s32* file_descriptor = (s32*)malloc(sizeof(s32));
 
-    *file_descriptor = open(file_path,O_RDWR | O_TRUNC);
+    *file_descriptor = 
+        open(
+            file_path,
+            O_RDWR | O_EXCL,
+            ALLPERMS
+    );
 
     if (*file_descriptor == -1) {
         free(file_descriptor);
@@ -52,7 +57,11 @@ brewpanel_x11_api_file_get_size(
 
     s32 file_descriptor = *((s32*)file);
 
-    u64 size = lseek(file_descriptor,0,SEEK_END);
+    struct stat file_stat = {0};
+
+    s32 fstat_result = fstat(file_descriptor,&file_stat); 
+
+    u32 size = fstat_result == -1 ? 0 : file_stat.st_size;
 
     return(size);
 }
@@ -63,12 +72,12 @@ brewpanel_x11_api_file_create(
 
     //on linux, the file handle is an int
     //TODO: I HATE THIS, it would be better if we passed the handle into the arguments
-    //but I'm lazy and want my damn beer
+    //but I'm lazy and want my damn beerO_TRUNC
     mode_t mode = ALLPERMS;
 
     s32* file_descriptor = (s32*)malloc(sizeof(s32));
 
-    *file_descriptor = open(file_path,O_RDWR | O_CREAT | O_TRUNC,mode);
+    *file_descriptor = open(file_path,O_RDWR | O_CREAT,mode);
 
     return((brewpanel_file_handle)file_descriptor);
 }
