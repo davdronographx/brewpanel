@@ -18,9 +18,9 @@ struct BrewPanelX11Window {
     GC              gc;
     XEvent          event;
     BrewPanelInput  input;
-    XImage*         bitmap;
+    XImage*         panel_image;
     Pixmap*         pixmap;
-};  
+};
 
 unsigned long black, white;
 
@@ -29,15 +29,8 @@ brewpanel_x11_process_event(
     BrewPanelX11Window* x11_window) {
 
     XNextEvent(x11_window->display, &x11_window->event);
-    
+
     switch(x11_window->event.type) {
-
-        case Expose: {
-
-            if (x11_window->event.xexpose.count == 0) {
-                XClearWindow(x11_window->display, x11_window->window);
-            }
-        } break;
 
         case ButtonPress: {
 
@@ -58,64 +51,11 @@ brewpanel_x11_process_event(
             x11_window->input.mouse_x_pos = x11_window->event.xbutton.x;
             x11_window->input.mouse_y_pos = x11_window->event.xbutton.y;
         } break;
-    
+
         default: {
             break;
         }
     }
-}
-
-internal void
-brewpanel_x11_draw_bitmap(BrewPanelX11Window* x11_window) {
-
-    //https://stackoverflow.com/questions/6609281/how-to-draw-an-image-from-file-on-window-with-xlib
-
-    // XPutImage(
-    //     x11_window->display,
-    //     x11_window->window,
-    //     x11_window->gc,
-    //     x11_window->bitmap,
-    //     0,0,
-    //     0,0,
-    //     BREW_PANEL_WIDTH_PIXELS,
-    //     BREW_PANEL_HEIGHT_PIXELS
-    // );
-
-
-    Visual* default_visual = 
-        DefaultVisual(
-            x11_window->display, 
-            x11_window->screen
-    );
-
-    XImage* image = XCreateImage(
-        x11_window->display,
-        default_visual,
-        8,
-        ZPixmap,
-        0,
-        brewpanel_back_buffer_data(),
-        BREW_PANEL_WIDTH_PIXELS,
-        BREW_PANEL_HEIGHT_PIXELS,
-        XBitmapPad(x11_window->display),
-        BREW_PANEL_WIDTH_PIXELS
-    );
-
-    if (image == NULL) {
-        return;
-    }
-
-    XPutImage(
-        x11_window->display,
-        x11_window->window,
-        x11_window->gc,
-        image,
-        0,0,0,0,
-        BREW_PANEL_WIDTH_PIXELS,
-        BREW_PANEL_HEIGHT_PIXELS
-    );
-
-    XFree(image);
 }
 
 int main(int argc, char** argv)
@@ -136,8 +76,8 @@ int main(int argc, char** argv)
     platform_api.file_get_size                = brewpanel_x11_api_file_get_size;
     platform_api.file_create                  = brewpanel_x11_api_file_create;
     platform_api.file_close                   = brewpanel_x11_api_file_close;
-    platform_api.file_read                    = brewpanel_x11_api_file_read; 
-    platform_api.file_write                   = brewpanel_x11_api_file_write; 
+    platform_api.file_read                    = brewpanel_x11_api_file_read;
+    platform_api.file_write                   = brewpanel_x11_api_file_write;
     platform_api.system_time_get              = brewpanel_x11_api_system_time;
     platform_api.controller_handle            = brewpanel_x11_api_controller_handle;
     platform_api.controller_close             = brewpanel_x11_api_controller_close;
@@ -150,7 +90,7 @@ int main(int argc, char** argv)
 
     //create the window
     BrewPanelX11Window x11_window = {0};
-    
+
     x11_window.display = XOpenDisplay((char *)0);
     x11_window.screen  = DefaultScreen(x11_window.display);
 
@@ -159,13 +99,13 @@ int main(int argc, char** argv)
 
     u32 center_x = screen_width  / 2;
     u32 center_y = screen_height / 2;
-    
+
     x11_window.window  =
         XCreateSimpleWindow(
-            x11_window.display, 
-            DefaultRootWindow(x11_window.display), 
-            center_x, 
-            center_y, 
+            x11_window.display,
+            DefaultRootWindow(x11_window.display),
+            center_x,
+            center_y,
             BREW_PANEL_WIDTH_PIXELS,
             BREW_PANEL_HEIGHT_PIXELS,
             0,
@@ -174,41 +114,54 @@ int main(int argc, char** argv)
     x11_window.gc      = XCreateGC(x11_window.display, x11_window.window, 0, 0);
     x11_window.running = true;
 
-    // Visual* bitmap_visual = DefaultVisual(x11_window.display,DefaultScreen(x11_window.display));
+    //create the image
+    Visual* bitmap_visual =
+        DefaultVisual(
+            x11_window.display,
+            x11_window.screen
+    );
 
-    // mem_data pixel_data = brewpanel_back_buffer_data(); 
+    x11_window.panel_image =
+        XCreateImage(
+            x11_window.display,
+            bitmap_visual,
+            DefaultDepth(x11_window.display,x11_window.screen),
+            ZPixmap,
+            0,
+            brewpanel_back_buffer_data(),
+            BREW_PANEL_WIDTH_PIXELS,
+            BREW_PANEL_HEIGHT_PIXELS,
+            32,
+            0
+    );
 
-    // x11_window.bitmap = XCreateImage(
-    //     x11_window.display,
-    //     bitmap_visual,
-    //     8,
-    //     ZPixmap,
-    //     0,
-    //     pixel_data,
-    //     BREW_PANEL_WIDTH_PIXELS,
-    //     BREW_PANEL_HEIGHT_PIXELS,
-    //     XBitmapPad(x11_window.display),
-    //     BREW_PANEL_WIDTH_PIXELS * 4
-    // );
 
 
-    black = BlackPixel(x11_window.display, x11_window.screen);
-    white = WhitePixel(x11_window.display, x11_window.screen);
 
     XSetStandardProperties(x11_window.display, x11_window.window, "Brewpanel", "Brewpanel", None, NULL, 0, NULL);
     XSelectInput(x11_window.display, x11_window.window, ExposureMask | ButtonPressMask | KeyPressMask | PointerMotionMask);
-    XSetBackground(x11_window.display, x11_window.gc, white);
-    XSetForeground(x11_window.display, x11_window.gc, black);
-    XClearWindow(x11_window.display, x11_window.window);
-    XMapRaised(x11_window.display,   x11_window.window);
+    XMapWindow(x11_window.display,   x11_window.window);
+
 
     while (x11_window.running)
     {
         brewpanel_x11_process_event(&x11_window);
 
         if (brewpanel_core_update_and_render(&x11_window.input)) {
-            brewpanel_x11_draw_bitmap(&x11_window);
+    
+            mem_data pixels = brewpanel_back_buffer_data();
+
+            XPutImage(
+                x11_window.display,
+                x11_window.window,
+                x11_window.gc,
+                x11_window.panel_image,
+                0,0,0,0,
+                BREW_PANEL_WIDTH_PIXELS,
+                BREW_PANEL_HEIGHT_PIXELS
+            );
         }
+
     }
 
     XFreeGC(x11_window.display, x11_window.gc);
