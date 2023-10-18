@@ -135,9 +135,6 @@ int main(int argc, char** argv)
             0
     );
 
-
-
-
     XSetStandardProperties(x11_window.display, x11_window.window, "Brewpanel", "Brewpanel", None, NULL, 0, NULL);
     XSelectInput(x11_window.display, x11_window.window, ExposureMask | ButtonPressMask | KeyPressMask | PointerMotionMask);
     XMapWindow(x11_window.display,   x11_window.window);

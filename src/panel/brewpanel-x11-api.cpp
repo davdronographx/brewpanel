@@ -38,7 +38,7 @@ brewpanel_x11_api_file_open(
 
     *file_descriptor = open(file_path,O_RDWR | O_TRUNC);
 
-    if (*file_descriptor) {
+    if (*file_descriptor == -1) {
         free(file_descriptor);
         return(NULL);
     }
