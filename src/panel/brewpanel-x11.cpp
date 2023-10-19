@@ -1,5 +1,3 @@
-
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
@@ -10,6 +8,8 @@
 #include "brewpanel-core.cpp"
 #include "brewpanel-x11.h"
 
+
+#define PIXEL_BUFFER_SIZE (BREW_PANEL_WIDTH_PIXELS * BREW_PANEL_HEIGHT_PIXELS * 4)
 struct BrewPanelX11Window {
     bool            running;
     Display*        display;
@@ -20,6 +20,7 @@ struct BrewPanelX11Window {
     BrewPanelInput  input;
     XImage*         panel_image;
     Pixmap*         pixmap;
+    mem_byte        pixel_buffer[PIXEL_BUFFER_SIZE];
 };
 
 unsigned long black, white;
@@ -36,20 +37,20 @@ brewpanel_x11_process_event(
 
             x11_window->input.click = true;
             x11_window->input.mouse_x_pos = x11_window->event.xbutton.x;
-            x11_window->input.mouse_y_pos = x11_window->event.xbutton.y;
+            x11_window->input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - x11_window->event.xbutton.y;
         } break;
 
         case ButtonRelease: {
 
             x11_window->input.click = false;
             x11_window->input.mouse_x_pos = x11_window->event.xbutton.x;
-            x11_window->input.mouse_y_pos = x11_window->event.xbutton.y;
+            x11_window->input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - x11_window->event.xbutton.y;
         } break;
 
         case MotionNotify: {
 
             x11_window->input.mouse_x_pos = x11_window->event.xbutton.x;
-            x11_window->input.mouse_y_pos = x11_window->event.xbutton.y;
+            x11_window->input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - x11_window->event.xbutton.y;
         } break;
 
         default: {
@@ -128,7 +129,8 @@ int main(int argc, char** argv)
             DefaultDepth(x11_window.display,x11_window.screen),
             ZPixmap,
             0,
-            brewpanel_back_buffer_data(),
+            // brewpanel_back_buffer_data(),
+            x11_window.pixel_buffer,
             BREW_PANEL_WIDTH_PIXELS,
             BREW_PANEL_HEIGHT_PIXELS,
             32,
@@ -146,7 +148,29 @@ int main(int argc, char** argv)
 
         if (brewpanel_core_update_and_render(&x11_window.input)) {
     
-            mem_data pixels = brewpanel_back_buffer_data();
+            mem_data pixel_buffer = brewpanel_back_buffer_data();
+
+            for (
+                u32 row = 0;
+                row < BREW_PANEL_HEIGHT_PIXELS;
+                ++row
+            ) {
+
+                for (
+                    u32 column = 0;
+                    column < BREW_PANEL_WIDTH_PIXELS;
+                    ++column
+                ) {
+
+                    u32 source_index      = (row * BREW_PANEL_WIDTH_PIXELS + column) * 4;
+                    u32 destination_index = ((BREW_PANEL_HEIGHT_PIXELS - row - 1) * BREW_PANEL_WIDTH_PIXELS + (column)) * 4;
+
+                    x11_window.pixel_buffer[destination_index + 0] = pixel_buffer[source_index + 0]; 
+                    x11_window.pixel_buffer[destination_index + 1] = pixel_buffer[source_index + 1]; 
+                    x11_window.pixel_buffer[destination_index + 2] = pixel_buffer[source_index + 2]; 
+                    x11_window.pixel_buffer[destination_index + 3] = pixel_buffer[source_index + 3]; 
+                }
+            }
 
             XPutImage(
                 x11_window.display,
@@ -158,7 +182,6 @@ int main(int argc, char** argv)
                 BREW_PANEL_HEIGHT_PIXELS
             );
         }
-
     }
 
     XFreeGC(x11_window.display, x11_window.gc);
