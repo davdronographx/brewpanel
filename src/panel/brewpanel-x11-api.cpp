@@ -143,6 +143,13 @@ brewpanel_x11_api_system_time(){
     return(bp_system_time);
 }
 
+/**
+ * USB COMM
+ * https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/
+ * 
+ * 
+*/
+
 internal controller_handle
 brewpanel_x11_api_controller_handle(
     BrewPanelControllerInfo controller_info) {
@@ -166,6 +173,12 @@ brewpanel_x11_api_controller_write_buffer(
 
     //TODO
 }
+
+/**
+ * THREADS
+ * 
+ * https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html
+*/
 
 internal thread_handle
 brewpanel_x11_api_start_controller_comm_thread(
