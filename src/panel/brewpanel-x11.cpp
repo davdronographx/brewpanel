@@ -53,6 +53,34 @@ brewpanel_x11_process_event(
             x11_window->input.mouse_y_pos = BREW_PANEL_HEIGHT_PIXELS - x11_window->event.xbutton.y;
         } break;
 
+        case Expose: {
+
+            XPutImage(
+                    x11_window->display,
+                    x11_window->window,
+                    x11_window->gc,
+                    x11_window->panel_image,
+                    0,0,0,0,
+                    BREW_PANEL_WIDTH_PIXELS,
+                    BREW_PANEL_HEIGHT_PIXELS
+            );
+
+        } break;
+
+        case GraphicsExpose: {
+
+            XPutImage(
+                    x11_window->display,
+                    x11_window->window,
+                    x11_window->gc,
+                    x11_window->panel_image,
+                    0,0,0,0,
+                    BREW_PANEL_WIDTH_PIXELS,
+                    BREW_PANEL_HEIGHT_PIXELS
+            );
+
+        } break;
+
         default: {
             break;
         }
@@ -102,26 +130,49 @@ int main(int argc, char** argv)
     u32 center_x = screen_width  / 2;
     u32 center_y = screen_height / 2;
 
-    x11_window.window  =
-        XCreateSimpleWindow(
-            x11_window.display,
-            DefaultRootWindow(x11_window.display),
-            center_x,
-            center_y,
-            BREW_PANEL_WIDTH_PIXELS,
-            BREW_PANEL_HEIGHT_PIXELS,
-            0,
-            white,
-            black);
-    x11_window.gc      = XCreateGC(x11_window.display, x11_window.window, 0, 0);
-    x11_window.running = true;
-
     //create the image
     Visual* bitmap_visual =
         DefaultVisual(
             x11_window.display,
             x11_window.screen
     );
+
+
+    // x11_window.window  =
+    //     XCreateSimpleWindow(
+    //         x11_window.display,
+    //         DefaultRootWindow(x11_window.display),
+    //         center_x,
+    //         center_y,
+    //         BREW_PANEL_WIDTH_PIXELS,
+    //         BREW_PANEL_HEIGHT_PIXELS,
+    //         0,
+    //         white,
+    //         black);
+
+
+    XSetWindowAttributes attributes = {0};
+    attributes.background_pixel = XWhitePixel(x11_window.display,x11_window.screen);
+ 
+     x11_window.window = 
+        XCreateWindow(
+            x11_window.display,
+            XRootWindow(x11_window.display,x11_window.screen),
+            center_x,
+            center_y,
+            BREW_PANEL_WIDTH_PIXELS,
+            BREW_PANEL_HEIGHT_PIXELS,
+            0,
+            DefaultDepth(x11_window.display,x11_window.screen),
+            InputOutput,
+            bitmap_visual,
+            CWBackPixel,
+            &attributes
+    );
+
+
+    x11_window.running = true;
+
 
     x11_window.panel_image =
         XCreateImage(
@@ -130,7 +181,6 @@ int main(int argc, char** argv)
             DefaultDepth(x11_window.display,x11_window.screen),
             ZPixmap,
             0,
-            // brewpanel_back_buffer_data(),
             x11_window.pixel_buffer,
             BREW_PANEL_WIDTH_PIXELS,
             BREW_PANEL_HEIGHT_PIXELS,
@@ -139,8 +189,13 @@ int main(int argc, char** argv)
     );
 
     XSetStandardProperties(x11_window.display, x11_window.window, "Brewpanel", "Brewpanel", None, NULL, 0, NULL);
-    XSelectInput(x11_window.display, x11_window.window, ExposureMask | ButtonPressMask | KeyPressMask | PointerMotionMask);
+    XSelectInput(x11_window.display, x11_window.window,  ExposureMask | ButtonPressMask | KeyPressMask | PointerMotionMask);
+    
+
+    x11_window.gc      = XCreateGC(x11_window.display, x11_window.window, 0, 0);
+    XFlush(x11_window.display);
     XMapWindow(x11_window.display,   x11_window.window);
+    XFlush(x11_window.display);
 
 
     while (x11_window.running)
@@ -172,18 +227,19 @@ int main(int argc, char** argv)
                     x11_window.pixel_buffer[destination_index + 3] = pixel_buffer[source_index + 3]; 
                 }
             }
-
-            XPutImage(
-                x11_window.display,
-                x11_window.window,
-                x11_window.gc,
-                x11_window.panel_image,
-                0,0,0,0,
-                BREW_PANEL_WIDTH_PIXELS,
-                BREW_PANEL_HEIGHT_PIXELS
-            );
         }
+
+                    XPutImage(
+                    x11_window.display,
+                    x11_window.window,
+                    x11_window.gc,
+                    x11_window.panel_image,
+                    0,0,0,0,
+                    BREW_PANEL_WIDTH_PIXELS,
+                    BREW_PANEL_HEIGHT_PIXELS
+            );
     }
+
 
     XFreeGC(x11_window.display, x11_window.gc);
     XDestroyWindow(x11_window.display, x11_window.window);
