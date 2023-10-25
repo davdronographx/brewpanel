@@ -120,10 +120,10 @@ brewpanel_core_update_and_render(
         &brewpanel_state->button_store
     );
 
-    // redraw |= brewpanel_communication_update(
-    //     &brewpanel_state->comm_handler,
-    //     &brewpanel_state->images
-    // );
+    redraw |= brewpanel_communication_update(
+        &brewpanel_state->comm_handler,
+        &brewpanel_state->images
+    );
     
     redraw |= brewpanel_clock_update(
         &brewpanel_state->clock,

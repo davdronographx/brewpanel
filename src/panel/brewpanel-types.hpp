@@ -37,6 +37,7 @@ struct BrewPanelControllerInfo {
     str vendor_id;
     str product_id;
     str serial_number;
+    str port;
 };
 
 struct RGBAPixel {

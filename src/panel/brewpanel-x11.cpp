@@ -62,12 +62,13 @@ brewpanel_x11_process_event(
 int main(int argc, char** argv)
 {
     //initialize the controller info
-    brewpanel_assert(argc == 4);
+    brewpanel_assert(argc == 5);
 
     BrewPanelControllerInfo controller_info = {0};
     controller_info.vendor_id     = argv[1];
     controller_info.product_id    = argv[2];
     controller_info.serial_number = argv[3];
+    controller_info.port          = argv[4];
 
     //initialize the api
     platform_api = {0};
