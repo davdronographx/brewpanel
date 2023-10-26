@@ -29,6 +29,7 @@ internal void
 brewpanel_x11_process_event(
     BrewPanelX11Window* x11_window) {
 
+    XAllowEvents(x11_window->display, AsyncBoth, CurrentTime);
     XNextEvent(x11_window->display, &x11_window->event);
 
     switch(x11_window->event.type) {
@@ -122,6 +123,7 @@ int main(int argc, char** argv)
     BrewPanelX11Window x11_window = {0};
 
     x11_window.display = XOpenDisplay((char *)0);
+
     x11_window.screen  = DefaultScreen(x11_window.display);
 
     u32 screen_width  = XDisplayWidth(x11_window.display,x11_window.screen);
@@ -189,10 +191,10 @@ int main(int argc, char** argv)
     );
 
     XSetStandardProperties(x11_window.display, x11_window.window, "Brewpanel", "Brewpanel", None, NULL, 0, NULL);
-    XSelectInput(x11_window.display, x11_window.window,  ExposureMask | ButtonPressMask | KeyPressMask | PointerMotionMask);
+    XSelectInput(x11_window.display, x11_window.window,  ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyPressMask | PointerMotionMask);
     
-
     x11_window.gc      = XCreateGC(x11_window.display, x11_window.window, 0, 0);
+
     XFlush(x11_window.display);
     XMapWindow(x11_window.display,   x11_window.window);
     XFlush(x11_window.display);
@@ -200,7 +202,9 @@ int main(int argc, char** argv)
 
     while (x11_window.running)
     {
-        brewpanel_x11_process_event(&x11_window);
+        while (XPending(x11_window.display)) {
+            brewpanel_x11_process_event(&x11_window);
+        }
 
         if (brewpanel_core_update_and_render(&x11_window.input)) {
     
