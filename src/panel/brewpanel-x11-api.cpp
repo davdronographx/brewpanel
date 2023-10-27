@@ -2,6 +2,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
 #include <sys/stat.h>
+#include <sys/file.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,19 +11,10 @@
 #include <termios.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <pthread.h>
+#include <sys/ioctl.h>
 
 #include "brewpanel-types.hpp"
-
-#define PORT_COUNT  38
-
-const char *comports[PORT_COUNT]={"/dev/ttyS0","/dev/ttyS1","/dev/ttyS2","/dev/ttyS3","/dev/ttyS4","/dev/ttyS5",
-                                    "/dev/ttyS6","/dev/ttyS7","/dev/ttyS8","/dev/ttyS9","/dev/ttyS10","/dev/ttyS11",
-                                    "/dev/ttyS12","/dev/ttyS13","/dev/ttyS14","/dev/ttyS15","/dev/ttyUSB0",
-                                    "/dev/ttyUSB1","/dev/ttyUSB2","/dev/ttyUSB3","/dev/ttyUSB4","/dev/ttyUSB5",
-                                    "/dev/ttyAMA0","/dev/ttyAMA1","/dev/ttyACM0","/dev/ttyACM1",
-                                    "/dev/rfcomm0","/dev/rfcomm1","/dev/ircomm0","/dev/ircomm1",
-                                    "/dev/cuau0","/dev/cuau1","/dev/cuau2","/dev/cuau3",
-                                    "/dev/cuaU0","/dev/cuaU1","/dev/cuaU2","/dev/cuaU3"};
 
 internal mem_data
 brewpanel_x11_api_memory_allocate(
@@ -242,10 +234,74 @@ brewpanel_x11_api_controller_write_buffer(
  * https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html
 */
 
+internal void
+brewpanel_x11_api_controller_read_thread(
+    BrewPanelControlCommData* controller_comm_data) {
+
+    s32 bytes_available = 0;
+
+
+    while (true) {
+
+        //make sure we have a valid controller handle
+        if (controller_comm_data->controller == NULL) {
+            continue;
+        }
+
+        //get an exclusive lock on the controller
+        s32 controller_fd = *(s32*)controller_comm_data->controller;
+        if(flock(controller_fd, LOCK_EX | LOCK_NB) == -1) {            
+            continue;
+        }
+
+        //check if we have anything available
+        ioctl(controller_fd,FIONREAD,&bytes_available);
+        if (bytes_available == 0) {
+            continue;
+        }
+
+        //read from the controller until we can't read anymore
+        u32 bytes_read = 0;
+        do {
+
+            bytes_read = read(
+                controller_fd,
+                controller_comm_data->read_buffer[controller_comm_data->bytes_read],
+                1
+            );
+
+            ++controller_comm_data->bytes_read;
+            if (controller_comm_data->bytes_read == BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE) {
+                break;
+            }
+
+        } while (bytes_read > 0);
+
+    
+        //let the app know dat was read
+        if (controller_comm_data->bytes_read > 0) {
+            controller_comm_data->read_callback(controller_comm_data->panel_comm_handler);
+        }
+
+
+        //unlock the controller
+        flock(controller_fd, LOCK_UN | LOCK_NB);
+    }
+
+}
+
 internal thread_handle
 brewpanel_x11_api_start_controller_comm_thread(
     BrewPanelControlCommData* controller_comm_data) {
 
-    //TODO
-    return(NULL);
+    u64* thread_id = (u64*)malloc(sizeof(u64));
+
+    pthread_create(
+        thread_id,
+        NULL,
+        brewpanel_x11_api_controller_read_thread,
+        controller_comm_data
+    );
+
+    return(thread_id);
 }

@@ -424,6 +424,8 @@ brewpanel_win32_controller_read(LPVOID payload) {
                                         break;
                                     }
 
+
+
                                 } while (bytes_read > 0);
                                 
                                 CloseHandle(ov_read.hEvent);
