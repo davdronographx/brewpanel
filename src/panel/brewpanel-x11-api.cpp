@@ -225,7 +225,26 @@ brewpanel_x11_api_controller_write_buffer(
     mem_data          write_buffer,
     u64               write_buffer_size) {
 
-    //TODO
+    //make sure we have a valid controller handle
+    if (!controller_handle) {
+        return;
+    }
+
+    //wait until we can geLOCK_EX | LOCK_NBt an exclusive lock on the controller
+    s32 controller_fd = *(s32*)controller_handle;
+    while(flock(controller_fd, LOCK_EX | LOCK_NB) == -1) {            
+        brewpanel_nop();
+    }
+
+    u32 bytes_written =
+        write(
+            controller_fd,
+            write_buffer,
+            write_buffer_size
+    );
+
+    //release the lock on the controller
+    flock(controller_fd, LOCK_UN | LOCK_NB);
 }
 
 /**
@@ -239,7 +258,6 @@ brewpanel_x11_api_controller_read_thread(
     BrewPanelControlCommData* controller_comm_data) {
 
     s32 bytes_available = 0;
-
 
     while (true) {
 
