@@ -470,7 +470,9 @@ brewpanel_win32_api_controller_write(
     u64               write_buffer_size
     ) {
 
-    brewpanel_assert(controller_handle);
+    if (!controller_handle) {
+        return;
+    }
 
     OVERLAPPED overlapped_write = {0};
     DWORD bytes_written         = 0;
