@@ -8,6 +8,7 @@
 #include "brewpanel-clock.cpp"
 #include "brewpanel-communication.cpp"
 #include "brewpanel-temp-control.cpp"
+#include "brewpanel-temp-read.cpp"
 #include "brewpanel-mode-control.cpp"
 #include "brewpanel-keypad.cpp"
 #include "brewpanel-pump-control.cpp"
@@ -68,6 +69,12 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     brewpanel_timer_control_create(
         &brewpanel_state->timer_control,
         &brewpanel_state->button_store,
+        &brewpanel_state->images
+    );
+
+    //temperature reading
+    brewpanel_temp_read_create(
+        &brewpanel_state->temp_control,
         &brewpanel_state->images
     );
 
@@ -137,6 +144,11 @@ brewpanel_core_update_and_render(
         &brewpanel_state->images,
         &brewpanel_state->button_store,
         &brewpanel_state->keypad
+    );
+
+    brewpanel_temp_read_update(
+        &brewpanel_state->temp_control,
+        &brewpanel_state->images
     );
 
     redraw |= brewpanel_mode_control_update(
