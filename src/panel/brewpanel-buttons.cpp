@@ -290,6 +290,10 @@ brewpanel_buttons_enable(
     button_id button_id,
     images_store* images_state) {
 
+    if (button_store->states[button_id] == BREWPANEL_BUTTON_STATE_IDLE) {
+        return;
+    }
+    
     button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
 
     BrewPanelButtonOffsets offsets = button_store->offsets[button_id];
