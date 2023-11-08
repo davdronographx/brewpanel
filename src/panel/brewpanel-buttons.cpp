@@ -290,11 +290,7 @@ brewpanel_buttons_enable(
     button_id button_id,
     images_store* images_state) {
 
-    if (button_store->states[button_id] == BREWPANEL_BUTTON_STATE_IDLE) {
-        return;
-    }
-    
-    button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
+    // button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
 
     BrewPanelButtonOffsets offsets = button_store->offsets[button_id];
 
@@ -340,9 +336,9 @@ brewpanel_buttons_show(
     brewpanel_buttons_enable(button_store,button_id,images);
 
     button_store->visibility[button_id] = BREWPANEL_BUTTON_VISIBILITY_SHOWN;
-    brewpanel_buttons_draw_button(
-        button_store,
-        images,
-        button_id
-    );
+    // brewpanel_buttons_draw_button(
+    //     button_store,
+    //     images,
+    //     button_id
+    // );
 }

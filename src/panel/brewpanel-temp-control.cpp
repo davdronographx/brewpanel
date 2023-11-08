@@ -154,10 +154,18 @@ brewpanel_temp_control_update_heating_element_control(
 
     bool redraw = false;
 
-    if (heating_element->previous_state == BREWPANEL_TEMP_HEATING_ELEMENT_STATE_DISABLED) {
-        brewpanel_buttons_show(buttons,heating_element->set_button_id,images);
-        brewpanel_buttons_show(buttons,heating_element->off_button_id,images);
-        heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
+    brewpanel_buttons_show(buttons,heating_element->set_button_id,images);
+    brewpanel_buttons_show(buttons,heating_element->off_button_id,images);
+    heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
+    if (!brewpanel_buttons_is_idle(buttons, heating_element->set_button_id)) {
+        brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
+    }
+
+    if (heating_element->previous_state != heating_element->state) {
+
+
+
+
     }
 
     heating_element->previous_state = heating_element->state; 
