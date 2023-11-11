@@ -236,27 +236,31 @@ brewpanel_temp_control_update(
     local panel_mode previous_mode = BREWPANEL_MODE_OFF;
 
     //first, we need to determine which panel we need to draw
-    image_id panel = BREWPANEL_IMAGES_ID_NULL;
-
     switch (mode) {
         
         case BREWPANEL_MODE_OFF: {
-            panel = control->off_panel;
+            brewpanel_images_draw_image_instance(images,control->off_panel);
         } break;
 
         case BREWPANEL_MODE_BOIL: {
-            panel = control->boil_element.panel_id;
+            brewpanel_images_draw_image_instance(images,control->boil_element.panel_id);
+            brewpanel_images_draw_image_instance(images,control->boil_element.temp_values.temp_hundreds_digit);
+            brewpanel_images_draw_image_instance(images,control->boil_element.temp_values.temp_tens_digit);
+            brewpanel_images_draw_image_instance(images,control->boil_element.temp_values.temp_ones_digit);
+            brewpanel_images_draw_image_instance(images,control->boil_element.percent);
         } break;
 
         case BREWPANEL_MODE_MASH: {
-            panel = control->mlt_element.panel_id;
+            brewpanel_images_draw_image_instance(images,control->mlt_element.panel_id);
+            brewpanel_images_draw_image_instance(images,control->mlt_element.temp_values.temp_hundreds_digit);
+            brewpanel_images_draw_image_instance(images,control->mlt_element.temp_values.temp_tens_digit);
+            brewpanel_images_draw_image_instance(images,control->mlt_element.temp_values.temp_ones_digit);
+            brewpanel_images_draw_image_instance(images,control->mlt_element.degree);
+            brewpanel_images_draw_image_instance(images,control->mlt_element.farenheit);
         } break;
 
         default: break;
     }
-
-    //draw the panel
-    brewpanel_images_draw_image_instance(images,panel);
 
     //if the panel is off, we're done
     if (mode == BREWPANEL_MODE_OFF) {
