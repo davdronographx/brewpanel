@@ -43,6 +43,7 @@ brewpanel_temp_control_heating_element_keypad_callback(
     switch (button_type) {
 
         case BREWPANEL_KEYPAD_BUTTON_TYPE_SET: {
+
             brewpanel_temp_control_change_element_state(heating_element,BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING);
         } break;
 
@@ -75,7 +76,6 @@ _brewpanel_temp_control_update_heating_element_control(
         brewpanel_buttons_show(buttons,heating_element->off_button_id,images);
         buttons_shown = true;
     }
-
 
     image_id input_panel = BREWPANEL_IMAGES_ID_NULL;
 
@@ -139,7 +139,6 @@ _brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
         } break;
     }
-
 
     return(redraw);
 }
@@ -222,9 +221,6 @@ brewpanel_temp_control_update_heating_element_control(
 
     }
 
-
-    heating_element->previous_state = heating_element->state; 
-
     return(redraw);
 }
 
@@ -266,6 +262,10 @@ brewpanel_temp_control_update(
     if (mode == BREWPANEL_MODE_OFF) {
         control->mlt_element.state  = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_DISABLED;
         control->boil_element.state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_DISABLED;
+        brewpanel_buttons_hide(buttons,control->boil_element.off_button_id,images);
+        brewpanel_buttons_hide(buttons,control->boil_element.set_button_id,images);
+        brewpanel_buttons_hide(buttons,control->mlt_element.off_button_id,images);
+        brewpanel_buttons_hide(buttons,control->mlt_element.set_button_id,images);        
         previous_mode = mode;
         return(redraw);
     }
