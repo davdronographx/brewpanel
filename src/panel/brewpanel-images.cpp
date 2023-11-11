@@ -268,7 +268,7 @@ internal void
 brewpanel_images_update_instance_image(
     images_store*     images,
     image_instance_id instance_id,
-    image_id          image_id) {
+    image_id          new_image_id) {
 
-    images->image_instances[instance_id].image_id = image_id;
+    images->image_instances[instance_id].image_id = new_image_id;
 }

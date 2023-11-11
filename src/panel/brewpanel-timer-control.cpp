@@ -247,47 +247,22 @@ brewpanel_timer_control_update_and_render(
     u8 seconds_tens = (timestamp.seconds / 10) % 10;
     u8 seconds_ones = timestamp.seconds - (seconds_tens * 10);
 
-    image_instance* hours_tens_instance   = &images_state->image_instances[timer->digits.hours.tens_face];        
-    image_instance* hours_ones_instance   = &images_state->image_instances[timer->digits.hours.ones_face];    
-    image_instance* minutes_tens_instance = &images_state->image_instances[timer->digits.minutes.tens_face];    
-    image_instance* minutes_ones_instance = &images_state->image_instances[timer->digits.minutes.ones_face];    
-    image_instance* seconds_tens_instance = &images_state->image_instances[timer->digits.seconds.tens_face];    
-    image_instance* seconds_ones_instance = &images_state->image_instances[timer->digits.seconds.ones_face];    
+    brewpanel_images_update_instance_image(images_state,timer->digits.hours.tens_face,brewpanel_timer_glyph_table[hours_tens]);
+    brewpanel_images_update_instance_image(images_state,timer->digits.hours.ones_face,brewpanel_timer_glyph_table[hours_ones]);
+    brewpanel_images_update_instance_image(images_state,timer->digits.minutes.tens_face,brewpanel_timer_glyph_table[minutes_tens]);
+    brewpanel_images_update_instance_image(images_state,timer->digits.minutes.ones_face,brewpanel_timer_glyph_table[minutes_ones]);
+    brewpanel_images_update_instance_image(images_state,timer->digits.seconds.tens_face,brewpanel_timer_glyph_table[seconds_tens]);
+    brewpanel_images_update_instance_image(images_state,timer->digits.seconds.ones_face,brewpanel_timer_glyph_table[seconds_ones]);
 
-    image_id  previous_hours_tens_image   = hours_tens_instance->image_id;
-    image_id  previous_hours_ones_image   = hours_ones_instance->image_id;
-    image_id  previous_minutes_tens_image = minutes_tens_instance->image_id;
-    image_id  previous_minutes_ones_image = minutes_ones_instance->image_id;
-    image_id  previous_seconds_tens_image = seconds_tens_instance->image_id;
-    image_id  previous_seconds_ones_image = seconds_ones_instance->image_id;
-
-    hours_tens_instance->image_id   = brewpanel_timer_glyph_table[hours_tens];
-    hours_ones_instance->image_id   = brewpanel_timer_glyph_table[hours_ones];
-    minutes_tens_instance->image_id = brewpanel_timer_glyph_table[minutes_tens];
-    minutes_ones_instance->image_id = brewpanel_timer_glyph_table[minutes_ones];
-    seconds_tens_instance->image_id = brewpanel_timer_glyph_table[seconds_tens];
-    seconds_ones_instance->image_id = brewpanel_timer_glyph_table[seconds_ones];
-
-    *redraw |= (
-        previous_hours_tens_image   != hours_tens_instance->image_id   ||
-        previous_hours_ones_image   != hours_ones_instance->image_id   ||
-        previous_minutes_tens_image != minutes_tens_instance->image_id ||
-        previous_minutes_ones_image != minutes_ones_instance->image_id ||
-        previous_seconds_tens_image != seconds_tens_instance->image_id ||
-        previous_seconds_ones_image != seconds_ones_instance->image_id 
-    );
-
-    if (*redraw) {
-        brewpanel_images_draw_image_instance(images_state,timer->panel_image);
-        brewpanel_images_draw_image_instance(images_state,timer->digits.hours.tens_face);
-        brewpanel_images_draw_image_instance(images_state,timer->digits.hours.ones_face);
-        brewpanel_images_draw_image_instance(images_state,timer->colon_1);
-        brewpanel_images_draw_image_instance(images_state,timer->digits.minutes.tens_face);
-        brewpanel_images_draw_image_instance(images_state,timer->digits.minutes.ones_face);
-        brewpanel_images_draw_image_instance(images_state,timer->colon_2);
-        brewpanel_images_draw_image_instance(images_state,timer->digits.seconds.tens_face);
-        brewpanel_images_draw_image_instance(images_state,timer->digits.seconds.ones_face);
-    }
+    brewpanel_images_draw_image_instance(images_state,timer->panel_image);
+    brewpanel_images_draw_image_instance(images_state,timer->digits.hours.tens_face);
+    brewpanel_images_draw_image_instance(images_state,timer->digits.hours.ones_face);
+    brewpanel_images_draw_image_instance(images_state,timer->colon_1);
+    brewpanel_images_draw_image_instance(images_state,timer->digits.minutes.tens_face);
+    brewpanel_images_draw_image_instance(images_state,timer->digits.minutes.ones_face);
+    brewpanel_images_draw_image_instance(images_state,timer->colon_2);
+    brewpanel_images_draw_image_instance(images_state,timer->digits.seconds.tens_face);
+    brewpanel_images_draw_image_instance(images_state,timer->digits.seconds.ones_face);
 
     return(redraw);
 }
