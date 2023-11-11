@@ -163,9 +163,6 @@ brewpanel_temp_control_update_heating_element_control(
     switch (heating_element->state) {
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF: {
-            // if (!brewpanel_buttons_is_idle(buttons,heating_element->set_button_id)) {
-            //     buttons->states[heating_element->set_button_id] = BREWPANEL_BUTTON_STATE_IDLE;
-            // }
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
             heating_element->keypad_input = {0};
@@ -209,6 +206,18 @@ brewpanel_temp_control_update_heating_element_control(
                 } break;
             }
 
+        } break;
+
+        case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING: {
+            brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
+            brewpanel_buttons_set_idle(buttons,heating_element->off_button_id);
+
+            heating_element->keypad_input = {0};
+        } break;
+
+        default: {
+            brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
+            brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
         } break;
 
     }
