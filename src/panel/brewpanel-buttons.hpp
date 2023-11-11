@@ -64,11 +64,6 @@ typedef BrewPanelButtonStore button_store;
 #define brewpanel_buttons_click_callbacks(store,id) store->on_click_callbacks[id]
 #define brewpanel_buttons_click_payloads(store,id)  store->on_click_payloads[id]
 
-#define brewpanel_buttons_set_idle(store,id)     store->states[id]=BREWPANEL_BUTTON_STATE_IDLE
-#define brewpanel_buttons_set_hover(store,id)    store->states[id]=BREWPANEL_BUTTON_STATE_HOVER
-#define brewpanel_buttons_set_clicked(store,id)  store->states[id]=BREWPANEL_BUTTON_STATE_CLICKED
-#define brewpanel_buttons_set_disabled(store,id) store->states[id]=BREWPANEL_BUTTON_STATE_DISABLED
-
 #define brewpanel_buttons_is_idle(store,id)     (store->states[id]==BREWPANEL_BUTTON_STATE_IDLE)
 #define brewpanel_buttons_is_hover(store,id)    (store->states[id]==BREWPANEL_BUTTON_STATE_HOVER)
 #define brewpanel_buttons_is_clicked(store,id)  (store->states[id]==BREWPANEL_BUTTON_STATE_CLICKED)

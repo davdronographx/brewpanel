@@ -137,7 +137,14 @@
         "array": "cpp",
         "initializer_list": "cpp",
         "vector": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "atomic": "cpp",
+        "locale": "cpp",
+        "xlocale": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only",
     "cmake.configureOnOpen": false,

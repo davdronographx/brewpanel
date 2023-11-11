@@ -122,10 +122,6 @@ brewpanel_core_update_and_render(
     brewpanel_state->temp_control.boil_temp_panel.values.value = brewpanel_state->comm_handler.latest_heartbeat.boil_element_temp;
     brewpanel_state->temp_control.redraw = true;
 
-    brewpanel_buttons_update(
-        input,
-        &brewpanel_state->button_store
-    );
 
     redraw |= brewpanel_communication_update(
         &brewpanel_state->comm_handler,
@@ -176,6 +172,12 @@ brewpanel_core_update_and_render(
     redraw |= brewpanel_pump_control_update(
         &brewpanel_state->pump_control,
         &brewpanel_state->images,
+        &brewpanel_state->button_store
+    );
+
+
+    brewpanel_buttons_update(
+        input,
         &brewpanel_state->button_store
     );
 

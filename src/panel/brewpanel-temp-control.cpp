@@ -154,19 +154,65 @@ brewpanel_temp_control_update_heating_element_control(
 
     bool redraw = false;
 
-    brewpanel_buttons_show(buttons,heating_element->set_button_id,images);
-    brewpanel_buttons_show(buttons,heating_element->off_button_id,images);
-    heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
-    if (!brewpanel_buttons_is_idle(buttons, heating_element->set_button_id)) {
-        brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
+    if (heating_element->previous_state == BREWPANEL_TEMP_HEATING_ELEMENT_STATE_DISABLED) {
+        brewpanel_buttons_show(buttons,heating_element->set_button_id,images);
+        brewpanel_buttons_show(buttons,heating_element->off_button_id,images);
+        heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
     }
 
-    if (heating_element->previous_state != heating_element->state) {
+    switch (heating_element->state) {
 
+        case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF: {
+            // if (!brewpanel_buttons_is_idle(buttons,heating_element->set_button_id)) {
+            //     buttons->states[heating_element->set_button_id] = BREWPANEL_BUTTON_STATE_IDLE;
+            // }
+            brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
+            brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
+            heating_element->keypad_input = {0};
+        } break;
 
+        case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET: {
+            brewpanel_buttons_set_disabled(buttons,heating_element->set_button_id);
+            brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
 
+            brewpanel_keypad_active_input(
+                keypad,3,heating_element->temp_values.value,
+                &heating_element->keypad_input,
+                brewpanel_temp_control_heating_element_keypad_callback,
+                (mem_data)heating_element);
+
+            heating_element->temp_values.value  = heating_element->keypad_input.values[2] * 100;
+            heating_element->temp_values.value += heating_element->keypad_input.values[1] * 10;
+            heating_element->temp_values.value += heating_element->keypad_input.values[0];
+
+            switch(mode) {
+
+                case BREWPANEL_MODE_MASH: {
+
+                    if (heating_element->temp_values.value > 212) {
+                        heating_element->temp_values.value = 212;
+                        heating_element->keypad_input.values[2] = 2;
+                        heating_element->keypad_input.values[1] = 1;
+                        heating_element->keypad_input.values[0] = 2;
+                    }
+
+                } break;
+
+                case BREWPANEL_MODE_BOIL: {
+
+                    if (heating_element->temp_values.value > 100) {
+                        heating_element->temp_values.value = 100;
+                        heating_element->keypad_input.values[2] = 1;
+                        heating_element->keypad_input.values[1] = 0;
+                        heating_element->keypad_input.values[0] = 0;
+                    }
+                } break;
+            }
+
+        } break;
 
     }
+
 
     heating_element->previous_state = heating_element->state; 
 

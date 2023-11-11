@@ -2,6 +2,38 @@
 
 #include "brewpanel-buttons.hpp"
 
+internal void
+brewpanel_buttons_set_idle(
+    BrewPanelButtonStore* buttons,
+    button_id             button) {
+
+    buttons->states[button] = BREWPANEL_BUTTON_STATE_IDLE;
+}
+
+internal void
+brewpanel_buttons_set_hover(
+    BrewPanelButtonStore* buttons,
+    button_id             button) {
+
+    buttons->states[button] = BREWPANEL_BUTTON_STATE_HOVER;
+}
+
+internal void
+brewpanel_buttons_set_clicked(
+    BrewPanelButtonStore* buttons,
+    button_id             button) {
+
+    buttons->states[button] = BREWPANEL_BUTTON_STATE_CLICKED;
+}
+
+internal void
+brewpanel_buttons_set_disabled(
+    BrewPanelButtonStore* buttons,
+    button_id             button) {
+
+    buttons->states[button] = BREWPANEL_BUTTON_STATE_DISABLED;
+}
+
 internal BrewPanelButtonStore
 brewpanel_buttons_create_store(
     BrewPanelMemory* memory) {
@@ -290,7 +322,7 @@ brewpanel_buttons_enable(
     button_id button_id,
     images_store* images_state) {
 
-    // button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
+    button_store->states[button_id] = BREWPANEL_BUTTON_STATE_IDLE;
 
     BrewPanelButtonOffsets offsets = button_store->offsets[button_id];
 
