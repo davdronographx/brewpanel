@@ -6,22 +6,6 @@
 #pragma once
 
 internal void
-brewpanel_temp_control_update_temp_values(
-    temp_reading_values* temp_values,
-    images_store*        images) {
-
-    //get the values
-    u8 temp_hundreds = (temp_values->value / 100) % 100;
-    u8 temp_tens     = ((temp_values->value - (temp_hundreds *100)) / 10) % 10;
-    u8 temp_ones     = temp_values->value - (temp_hundreds * 100) - (temp_tens * 10);
-
-    //calculate the digits
-    images->image_instances[temp_values->temp_hundreds_digit].image_id = brewpanel_temp_glyph_table[temp_hundreds];
-    images->image_instances[temp_values->temp_tens_digit].image_id     = brewpanel_temp_glyph_table[temp_tens];
-    images->image_instances[temp_values->temp_ones_digit].image_id     = brewpanel_temp_glyph_table[temp_ones];
-}
-
-internal void
 brewpanel_temp_control_change_element_state(
     heating_element_control* heating_element,
     heating_element_state    new_state) {
@@ -29,7 +13,6 @@ brewpanel_temp_control_change_element_state(
     heating_element->previous_state = heating_element->state;
     heating_element->state          = new_state;
 }
-
 
 internal void
 brewpanel_temp_control_heating_element_keypad_callback(
@@ -94,8 +77,6 @@ brewpanel_temp_control_update_heating_element_control(
                 brewpanel_temp_control_heating_element_keypad_callback,
                 (mem_data)heating_element);
 
-
-
             switch(mode) {
 
                 case BREWPANEL_MODE_MASH: {
@@ -120,17 +101,17 @@ brewpanel_temp_control_update_heating_element_control(
                 } break;
             }
 
-            u8 temp_ones     = heating_element->keypad_input.values[2] * 100;
+            u8 temp_hundreds = heating_element->keypad_input.values[2] * 100;
             u8 temp_tens     = heating_element->keypad_input.values[1] * 10;
-            u8 temp_hundreds = heating_element->keypad_input.values[0];
+            u8 temp_ones     = heating_element->keypad_input.values[0];
 
             heating_element->temp_values.value  = temp_ones;
             heating_element->temp_values.value += temp_tens;
             heating_element->temp_values.value += temp_hundreds;
 
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    brewpanel_temp_glyph_table[temp_ones]);
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    brewpanel_temp_glyph_table[temp_tens]);
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,brewpanel_temp_glyph_table[temp_hundreds]);
+            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    brewpanel_temp_glyph_table[heating_element->keypad_input.values[0]]);
+            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    brewpanel_temp_glyph_table[heating_element->keypad_input.values[1]]);
+            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,brewpanel_temp_glyph_table[heating_element->keypad_input.values[2]]);
 
         } break;
 
