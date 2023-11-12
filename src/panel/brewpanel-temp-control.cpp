@@ -53,6 +53,14 @@ brewpanel_temp_control_update_heating_element_control(
 
     bool redraw = false;
 
+    image_id panel_image =
+        (mode == BREWPANEL_MODE_MASH)
+        ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
+        : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
+    
+    brewpanel_images_update_instance_image(images,heating_element->panel_id,panel_image);
+
+
     if (heating_element->previous_state == BREWPANEL_TEMP_HEATING_ELEMENT_STATE_DISABLED) {
         brewpanel_buttons_show(buttons,heating_element->set_button_id,images);
         brewpanel_buttons_show(buttons,heating_element->off_button_id,images);
@@ -65,9 +73,16 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
             heating_element->keypad_input = {0};
+            heating_element->temp_values.value = 0;
+
+            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    BREWPANEL_IMAGES_ID_RED_DIGIT_0);
+            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    BREWPANEL_IMAGES_ID_RED_DIGIT_0);
+            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,BREWPANEL_IMAGES_ID_RED_DIGIT_0);        
+        
         } break;
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET: {
+            
             brewpanel_buttons_set_disabled(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
 
@@ -118,6 +133,13 @@ brewpanel_temp_control_update_heating_element_control(
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING: {
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_idle(buttons,heating_element->off_button_id);
+
+            panel_image = 
+                (mode == BREWPANEL_MODE_MASH)
+                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_ON
+                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_ON;
+
+            brewpanel_images_update_instance_image(images,heating_element->panel_id,panel_image);
 
             heating_element->keypad_input = {0};
         } break;
