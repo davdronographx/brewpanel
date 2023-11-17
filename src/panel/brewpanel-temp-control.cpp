@@ -67,11 +67,7 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
 
             heating_element->keypad_input = {0};
-            heating_element->temp_values.value = 0;
-
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    BREWPANEL_IMAGES_ID_RED_DIGIT_0);
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    BREWPANEL_IMAGES_ID_RED_DIGIT_0);
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,BREWPANEL_IMAGES_ID_RED_DIGIT_0);        
+            heating_element->temp_values.value = {0};      
         
         } break;
 
@@ -91,41 +87,13 @@ brewpanel_temp_control_update_heating_element_control(
                 brewpanel_temp_control_heating_element_keypad_callback,
                 (mem_data)heating_element);
 
-            switch(mode) {
+            heating_element->temp_values.temp_hundreds_value = heating_element->keypad_input.values[2] * 100;
+            heating_element->temp_values.temp_tens_value     = heating_element->keypad_input.values[1] * 10;
+            heating_element->temp_values.temp_ones_value     = heating_element->keypad_input.values[0];
 
-                case BREWPANEL_MODE_MASH: {
-
-                    if (heating_element->temp_values.value > 212) {
-                        heating_element->temp_values.value = 212;
-                        heating_element->keypad_input.values[2] = 2;
-                        heating_element->keypad_input.values[1] = 1;
-                        heating_element->keypad_input.values[0] = 2;
-                    }
-
-                } break;
-
-                case BREWPANEL_MODE_BOIL: {
-
-                    if (heating_element->temp_values.value > 100) {
-                        heating_element->temp_values.value = 100;
-                        heating_element->keypad_input.values[2] = 1;
-                        heating_element->keypad_input.values[1] = 0;
-                        heating_element->keypad_input.values[0] = 0;
-                    }
-                } break;
-            }
-
-            u8 temp_hundreds = heating_element->keypad_input.values[2] * 100;
-            u8 temp_tens     = heating_element->keypad_input.values[1] * 10;
-            u8 temp_ones     = heating_element->keypad_input.values[0];
-
-            heating_element->temp_values.value  = temp_ones;
-            heating_element->temp_values.value += temp_tens;
-            heating_element->temp_values.value += temp_hundreds;
-
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    brewpanel_temp_glyph_table[heating_element->keypad_input.values[0]]);
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    brewpanel_temp_glyph_table[heating_element->keypad_input.values[1]]);
-            brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,brewpanel_temp_glyph_table[heating_element->keypad_input.values[2]]);
+            heating_element->temp_values.value  = heating_element->temp_values.temp_hundreds_value;
+            heating_element->temp_values.value += heating_element->temp_values.temp_tens_value;
+            heating_element->temp_values.value += heating_element->temp_values.temp_ones_value;
 
         } break;
 
@@ -134,29 +102,55 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_idle(buttons,heating_element->off_button_id);
 
-            panel_image = 
-                (mode == BREWPANEL_MODE_MASH)
-                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_ON
-                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_ON;
+            switch(mode) {
 
+                case BREWPANEL_MODE_MASH: {
+
+                    panel_image = BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_ON;
+
+                    if (heating_element->temp_values.value > 212) {
+                        heating_element->temp_values.value = 212;
+                    }
+                    else if (heating_element->temp_values.value < 60) {
+                        heating_element->temp_values.value = 60;
+                    }
+
+                } break;
+
+                case BREWPANEL_MODE_BOIL: {
+
+                    panel_image = BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_ON;
+
+                    if (heating_element->temp_values.value > 100) {
+                        heating_element->temp_values.value = 100;
+                    }
+                    else if (heating_element->temp_values.value < 25) {
+                        heating_element->temp_values.value = 25;
+                    }
+
+                } break;
+            }  
 
             heating_element->keypad_input = {0};
+
         } break;
 
         default: {
 
-            panel_image =
-                (mode == BREWPANEL_MODE_MASH)
-                ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
-                : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
-
             heating_element->state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
-
-            brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
-            brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
+        
         } break;
     }
 
+    // brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    BREWPANEL_IMAGES_ID_RED_DIGIT_0);
+    // brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    BREWPANEL_IMAGES_ID_RED_DIGIT_0);
+    // brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,BREWPANEL_IMAGES_ID_RED_DIGIT_0);        
+    
+
+    brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    brewpanel_temp_glyph_table[heating_element->temp_values.temp_ones_value]);
+    brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    brewpanel_temp_glyph_table[heating_element->temp_values.temp_tens_value]);
+    // brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,brewpanel_temp_glyph_table[heating_element->temp_values.temp_hundreds_value]);        
+    
     brewpanel_images_update_instance_image(images,heating_element->panel_id,panel_image);
 
     return(redraw);
@@ -192,6 +186,10 @@ brewpanel_temp_control_update(
             
             heating_element = &control->boil_element; 
 
+            if (control->boil_element.state == BREWPANEL_TEMP_HEATING_ELEMENT_STATE_DISABLED) {
+                control->boil_element.state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
+            }
+
             brewpanel_images_draw_image_instance(images,control->boil_element.panel_id);
             brewpanel_images_draw_image_instance(images,control->boil_element.temp_values.temp_hundreds_digit);
             brewpanel_images_draw_image_instance(images,control->boil_element.temp_values.temp_tens_digit);
@@ -205,6 +203,10 @@ brewpanel_temp_control_update(
         case BREWPANEL_MODE_MASH: {
 
             heating_element = &control->mlt_element;
+
+            if (control->mlt_element.state == BREWPANEL_TEMP_HEATING_ELEMENT_STATE_DISABLED) {
+                control->mlt_element.state = BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF;
+            }
 
             brewpanel_images_draw_image_instance(images,control->mlt_element.panel_id);
             brewpanel_images_draw_image_instance(images,control->mlt_element.temp_values.temp_hundreds_digit);
