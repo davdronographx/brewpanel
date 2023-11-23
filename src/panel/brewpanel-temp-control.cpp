@@ -67,8 +67,11 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
 
             heating_element->keypad_input = {0};
-            heating_element->temp_values.value = {0};      
-        
+            heating_element->temp_values.value = 0;
+            heating_element->temp_values.temp_hundreds_value = 0;
+            heating_element->temp_values.temp_tens_value     = 0;
+            heating_element->temp_values.temp_ones_value     = 0;
+
         } break;
 
         case BREWPANEL_TEMP_HEATING_ELEMENT_STATE_SET: {
@@ -131,7 +134,7 @@ brewpanel_temp_control_update_heating_element_control(
                 } break;
             }  
 
-            heating_element->keypad_input = {0};
+            // heating_element->keypad_input = {0};
 
         } break;
 
@@ -141,11 +144,6 @@ brewpanel_temp_control_update_heating_element_control(
         
         } break;
     }
-
-    // brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    BREWPANEL_IMAGES_ID_RED_DIGIT_0);
-    // brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    BREWPANEL_IMAGES_ID_RED_DIGIT_0);
-    // brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,BREWPANEL_IMAGES_ID_RED_DIGIT_0);        
-    
 
     brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    brewpanel_temp_glyph_table[heating_element->temp_values.temp_ones_value]);
     brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    brewpanel_temp_glyph_table[heating_element->temp_values.temp_tens_value]);
