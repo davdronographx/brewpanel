@@ -87,12 +87,12 @@ brewpanel_temp_control_update_heating_element_control(
                 brewpanel_temp_control_heating_element_keypad_callback,
                 (mem_data)heating_element);
 
-            heating_element->temp_values.temp_hundreds_value = heating_element->keypad_input.values[2] * 100;
-            heating_element->temp_values.temp_tens_value     = heating_element->keypad_input.values[1] * 10;
+            heating_element->temp_values.temp_hundreds_value = heating_element->keypad_input.values[2];
+            heating_element->temp_values.temp_tens_value     = heating_element->keypad_input.values[1];
             heating_element->temp_values.temp_ones_value     = heating_element->keypad_input.values[0];
 
-            heating_element->temp_values.value  = heating_element->temp_values.temp_hundreds_value;
-            heating_element->temp_values.value += heating_element->temp_values.temp_tens_value;
+            heating_element->temp_values.value  = heating_element->temp_values.temp_hundreds_value * 100;
+            heating_element->temp_values.value += heating_element->temp_values.temp_tens_value * 10;
             heating_element->temp_values.value += heating_element->temp_values.temp_ones_value;
 
         } break;
@@ -149,7 +149,7 @@ brewpanel_temp_control_update_heating_element_control(
 
     brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_ones_digit,    brewpanel_temp_glyph_table[heating_element->temp_values.temp_ones_value]);
     brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_tens_digit,    brewpanel_temp_glyph_table[heating_element->temp_values.temp_tens_value]);
-    // brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,brewpanel_temp_glyph_table[heating_element->temp_values.temp_hundreds_value]);        
+    brewpanel_images_update_instance_image(images,heating_element->temp_values.temp_hundreds_digit,brewpanel_temp_glyph_table[heating_element->temp_values.temp_hundreds_value]);        
     
     brewpanel_images_update_instance_image(images,heating_element->panel_id,panel_image);
 
