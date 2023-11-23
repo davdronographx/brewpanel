@@ -82,7 +82,8 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     brewpanel_temp_control_create(
         &brewpanel_state->temp_control,
         &brewpanel_state->button_store,
-        &brewpanel_state->images
+        &brewpanel_state->images,
+        &brewpanel_state->comm_handler
     );
 
     //mode control

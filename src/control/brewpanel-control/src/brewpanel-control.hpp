@@ -33,15 +33,15 @@ enum BrewPanelCommunicationMessageSender : u8 {
 };
 
 enum BrewPanelCommunicationMessageType : u8 {
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID           = 0x00,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT         = 0x01,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK     = 0x02,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE       = 0x03,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL      = 0x04,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TIMER_CONTROL     = 0x06,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TEMP_CONTROL      = 0x08,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PID_TUNE          = 0x0A,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT             = 0x0C,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID                = 0x00,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT              = 0x01,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK          = 0x02,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE            = 0x03,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL           = 0x04,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TIMER_CONTROL          = 0x06,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OUTPUT_SET     = 0x07,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OFF            = 0x08,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT                  = 0x09,
 };
 
 struct BrewPanelCommunicationMessageHeader {
@@ -89,10 +89,26 @@ struct BrewPanelCommunicationMessagePayloadModeChange {
 };
 
 
+enum BrewPanelCommunicationElement : u8 {
+    BREWPANEL_COMMUNICATION_ELEMENT_HLT  = 0x01,
+    BREWPANEL_COMMUNICATION_ELEMENT_BOIL = 0x02
+};
+
+struct BrewPanelCommunicationMessagePayloadElementOutputSet {
+    BrewPanelCommunicationElement element;
+    u8                            output_value;
+};
+
+struct BrewPanelCommunicationMessagePayloadElementOff {
+    BrewPanelCommunicationElement element;
+};
+
 union BrewPanelCommunicationMessagePayload {
-    BrewPanelCommunicationMessagePayloadHeartbeat   heartbeat;
-    BrewPanelCommunicationMessagePayloadPumpControl pump_control;
-    BrewPanelCommunicationMessagePayloadModeChange  mode_change;
+    BrewPanelCommunicationMessagePayloadHeartbeat        heartbeat;
+    BrewPanelCommunicationMessagePayloadPumpControl      pump_control;
+    BrewPanelCommunicationMessagePayloadModeChange       mode_change;
+    BrewPanelCommunicationMessagePayloadElementOutputSet element_output_set;
+    BrewPanelCommunicationMessagePayloadElementOff       element_off;
 };
 
 struct BrewPanelCommunicationMessage {
@@ -114,6 +130,16 @@ struct BrewPanelControlIncomingMessage{
     BrewPanelCommunicationMessage parsed_message;
 };
 
+enum BrewPanelControlElementState : u8 {
+    BREWPANEL_CONTROL_ELEMENT_STATE_OFF = 0x00,
+    BREWPANEL_CONTROL_ELEMENT_STATE_ON  = 0x01
+};
+
+struct BrewPanelControlElement {
+    BrewPanelControlElementState state;
+    u8                           output_value;
+};
+
 struct BrewPanelControlState {
     u8                              hlt_temp;
     u8                              mlt_temp;
@@ -125,6 +151,9 @@ struct BrewPanelControlState {
     BrewPanelMessageQueue           message_queue;
     BrewPanelControlIncomingMessage incoming_message;
     BrewPanelCommunicationMode      mode;
+    BrewPanelControlElement         hlt_element;
+    BrewPanelControlElement         boil_element;
+
 };
 
 typedef BrewPanelCommunicationMessageHeader           comm_message_header;
@@ -160,6 +189,9 @@ typedef BrewPanelMessageBuffer                        comm_message_buffer;
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_HLT  A0
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_MLT  A1
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_BOIL A2
+
+#define BREWPANEL_CONTROL_HLT_SSR  A3
+#define BREWPANEL_CONTROL_BOIL_SSR A4
 
 #define RREF      430.0
 #define RNOMINAL  100.0

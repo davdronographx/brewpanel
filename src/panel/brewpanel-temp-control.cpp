@@ -2,6 +2,7 @@
 #include "brewpanel-images.cpp"
 #include "brewpanel-buttons.cpp"
 #include "brewpanel-keypad.cpp"
+#include "brewpanel-communication.cpp"
 
 #pragma once
 
@@ -48,6 +49,7 @@ brewpanel_temp_control_update_heating_element_control(
     images_store*            images,
     button_store*            buttons,
     keypad*                  keypad,
+    comm_handler*            comm,
     panel_mode               mode) {
 
     bool redraw = false;
@@ -63,6 +65,11 @@ brewpanel_temp_control_update_heating_element_control(
                 ? BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL
                 : BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL;
 
+            BrewPanelCommunicationElement element = 
+                (mode == BREWPANEL_MODE_MASH)
+                ? BREWPANEL_COMMUNICATION_ELEMENT_HLT
+                : BREWPANEL_COMMUNICATION_ELEMENT_BOIL;
+
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_disabled(buttons,heating_element->off_button_id);
 
@@ -71,6 +78,11 @@ brewpanel_temp_control_update_heating_element_control(
             heating_element->temp_values.temp_hundreds_value = 0;
             heating_element->temp_values.temp_tens_value     = 0;
             heating_element->temp_values.temp_ones_value     = 0;
+
+            brewpanel_communication_send_message_element_off(
+                comm,
+                element
+            );
 
         } break;
 
@@ -118,6 +130,12 @@ brewpanel_temp_control_update_heating_element_control(
                         heating_element->temp_values.value = 60;
                     }
 
+                    brewpanel_communication_send_message_element_output_set(
+                        comm,
+                        BREWPANEL_COMMUNICATION_ELEMENT_HLT,
+                        heating_element->temp_values.value
+                    );
+
                 } break;
 
                 case BREWPANEL_MODE_BOIL: {
@@ -127,14 +145,18 @@ brewpanel_temp_control_update_heating_element_control(
                     if (heating_element->temp_values.value > 100) {
                         heating_element->temp_values.value = 100;
                     }
-                    else if (heating_element->temp_values.value < 25) {
-                        heating_element->temp_values.value = 25;
+                    else if (heating_element->temp_values.value < 10) {
+                        heating_element->temp_values.value = 10;
                     }
+
+                    brewpanel_communication_send_message_element_output_set(
+                        comm,
+                        BREWPANEL_COMMUNICATION_ELEMENT_BOIL,
+                        heating_element->temp_values.value
+                    );
 
                 } break;
             }  
-
-            // heating_element->keypad_input = {0};
 
         } break;
 
@@ -225,6 +247,7 @@ brewpanel_temp_control_update(
         images,
         buttons,
         keypad,
+        control->comm,
         mode
     ); 
 
@@ -274,13 +297,15 @@ internal void
 brewpanel_temp_control_create(
     temp_control* control,
     button_store* buttons,
-    images_store* images) {
+    images_store* images,
+    comm_handler* comm) {
 
     control->redraw                 = true;
     control->mlt_element.redraw     = true;
     control->boil_element.redraw    = true;
     control->off_panel              = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_OFF_TEMP_PANEL,BREWPANEL_TEMP_HEATING_ELEMENT_X_OFFSET,BREWPANEL_TEMP_HEATING_ELEMENT_Y_OFFSET);
-    
+    control->comm                   = comm;
+
     //offsets
     u32 element_hundreds_digit_offset = BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_X_OFFSET + BREWPANEL_TEMP_READ_DIGIT_WIDTH;
     u32 element_tens_digit_offset     = BREWPANEL_TEMP_HEATING_ELEMENT_DIGIT_X_OFFSET + (BREWPANEL_TEMP_READ_DIGIT_WIDTH * 2);
