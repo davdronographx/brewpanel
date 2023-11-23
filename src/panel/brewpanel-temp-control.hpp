@@ -5,6 +5,7 @@
 #include "brewpanel-images.hpp"
 #include "brewpanel-buttons.hpp"
 #include "brewpanel-keypad.hpp"
+#include "brewpanel-communication.hpp"
 
 #define BREWPANEL_TEMP_READ_PANEL_Y_OFFSET_BASE 25
 #define BREWPANEL_TEMP_READ_PANEL_X_OFFSET      25
@@ -79,6 +80,7 @@ struct BrewPanelTempControl {
     heating_element_control boil_element;
     image_instance_id       digit_glyph_table;
     image_instance_id       off_panel;
+    comm_handler*           comm;
 };
 typedef BrewPanelTempControl temp_control;
 

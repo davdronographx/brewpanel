@@ -37,6 +37,8 @@ void setup() {
     pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
     pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
+    pinMode(BREWPANEL_CONTROL_HLT_SSR,OUTPUT);
+    pinMode(BREWPANEL_CONTROL_BOIL_SSR,OUTPUT);
 
     hlt_thermo.begin(MAX31865_3WIRE);
     mlt_thermo.begin(MAX31865_3WIRE);
@@ -116,11 +118,72 @@ void brewpanel_control_handle_incoming_message() {
         } break;
 
         case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE: {
+            
             control_state.mode = incoming_message.payload.mode_change.mode;
         } break;
+
+        case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OUTPUT_SET: {
+            
+            switch (control_state.mode) {
+                
+                case BREWPANEL_COMMUNICATION_MODE_MASH: {
+
+                    if (incoming_message.payload.element_output_set.element == BREWPANEL_COMMUNICATION_ELEMENT_HLT) {
+                        control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_ON;
+                        control_state.hlt_element.output_value = incoming_message.payload.element_output_set.output_value;
+                    }
+
+                    control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+                    control_state.boil_element.output_value = 0;
+
+                } break;
+                
+                case BREWPANEL_COMMUNICATION_MODE_BOIL: {
+
+                    if (incoming_message.payload.element_output_set.element == BREWPANEL_COMMUNICATION_ELEMENT_BOIL) {
+                        control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_ON;
+                        control_state.boil_element.output_value = incoming_message.payload.element_output_set.output_value;
+                    }
+
+                    control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+                    control_state.hlt_element.output_value = 0;
+
+                } break;
+                
+                case BREWPANEL_COMMUNICATION_MODE_OFF:
+                default: {
+
+                    //in this case, we are turning everything off to be safe
+                    control_state.hlt_element.state         = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+                    control_state.hlt_element.output_value = 0;
+
+                    control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+                    control_state.boil_element.output_value = 0;
+                
+                } break;
+            }
+        }
     }
 
     control_state.incoming_message.message_ready = false;
+}
+
+void brewpanel_control_update_ssr_hlt() {
+
+}
+
+void brewpanel_control_update_ssr_boil() {
+
+    u8 pwm_value = 
+        map(
+            control_state.boil_element.output_value, //value
+            0,                                       //fromLow
+            100,                                     //fromHigh
+            0,                                       //toLow
+            255                                      //toHigh
+    );
+
+    analogWrite(BREWPANEL_CONTROL_BOIL_SSR,pwm_value);
 }
 
 void brewpanel_control_update_outputs() {
@@ -129,17 +192,23 @@ void brewpanel_control_update_outputs() {
     brewpanel_control_water_pump(control_state.water_pump_state ? ON : OFF);
     brewpanel_control_wort_pump(control_state.wort_pump_state ? ON : OFF);
 
-    //mode/element contactors
+    //mode/element contactors and ssrs
     switch (control_state.mode)
     {
         case BREWPANEL_COMMUNICATION_MODE_MASH: {
             brewpanel_control_hlt_contactor_on();
             brewpanel_control_boil_contactor_off();
+            if (control_state.hlt_element.state == BREWPANEL_CONTROL_ELEMENT_STATE_ON) {
+                brewpanel_control_update_ssr_hlt();
+            }
         } break;
         
         case BREWPANEL_COMMUNICATION_MODE_BOIL: {
             brewpanel_control_hlt_contactor_off();
             brewpanel_control_boil_contactor_on();
+            if (control_state.boil_element.state == BREWPANEL_CONTROL_ELEMENT_STATE_ON) {
+                brewpanel_control_update_ssr_boil();
+            }
         } break;
 
         //default is off

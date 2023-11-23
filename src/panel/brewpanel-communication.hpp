@@ -21,15 +21,15 @@ enum BrewPanelCommunicationMessageSender : u8 {
 };
 
 enum BrewPanelCommunicationMessageType : u8 {
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID           = 0x00,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT         = 0x01,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK     = 0x02,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE       = 0x03,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL      = 0x04,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TIMER_CONTROL     = 0x06,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TEMP_CONTROL      = 0x08,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PID_TUNE          = 0x0A,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT             = 0x0C,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_INVALID                = 0x00,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT              = 0x01,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK          = 0x02,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE            = 0x03,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL           = 0x04,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TIMER_CONTROL          = 0x06,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OUTPUT_SET     = 0x07,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OFF            = 0x08,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT                  = 0x09,
 };
 
 struct BrewPanelCommunicationMessageHeader {
@@ -88,12 +88,28 @@ struct BrewPanelCommunicationMessagePayloadModeChange {
     BrewPanelCommunicationMode mode;
 };
 
+enum BrewPanelCommunicationElement : u8 {
+    BREWPANEL_COMMUNICATION_ELEMENT_HLT  = 0x01,
+    BREWPANEL_COMMUNICATION_ELEMENT_BOIL = 0x02
+};
+
+struct BrewPanelCommunicationMessagePayloadElementOutputSet {
+    BrewPanelCommunicationElement element;
+    u8                            output_value;
+};
+
+struct BrewPanelCommunicationMessagePayloadElementOff {
+    BrewPanelCommunicationElement element;
+};
+
 struct BrewPanelCommunicationMessage {
     BrewPanelCommunicationMessageHeader header;
     union PayloadData  {
-        BrewPanelCommunicationMessagePayloadHeartBeatAck heartbeat_ack;
-        BrewPanelCommunicationMessagePayloadPumpControl  pump_control;
-        BrewPanelCommunicationMessagePayloadModeChange   mode_change;
+        BrewPanelCommunicationMessagePayloadHeartBeatAck     heartbeat_ack;
+        BrewPanelCommunicationMessagePayloadPumpControl      pump_control;
+        BrewPanelCommunicationMessagePayloadModeChange       mode_change;
+        BrewPanelCommunicationMessagePayloadElementOutputSet element_output_set;
+        BrewPanelCommunicationMessagePayloadElementOff       element_off;
     } payload;
 };
 

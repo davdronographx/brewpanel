@@ -88,6 +88,56 @@ brewpanel_communication_send_message_pump_control(
     );
 }
 
+internal void
+brewpanel_communication_send_message_element_output_set(
+    BrewPanelCommunicationHandler*   comm,
+    BrewPanelCommunicationElement    element,
+    u8                               output) {
+
+    BrewPanelCommunicationMessage message = {0};
+    message.header.sender                           = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
+    message.header.message_type                     = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OUTPUT_SET;
+    message.header.message_size                     = sizeof(BrewPanelCommunicationMessagePayloadElementOutputSet);
+    message.payload.element_output_set.element      = element;
+    message.payload.element_output_set.output_value = output;
+
+    BrewPanelCommunicationMessageBuffer message_buffer = {0};
+    brewpanel_communication_message_buffer_build(
+        &message,
+        &message_buffer
+    );
+
+    brewpanel_platform_controller_write(
+        comm->comm_data.controller,
+        message_buffer.buffer,
+        message_buffer.buffer_size
+    );
+}
+
+internal void
+brewpanel_communication_send_message_element_off(
+    BrewPanelCommunicationHandler*   comm,
+    BrewPanelCommunicationElement    element) {
+    
+    BrewPanelCommunicationMessage message = {0};
+    message.header.sender                           = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
+    message.header.message_type                     = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OFF;
+    message.header.message_size                     = sizeof(BrewPanelCommunicationMessagePayloadElementOff);
+    message.payload.element_output_set.element      = element;
+
+    BrewPanelCommunicationMessageBuffer message_buffer = {0};
+    brewpanel_communication_message_buffer_build(
+        &message,
+        &message_buffer
+    );
+
+    brewpanel_platform_controller_write(
+        comm->comm_data.controller,
+        message_buffer.buffer,
+        message_buffer.buffer_size
+    );
+}
+
 internal bool
 brewpanel_communication_message_queue_push(
     BrewPanelCommunicationMessageQueue* queue,
