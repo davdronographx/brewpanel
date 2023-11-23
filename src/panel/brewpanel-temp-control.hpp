@@ -28,7 +28,10 @@
 #define BREWPANEL_TEMP_HEATING_ELEMENT_BUTTON_OFF_Y_OFFSET 200
 
 struct BrewPanelTempReading {
-    u8               value;
+    u8                value;
+    u32               temp_hundreds_value;
+    u32               temp_tens_value;
+    u32               temp_ones_value;
     image_instance_id temp_hundreds_digit;
     image_instance_id temp_tens_digit;
     image_instance_id temp_ones_digit;
