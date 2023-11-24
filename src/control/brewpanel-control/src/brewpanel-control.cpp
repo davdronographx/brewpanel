@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Adafruit_MAX31865.h>
+#include <PID_v1.h>
 #include "brewpanel-control.hpp"
 
 BrewPanelControlState control_state;
@@ -25,6 +26,16 @@ Adafruit_MAX31865 boil_thermo =
         BREWPANEL_CONTROL_THERMO_PIN_SDO, 
         BREWPANEL_CONTROL_THERMO_PIN_CLK
 );
+
+PID hlt_pid = 
+    PID(
+        &control_state.hlt_temp,
+        &control_state.hlt_element.set_value,
+        &control_state.hlt_element.output_value,
+        BREWPANEL_CONTROL_PID_CONSERVATIVE_P,
+        BREWPANEL_CONTROL_PID_CONSERVATIVE_I,
+        BREWPANEL_CONTROL_PID_CONSERVATIVE_D
+    );
 
 void setup() {
 
@@ -130,11 +141,11 @@ void brewpanel_control_handle_incoming_message() {
 
                     if (incoming_message.payload.element_output_set.element == BREWPANEL_COMMUNICATION_ELEMENT_HLT) {
                         control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_ON;
-                        control_state.hlt_element.output_value = incoming_message.payload.element_output_set.output_value;
+                        control_state.hlt_element.set_value = incoming_message.payload.element_output_set.set_value;
                     }
 
-                    control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-                    control_state.boil_element.output_value = 0;
+                    control_state.boil_element.state     = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+                    control_state.boil_element.set_value = 0;
 
                 } break;
                 
@@ -142,11 +153,11 @@ void brewpanel_control_handle_incoming_message() {
 
                     if (incoming_message.payload.element_output_set.element == BREWPANEL_COMMUNICATION_ELEMENT_BOIL) {
                         control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_ON;
-                        control_state.boil_element.output_value = incoming_message.payload.element_output_set.output_value;
+                        control_state.boil_element.set_value = incoming_message.payload.element_output_set.set_value;
                     }
 
                     control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-                    control_state.hlt_element.output_value = 0;
+                    control_state.hlt_element.set_value = 0;
 
                 } break;
                 
@@ -155,10 +166,10 @@ void brewpanel_control_handle_incoming_message() {
 
                     //in this case, we are turning everything off to be safe
                     control_state.hlt_element.state         = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-                    control_state.hlt_element.output_value = 0;
+                    control_state.hlt_element.set_value = 0;
 
                     control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-                    control_state.boil_element.output_value = 0;
+                    control_state.boil_element.set_value = 0;
                 
                 } break;
             }
@@ -174,16 +185,16 @@ void brewpanel_control_update_ssr_hlt() {
 
 void brewpanel_control_update_ssr_boil() {
 
-    u8 pwm_value = 
+    control_state.boil_element.output_value = 
         map(
-            control_state.boil_element.output_value, //value
+            control_state.boil_element.set_value, //value
             0,                                       //fromLow
             100,                                     //fromHigh
             0,                                       //toLow
             255                                      //toHigh
     );
 
-    analogWrite(BREWPANEL_CONTROL_BOIL_SSR,pwm_value);
+    analogWrite(BREWPANEL_CONTROL_BOIL_SSR,control_state.boil_element.output_value);
 }
 
 void brewpanel_control_update_outputs() {

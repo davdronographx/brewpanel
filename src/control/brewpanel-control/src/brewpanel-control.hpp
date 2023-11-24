@@ -137,7 +137,8 @@ enum BrewPanelControlElementState : u8 {
 
 struct BrewPanelControlElement {
     BrewPanelControlElementState state;
-    u8                           output_value;
+    u8                           set_value;
+    double                       output_value;
 };
 
 struct BrewPanelControlState {
@@ -189,6 +190,19 @@ typedef BrewPanelMessageBuffer                        comm_message_buffer;
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_HLT  A0
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_MLT  A1
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_BOIL A2
+
+double aggKp=4, aggKi=0.2, aggKd=1;
+double consKp=1, consKi=0.05, consKd=0.25;
+
+#define BREWPANEL_CONTROL_PID_AGGRESSIVE_P 4.00
+#define BREWPANEL_CONTROL_PID_AGGRESSIVE_I 0.20
+#define BREWPANEL_CONTROL_PID_AGGRESSIVE_D 1.00
+
+#define BREWPANEL_CONTROL_PID_CONSERVATIVE_P 1.00
+#define BREWPANEL_CONTROL_PID_CONSERVATIVE_I 0.05
+#define BREWPANEL_CONTROL_PID_CONSERVATIVE_D 1.00
+
+#define BREWPANEL_CONTROL_PID_ADAPTIVE_THRESHOLD 10.00
 
 #define BREWPANEL_CONTROL_HLT_SSR  A3
 #define BREWPANEL_CONTROL_BOIL_SSR A4
