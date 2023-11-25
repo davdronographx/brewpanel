@@ -280,20 +280,26 @@ brewpanel_x11_api_controller_read_thread(
 
         //read from the controller until we can't read anymore
         s32 bytes_read = 0;
+        
+        char buf[1] = {0};
+        
         do {
 
             bytes_read = read(
                 controller_fd,
-                controller_comm_data->read_buffer[controller_comm_data->bytes_read],
+                buf,
                 1
             );
 
-            auto error = errno;
-
-            ++controller_comm_data->bytes_read;
-            if (controller_comm_data->bytes_read == BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE) {
-                break;
+            if (bytes_read > 0) {
+                    
+                controller_comm_data->read_buffer[controller_comm_data->bytes_read] = buf[0],
+                ++controller_comm_data->bytes_read;
+                if (controller_comm_data->bytes_read == BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE) {
+                    break;
+                }
             }
+
 
         } while (bytes_read > 0);
 
