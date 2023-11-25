@@ -79,10 +79,12 @@ brewpanel_temp_control_update_heating_element_control(
             heating_element->temp_values.temp_tens_value     = 0;
             heating_element->temp_values.temp_ones_value     = 0;
 
-            brewpanel_communication_send_message_element_off(
-                comm,
-                element
-            );
+            if (heating_element->previous_state != BREWPANEL_TEMP_HEATING_ELEMENT_STATE_OFF) {
+                brewpanel_communication_send_message_element_off(
+                    comm,
+                    element
+                );
+            }
 
         } break;
 
@@ -117,11 +119,15 @@ brewpanel_temp_control_update_heating_element_control(
             brewpanel_buttons_set_idle(buttons,heating_element->set_button_id);
             brewpanel_buttons_set_idle(buttons,heating_element->off_button_id);
 
+            BrewPanelCommunicationElement comm_heating_element = BREWPANEL_COMMUNICATION_ELEMENT_HLT;
+            
             switch(mode) {
 
                 case BREWPANEL_MODE_MASH: {
 
                     panel_image = BREWPANEL_IMAGES_ID_MLT_ELEMENT_PANEL_ON;
+
+                    comm_heating_element = BREWPANEL_COMMUNICATION_ELEMENT_HLT;
 
                     if (heating_element->temp_values.value > 212) {
                         heating_element->temp_values.value = 212;
@@ -130,17 +136,13 @@ brewpanel_temp_control_update_heating_element_control(
                         heating_element->temp_values.value = 60;
                     }
 
-                    brewpanel_communication_send_message_element_output_set(
-                        comm,
-                        BREWPANEL_COMMUNICATION_ELEMENT_HLT,
-                        heating_element->temp_values.value
-                    );
-
                 } break;
 
                 case BREWPANEL_MODE_BOIL: {
 
                     panel_image = BREWPANEL_IMAGES_ID_BOIL_ELEMENT_PANEL_ON;
+
+                    comm_heating_element = BREWPANEL_COMMUNICATION_ELEMENT_BOIL;
 
                     if (heating_element->temp_values.value > 100) {
                         heating_element->temp_values.value = 100;
@@ -149,14 +151,16 @@ brewpanel_temp_control_update_heating_element_control(
                         heating_element->temp_values.value = 10;
                     }
 
-                    brewpanel_communication_send_message_element_output_set(
-                        comm,
-                        BREWPANEL_COMMUNICATION_ELEMENT_BOIL,
-                        heating_element->temp_values.value
-                    );
-
                 } break;
             }  
+
+            if (heating_element->previous_state != BREWPANEL_TEMP_HEATING_ELEMENT_STATE_RUNNING) {
+                brewpanel_communication_send_message_element_output_set(
+                    comm,
+                    comm_heating_element,
+                    heating_element->temp_values.value
+                );
+            }
 
         } break;
 
@@ -173,6 +177,8 @@ brewpanel_temp_control_update_heating_element_control(
     
     brewpanel_images_update_instance_image(images,heating_element->panel_id,panel_image);
 
+    heating_element->previous_state = heating_element->state;
+
     return(redraw);
 }
 
@@ -185,6 +191,7 @@ brewpanel_temp_control_update(
     keypad*       keypad) {
 
     local bool redraw = false;
+    local panel_mode previous_mode = BREWPANEL_MODE_OFF;
 
     heating_element_control* heating_element = NULL;
 
@@ -199,6 +206,23 @@ brewpanel_temp_control_update(
             brewpanel_buttons_hide(buttons,control->mlt_element.off_button_id,images);
             brewpanel_buttons_hide(buttons,control->mlt_element.set_button_id,images);  
             brewpanel_images_draw_image_instance(images,control->off_panel);
+
+            //to be safe, we're turning both elements off
+            if (previous_mode != BREWPANEL_MODE_OFF) {
+
+                brewpanel_communication_send_message_element_off(
+                    control->comm,
+                    BREWPANEL_COMMUNICATION_ELEMENT_HLT
+                );
+
+                brewpanel_communication_send_message_element_off(
+                    control->comm,
+                    BREWPANEL_COMMUNICATION_ELEMENT_BOIL
+                );
+            }
+
+            previous_mode = mode;
+
             return(true);
         } break;
 
@@ -250,6 +274,8 @@ brewpanel_temp_control_update(
         control->comm,
         mode
     ); 
+
+    previous_mode = mode;
 
     return(true);
 }
