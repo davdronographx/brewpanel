@@ -279,7 +279,7 @@ brewpanel_x11_api_controller_read_thread(
         }
 
         //read from the controller until we can't read anymore
-        u32 bytes_read = 0;
+        s32 bytes_read = 0;
         do {
 
             bytes_read = read(
@@ -287,6 +287,8 @@ brewpanel_x11_api_controller_read_thread(
                 controller_comm_data->read_buffer[controller_comm_data->bytes_read],
                 1
             );
+
+            auto error = errno;
 
             ++controller_comm_data->bytes_read;
             if (controller_comm_data->bytes_read == BREWPANEL_CONTROL_COMM_DATA_BUFFER_SIZE) {
@@ -301,6 +303,8 @@ brewpanel_x11_api_controller_read_thread(
             controller_comm_data->read_callback(controller_comm_data->panel_comm_handler);
         }
 
+        sleep(2);
+        tcflush(controller_fd,TCIOFLUSH);
 
         //unlock the controller
         flock(controller_fd, LOCK_UN | LOCK_NB);
