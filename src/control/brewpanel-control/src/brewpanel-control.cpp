@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Adafruit_MAX31865.h>
 #include <PID_v1.h>
+#include <arduino-timer.h>
 #include "brewpanel-control.hpp"
 
 BrewPanelControlState control_state;
@@ -37,6 +38,8 @@ PID hlt_pid =
         BREWPANEL_CONTROL_PID_CONSERVATIVE_D,
         DIRECT
     );
+
+Timer<1,millis> heartbeat_timer;
 
 void setup() {
 
@@ -99,8 +102,8 @@ brewpanel_control_message_heartbeat_build_and_send() {
     );
 
     Serial.write(message_buffer.buffer,message_buffer.buffer_size);
-}
 
+}
 
 void brewpanel_control_handle_incoming_message() {
 
@@ -324,7 +327,7 @@ void brewpanel_control_read_and_parse_incoming_data() {
 
 u16 thermo_index = 0;
 
-void brewpanel_control_update_temperatures() {
+bool brewpanel_control_update_temperatures() {
 
     static unsigned long chrono = millis();
     unsigned long elapsed       = millis();
@@ -338,7 +341,7 @@ void brewpanel_control_update_temperatures() {
     control_state.boil_temp = (u8)boil_temp;
 
     if (elapsed - chrono < 250) {
-        return;
+        return(false);
     }
 
     chrono = millis();
@@ -346,7 +349,25 @@ void brewpanel_control_update_temperatures() {
     switch (thermo_index) {
 
         case 0: {
-            hlt_temp = (u16)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
+
+            //TODO: this is a temporary fix for calibration. this should be a user setting,
+            //but this is a basic algorithm to get things going
+            //calibration follows y = mx + b
+            float value_low      = 104;
+            float value_high     = 200;
+            float reference_low  = 80;
+            float reference_high = 180;
+            
+            float value_range     = value_high - value_low;
+            float reference_range = reference_high - reference_low;
+
+            float m = reference_range / value_range;
+            float b = reference_low - (m * value_low); 
+
+            float hlt_temp_raw = (float)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32.0f);
+
+            hlt_temp = (m * hlt_temp_raw) + b;
+
             if (hlt_temp > 212) {
                hlt_temp = 212;
             }
@@ -371,10 +392,13 @@ void brewpanel_control_update_temperatures() {
     if (thermo_index > 2) {
         thermo_index = 0;
     }
+
+    return(true);
 }
 
 void loop() {
-    brewpanel_control_update_temperatures();
+
+    bool send_heartbeat = brewpanel_control_update_temperatures();
 
     brewpanel_control_read_and_parse_incoming_data();
 
@@ -382,6 +406,8 @@ void loop() {
 
     brewpanel_control_update_outputs();
 
-    brewpanel_control_message_heartbeat_build_and_send();
+    if (send_heartbeat) {
+        brewpanel_control_message_heartbeat_build_and_send();
+    }
 
 }
