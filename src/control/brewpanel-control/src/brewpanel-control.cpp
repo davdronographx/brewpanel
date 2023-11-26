@@ -105,26 +105,6 @@ brewpanel_control_message_heartbeat_build_and_send() {
 
 }
 
-void setup() {
-
-    control_state = {0};
-
-    Serial.begin(115200,SERIAL_8N1);
-    Serial.setTimeout(1000);
-
-    pinMode(BREWPANEL_CONTROL_PIN_WATER_PUMP,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_HLT_SSR,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_BOIL_SSR,OUTPUT);
-
-    hlt_thermo.begin(MAX31865_3WIRE);
-    mlt_thermo.begin(MAX31865_3WIRE);
-    boil_thermo.begin(MAX31865_3WIRE);
-}
-
-
 void brewpanel_control_handle_incoming_message() {
 
     if (!control_state.incoming_message.message_ready) {
@@ -351,7 +331,7 @@ bool brewpanel_control_update_temperatures() {
     control_state.boil_temp = (u8)boil_temp;
 
     if (elapsed - chrono < 250) {
-        return;
+        return(false);
     }
 
     chrono = millis();
