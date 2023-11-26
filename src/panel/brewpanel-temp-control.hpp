@@ -68,6 +68,7 @@ struct BrewPanelTempHeatingElementControl {
     heating_element_state state;
     heating_element_state previous_state;
     keypad_input          keypad_input;
+    u8                    set_point;
 };
 typedef BrewPanelTempHeatingElementControl heating_element_control;
 
