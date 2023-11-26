@@ -183,11 +183,14 @@ void brewpanel_control_handle_incoming_message() {
         case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OFF: {
                     
             //in this case, we are turning everything off to be safe
-            control_state.hlt_element.state     = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-            control_state.hlt_element.set_value = 0;
+            control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+            control_state.hlt_element.set_value    = 0;
+            control_state.hlt_element.output_value = 0;
 
-            control_state.boil_element.state     = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-            control_state.boil_element.set_value = 0;
+            control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+            control_state.boil_element.set_value    = 0;
+            control_state.boil_element.output_value = 0;
+
         } break;
     }
 
@@ -212,7 +215,6 @@ void brewpanel_control_update_ssr_hlt() {
             BREWPANEL_CONTROL_PID_AGGRESSIVE_D
         );
     }
-
 
     hlt_pid.Compute();
 
@@ -247,7 +249,11 @@ void brewpanel_control_update_outputs() {
             brewpanel_control_boil_contactor_off();
             if (control_state.hlt_element.state == BREWPANEL_CONTROL_ELEMENT_STATE_ON) {
                 brewpanel_control_update_ssr_hlt();
+            } 
+            else {
+                analogWrite(BREWPANEL_CONTROL_HLT_SSR,0);
             }
+
         } break;
         
         case BREWPANEL_COMMUNICATION_MODE_BOIL: {
@@ -256,6 +262,10 @@ void brewpanel_control_update_outputs() {
             if (control_state.boil_element.state == BREWPANEL_CONTROL_ELEMENT_STATE_ON) {
                 brewpanel_control_update_ssr_boil();
             }
+            else {
+                analogWrite(BREWPANEL_CONTROL_BOIL_SSR,0);
+            }
+
         } break;
 
         //default is off
@@ -340,7 +350,7 @@ bool brewpanel_control_update_temperatures() {
     control_state.hlt_temp  = (u8)hlt_temp;
     control_state.boil_temp = (u8)boil_temp;
 
-    if (elapsed - chrono < 250) {
+    if (elapsed - chrono < 100) {
         return(false);
     }
 
