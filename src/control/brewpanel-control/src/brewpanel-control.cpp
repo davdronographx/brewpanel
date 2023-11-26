@@ -305,7 +305,25 @@ bool brewpanel_control_update_temperatures() {
     switch (thermo_index) {
 
         case 0: {
-            hlt_temp = (u16)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32);
+
+            //TODO: this is a temporary fix for calibration. this should be a user setting,
+            //but this is a basic algorithm to get things going
+            //calibration follows y = mx + b
+            float value_low      = 104;
+            float value_high     = 200;
+            float reference_low  = 80;
+            float reference_high = 180;
+            
+            float value_range     = value_high - value_low;
+            float reference_range = reference_high - reference_low;
+
+            float m = reference_range / value_range;
+            float b = reference_low - (m * value_low); 
+
+            float hlt_temp_raw = (float)((hlt_thermo.temperature(RNOMINAL,  RREF) * 1.8) + 32.0f);
+
+            hlt_temp = (m * hlt_temp_raw) + b;
+
             if (hlt_temp > 212) {
                hlt_temp = 212;
             }
