@@ -168,7 +168,7 @@ void brewpanel_control_handle_incoming_message() {
 
                     //in this case, we are turning everything off to be safe
                     control_state.hlt_element.state         = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-                    control_state.hlt_element.set_value = 0;
+                    control_state.hlt_element.set_value  = 0;
 
                     control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
                     control_state.boil_element.set_value = 0;
@@ -176,6 +176,16 @@ void brewpanel_control_handle_incoming_message() {
                 } break;
             }
         }
+
+        case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OFF: {
+                    
+            //in this case, we are turning everything off to be safe
+            control_state.hlt_element.state     = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+            control_state.hlt_element.set_value = 0;
+
+            control_state.boil_element.state     = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+            control_state.boil_element.set_value = 0;
+        } break;
     }
 
     control_state.incoming_message.message_ready = false;
