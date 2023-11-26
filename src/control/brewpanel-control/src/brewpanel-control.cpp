@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Adafruit_MAX31865.h>
+#include <arduino-timer.h>
 #include "brewpanel-control.hpp"
 
 BrewPanelControlState control_state;
@@ -26,25 +27,7 @@ Adafruit_MAX31865 boil_thermo =
         BREWPANEL_CONTROL_THERMO_PIN_CLK
 );
 
-void setup() {
-
-    control_state = {0};
-
-    Serial.begin(115200,SERIAL_8N1);
-    Serial.setTimeout(1000);
-
-    pinMode(BREWPANEL_CONTROL_PIN_WATER_PUMP,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_HLT_SSR,OUTPUT);
-    pinMode(BREWPANEL_CONTROL_BOIL_SSR,OUTPUT);
-
-    hlt_thermo.begin(MAX31865_3WIRE);
-    mlt_thermo.begin(MAX31865_3WIRE);
-    boil_thermo.begin(MAX31865_3WIRE);
-
-}
+Timer<1,millis> heartbeat_timer;
 
 void
 brewpanel_control_message_heartbeat_build_and_send() {
@@ -86,6 +69,26 @@ brewpanel_control_message_heartbeat_build_and_send() {
     );
 
     Serial.write(message_buffer.buffer,message_buffer.buffer_size);
+
+}
+
+void setup() {
+
+    control_state = {0};
+
+    Serial.begin(115200,SERIAL_8N1);
+    Serial.setTimeout(1000);
+
+    pinMode(BREWPANEL_CONTROL_PIN_WATER_PUMP,OUTPUT);
+    pinMode(BREWPANEL_CONTROL_PIN_WORT_PUMP,OUTPUT);
+    pinMode(BREWPANEL_CONTROL_PIN_HLT_CONTACTOR,OUTPUT);
+    pinMode(BREWPANEL_CONTROL_PIN_BOIL_CONTACTOR,OUTPUT);
+    pinMode(BREWPANEL_CONTROL_HLT_SSR,OUTPUT);
+    pinMode(BREWPANEL_CONTROL_BOIL_SSR,OUTPUT);
+
+    hlt_thermo.begin(MAX31865_3WIRE);
+    mlt_thermo.begin(MAX31865_3WIRE);
+    boil_thermo.begin(MAX31865_3WIRE);
 }
 
 
@@ -280,7 +283,7 @@ void brewpanel_control_read_and_parse_incoming_data() {
 
 u16 thermo_index = 0;
 
-void brewpanel_control_update_temperatures() {
+bool brewpanel_control_update_temperatures() {
 
     static unsigned long chrono = millis();
     unsigned long elapsed       = millis();
@@ -294,7 +297,7 @@ void brewpanel_control_update_temperatures() {
     control_state.boil_temp = (u8)boil_temp;
 
     if (elapsed - chrono < 1000) {
-        return;
+        return(false);
     }
 
     chrono = millis();
@@ -327,10 +330,13 @@ void brewpanel_control_update_temperatures() {
     if (thermo_index > 2) {
         thermo_index = 0;
     }
+
+    return(true);
 }
 
 void loop() {
-    brewpanel_control_update_temperatures();
+
+    bool send_heartbeat = brewpanel_control_update_temperatures();
 
     brewpanel_control_read_and_parse_incoming_data();
 
@@ -338,6 +344,8 @@ void loop() {
 
     brewpanel_control_update_outputs();
 
-    brewpanel_control_message_heartbeat_build_and_send();
+    if (send_heartbeat) {
+        brewpanel_control_message_heartbeat_build_and_send();
+    }
 
 }
