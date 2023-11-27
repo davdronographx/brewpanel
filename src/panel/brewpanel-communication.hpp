@@ -26,7 +26,7 @@ enum BrewPanelCommunicationMessageType : u8 {
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK          = 0x02,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_MODE_CHANGE            = 0x03,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_PUMP_CONTROL           = 0x04,
-    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_TIMER_CONTROL          = 0x06,
+    BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ALARM_CONTROL          = 0x06,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OUTPUT_SET     = 0x07,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OFF            = 0x08,
     BREWPANEL_COMMUNICATION_MESSAGE_TYPE_COUNT                  = 0x09,
@@ -102,6 +102,15 @@ struct BrewPanelCommunicationMessagePayloadElementOff {
     BrewPanelCommunicationElement element;
 };
 
+enum BrewPanelCommunicationAlarmStatus : u8 {
+    BREWPANEL_COMMUNICATION_ALARM_STATUS_OFF = 0x01,
+    BREWPANEL_COMMUNICATION_ALARM_STATUS_ON  = 0x02,
+}
+
+struct BrewPanelCommunicationMessagePayloadAlarmControl {
+    BrewPanelCommunicationAlarmStatus status;
+};
+
 struct BrewPanelCommunicationMessage {
     BrewPanelCommunicationMessageHeader header;
     union PayloadData  {
@@ -110,6 +119,7 @@ struct BrewPanelCommunicationMessage {
         BrewPanelCommunicationMessagePayloadModeChange       mode_change;
         BrewPanelCommunicationMessagePayloadElementOutputSet element_output_set;
         BrewPanelCommunicationMessagePayloadElementOff       element_off;
+        BrewPanelCommunicationMessagePayloadAlarmControl     alarm_control;
     } payload;
 };
 

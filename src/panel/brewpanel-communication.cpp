@@ -138,6 +138,30 @@ brewpanel_communication_send_message_element_off(
     );
 }
 
+internal void
+brewpanel_communication_send_message_alarm_control(
+    BrewPanelCommunicationHandler*   comm,
+    BrewPanelCommunicationAlarmStatus alarm_status) {
+
+    BrewPanelCommunicationMessage message = {0};
+    message.header.sender                 = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
+    message.header.message_type           = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ALARM_CONTROL;
+    message.header.message_size           = sizeof(BrewPanelCommunicationMessagePayloadAlarmControl);
+    message.payload.alarm_control         = alarm_status;
+
+    BrewPanelCommunicationMessageBuffer message_buffer = {0};
+    brewpanel_communication_message_buffer_build(
+        &message,
+        &message_buffer
+    );
+
+    brewpanel_platform_controller_write(
+        comm->comm_data.controller,
+        message_buffer.buffer,
+        message_buffer.buffer_size
+    );
+}
+
 internal bool
 brewpanel_communication_message_queue_push(
     BrewPanelCommunicationMessageQueue* queue,
