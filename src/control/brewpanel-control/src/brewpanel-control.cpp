@@ -31,11 +31,11 @@ Adafruit_MAX31865 boil_thermo =
 PID hlt_pid = 
     PID(
         (double*)&control_state.hlt_temp,
-        (double*)&control_state.hlt_element.set_value,
         &control_state.hlt_element.output_value,
-        BREWPANEL_CONTROL_PID_CONSERVATIVE_P,
-        BREWPANEL_CONTROL_PID_CONSERVATIVE_I,
-        BREWPANEL_CONTROL_PID_CONSERVATIVE_D,
+        (double*)&control_state.hlt_element.set_value,
+        BREWPANEL_CONTROL_PID_HIGH_P,
+        BREWPANEL_CONTROL_PID_HIGH_I,
+        BREWPANEL_CONTROL_PID_HIGH_D,
         DIRECT
     );
 
@@ -75,9 +75,9 @@ brewpanel_control_message_heartbeat_build_and_send() {
     heartbeat.header.message_type = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_HEARTBEAT_ACK;
     heartbeat.header.message_size = sizeof(BrewPanelCommunicationMessagePayloadHeartbeat);
     
-    heartbeat.payload.heartbeat.hlt_element_temp  = control_state.hlt_temp;
-    heartbeat.payload.heartbeat.mlt_element_temp  = control_state.mlt_temp;
-    heartbeat.payload.heartbeat.boil_element_temp = control_state.boil_temp;
+    heartbeat.payload.heartbeat.hlt_element_temp  = (u8)control_state.hlt_temp;
+    heartbeat.payload.heartbeat.mlt_element_temp  = (u8)control_state.mlt_temp;
+    heartbeat.payload.heartbeat.boil_element_temp = (u8)control_state.boil_temp;
     heartbeat.payload.heartbeat.timer_set_point_ms = 0xAAAA;
     heartbeat.payload.heartbeat.timer_elapsed_ms = 0xBBBB;
     message_buffer.buffer_size = sizeof(comm_message_header) + sizeof(comm_payload_heartbeat_ack) + 16; 
@@ -145,7 +145,7 @@ void brewpanel_control_handle_incoming_message() {
                 case BREWPANEL_COMMUNICATION_MODE_MASH: {
 
                     if (incoming_message.payload.element_output_set.element == BREWPANEL_COMMUNICATION_ELEMENT_HLT) {
-                        control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_ON;
+                        control_state.hlt_element.state     = BREWPANEL_CONTROL_ELEMENT_STATE_ON;
                         control_state.hlt_element.set_value = incoming_message.payload.element_output_set.output_value;
                     }
 
@@ -157,11 +157,11 @@ void brewpanel_control_handle_incoming_message() {
                 case BREWPANEL_COMMUNICATION_MODE_BOIL: {
 
                     if (incoming_message.payload.element_output_set.element == BREWPANEL_COMMUNICATION_ELEMENT_BOIL) {
-                        control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_ON;
+                        control_state.boil_element.state     = BREWPANEL_CONTROL_ELEMENT_STATE_ON;
                         control_state.boil_element.set_value = incoming_message.payload.element_output_set.output_value;
                     }
 
-                    control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+                    control_state.hlt_element.state     = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
                     control_state.hlt_element.set_value = 0;
 
                 } break;
@@ -171,10 +171,10 @@ void brewpanel_control_handle_incoming_message() {
 
                     //in this case, we are turning everything off to be safe
                     control_state.hlt_element.state         = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-                    control_state.hlt_element.set_value  = 0;
+                    control_state.hlt_element.set_value     = 0;
 
                     control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-                    control_state.boil_element.set_value = 0;
+                    control_state.boil_element.set_value    = 0;
                 
                 } break;
             }
@@ -183,13 +183,13 @@ void brewpanel_control_handle_incoming_message() {
         case BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ELEMENT_OFF: {
                     
             //in this case, we are turning everything off to be safe
-            control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-            control_state.hlt_element.set_value    = 0;
-            control_state.hlt_element.output_value = 0;
+            // control_state.hlt_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+            // control_state.hlt_element.set_value    = 0;
+            // control_state.hlt_element.output_value = 0;
 
-            control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
-            control_state.boil_element.set_value    = 0;
-            control_state.boil_element.output_value = 0;
+            // control_state.boil_element.state        = BREWPANEL_CONTROL_ELEMENT_STATE_OFF;
+            // control_state.boil_element.set_value    = 0;
+            // control_state.boil_element.output_value = 0;
 
         } break;
     }
@@ -199,20 +199,29 @@ void brewpanel_control_handle_incoming_message() {
 
 void brewpanel_control_update_ssr_hlt() {
 
-    float gap = abs(control_state.hlt_element.set_value - control_state.hlt_temp);
+    double gap = abs(control_state.hlt_element.set_value - control_state.hlt_temp);
 
-    if (gap < 10) {
+
+    if (gap >= 20) {
+        
         hlt_pid.SetTunings(
-            BREWPANEL_CONTROL_PID_CONSERVATIVE_P,
-            BREWPANEL_CONTROL_PID_CONSERVATIVE_I,
-            BREWPANEL_CONTROL_PID_CONSERVATIVE_D
+            BREWPANEL_CONTROL_PID_HIGH_P,
+            BREWPANEL_CONTROL_PID_HIGH_I,
+            BREWPANEL_CONTROL_PID_HIGH_D
         );
-    } 
+    }
+    else if (gap > 10 && gap < 20) {
+        hlt_pid.SetTunings(
+            BREWPANEL_CONTROL_PID_MEDIUM_P,
+            BREWPANEL_CONTROL_PID_MEDIUM_I,
+            BREWPANEL_CONTROL_PID_MEDIUM_D
+        );
+    }
     else {
         hlt_pid.SetTunings(
-            BREWPANEL_CONTROL_PID_AGGRESSIVE_P,
-            BREWPANEL_CONTROL_PID_AGGRESSIVE_I,
-            BREWPANEL_CONTROL_PID_AGGRESSIVE_D
+            BREWPANEL_CONTROL_PID_LOW_P,
+            BREWPANEL_CONTROL_PID_LOW_I,
+            BREWPANEL_CONTROL_PID_LOW_D
         );
     }
 
@@ -224,7 +233,7 @@ void brewpanel_control_update_ssr_hlt() {
 void brewpanel_control_update_ssr_boil() {
 
     control_state.boil_element.output_value = 
-        map(
+        map( 
             control_state.boil_element.set_value, //value
             0,                                    //fromLow
             100,                                  //fromHigh
@@ -249,11 +258,7 @@ void brewpanel_control_update_outputs() {
             brewpanel_control_boil_contactor_off();
             if (control_state.hlt_element.state == BREWPANEL_CONTROL_ELEMENT_STATE_ON) {
                 brewpanel_control_update_ssr_hlt();
-            } 
-            else {
-                analogWrite(BREWPANEL_CONTROL_HLT_SSR,0);
             }
-
         } break;
         
         case BREWPANEL_COMMUNICATION_MODE_BOIL: {
@@ -262,10 +267,6 @@ void brewpanel_control_update_outputs() {
             if (control_state.boil_element.state == BREWPANEL_CONTROL_ELEMENT_STATE_ON) {
                 brewpanel_control_update_ssr_boil();
             }
-            else {
-                analogWrite(BREWPANEL_CONTROL_BOIL_SSR,0);
-            }
-
         } break;
 
         //default is off
@@ -275,6 +276,7 @@ void brewpanel_control_update_outputs() {
         } 
         default: break;
     }
+
 
     delay(10);
 }
@@ -350,7 +352,7 @@ bool brewpanel_control_update_temperatures() {
     control_state.hlt_temp  = (u8)hlt_temp;
     control_state.boil_temp = (u8)boil_temp;
 
-    if (elapsed - chrono < 100) {
+    if (elapsed - chrono < 250) {
         return(false);
     }
 
