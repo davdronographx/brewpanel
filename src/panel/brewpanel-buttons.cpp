@@ -189,12 +189,6 @@ brewpanel_buttons_draw(
             continue;
         }
 
-        //TODO: i'd like to keep this in, but visibility changes plus this doesn't work right
-        //we only want to draw if the state is different and the button is visible
-        // if (current_button_state == state_currently_drawn) {
-        //     continue;
-        // }
-
         //we're drawing something so we're re-rendering the screen
         render_screen = true;
 

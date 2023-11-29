@@ -131,38 +131,38 @@ brewpanel_timer_control_create(
             BREWPANEL_TIMER_BUTTON_BOTTOM_Y
     );
 
-    timer->buttons.start_button_id = 
-        brewpanel_buttons_create_button(
-            buttons,
-            images,
-            brewpanel_timer_control_on_start_button_click,
-            (mem_data)(&timer),
-            BREWPANEL_IMAGES_ID_TIMER_START_IDLE,
-            BREWPANEL_IMAGES_ID_TIMER_START_HOVER,
-            BREWPANEL_IMAGES_ID_TIMER_START_CLICKED,
-            BREWPANEL_IMAGES_ID_TIMER_START_DISABLED,
-            BREWPANEL_TIMER_BUTTON_X,
-            BREWPANEL_TIMER_BUTTON_TOP_Y
-    );
+    // timer->buttons.start_button_id = 
+    //     brewpanel_buttons_create_button(
+    //         buttons,
+    //         images,
+    //         brewpanel_timer_control_on_start_button_click,
+    //         (mem_data)(&timer),
+    //         BREWPANEL_IMAGES_ID_TIMER_START_IDLE,
+    //         BREWPANEL_IMAGES_ID_TIMER_START_HOVER,
+    //         BREWPANEL_IMAGES_ID_TIMER_START_CLICKED,
+    //         BREWPANEL_IMAGES_ID_TIMER_START_DISABLED,
+    //         BREWPANEL_TIMER_BUTTON_X,
+    //         BREWPANEL_TIMER_BUTTON_TOP_Y
+    // );
     
-    timer->buttons.pause_button_id = 
-        brewpanel_buttons_create_button(
-            buttons,
-            images,
-            brewpanel_timer_control_on_pause_button_click,
-            (mem_data)(&timer),
-            BREWPANEL_IMAGES_ID_TIMER_PAUSE_IDLE,
-            BREWPANEL_IMAGES_ID_TIMER_PAUSE_HOVER,
-            BREWPANEL_IMAGES_ID_TIMER_PAUSE_CLICKED,
-            BREWPANEL_IMAGES_ID_TIMER_PAUSE_DISABLED,
-            BREWPANEL_TIMER_BUTTON_X,
-            BREWPANEL_TIMER_BUTTON_TOP_Y
-    );
+    // timer->buttons.pause_button_id = 
+    //     brewpanel_buttons_create_button(
+    //         buttons,
+    //         images,
+    //         brewpanel_timer_control_on_pause_button_click,
+    //         (mem_data)(&timer),
+    //         BREWPANEL_IMAGES_ID_TIMER_PAUSE_IDLE,
+    //         BREWPANEL_IMAGES_ID_TIMER_PAUSE_HOVER,
+    //         BREWPANEL_IMAGES_ID_TIMER_PAUSE_CLICKED,
+    //         BREWPANEL_IMAGES_ID_TIMER_PAUSE_DISABLED,
+    //         BREWPANEL_TIMER_BUTTON_X,
+    //         BREWPANEL_TIMER_BUTTON_TOP_Y
+    // );
 
-    brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images);
-    brewpanel_buttons_hide(buttons,timer->buttons.stop_button_id, images);
-    brewpanel_buttons_hide(buttons,timer->buttons.pause_button_id,images);
-    brewpanel_buttons_hide(buttons,timer->buttons.reset_button_id,images);
+    // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images);
+    // brewpanel_buttons_hide(buttons,timer->buttons.stop_button_id, images);
+    // brewpanel_buttons_hide(buttons,timer->buttons.pause_button_id,images);
+    // brewpanel_buttons_hide(buttons,timer->buttons.reset_button_id,images);
 }
 
 internal BrewPanelTimerTimestamp
