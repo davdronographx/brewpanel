@@ -64,13 +64,6 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
     //get the button store
     brewpanel_state->button_store = brewpanel_buttons_create_store(&memory);
 
-    //timer controls
-    brewpanel_timer_control_create(
-        &brewpanel_state->timer_control,
-        &brewpanel_state->button_store,
-        &brewpanel_state->images
-    );
-
     //temperature reading
     brewpanel_temp_read_create(
         &brewpanel_state->temp_control,
@@ -105,6 +98,13 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
         &brewpanel_state->images,
         &brewpanel_state->button_store,
         &brewpanel_state->comm_handler
+    );
+
+    //timer controls
+    brewpanel_timer_control_create(
+        &brewpanel_state->timer_control,
+        &brewpanel_state->button_store,
+        &brewpanel_state->images
     );
 
     //render the main background
