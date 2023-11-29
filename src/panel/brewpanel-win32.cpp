@@ -285,13 +285,26 @@ wWinMain(
     brewpanel_assert(brewpanel_state != NULL);
 
     brewpanel_win32_draw_bitmap();
+    LARGE_INTEGER startTime, endTime, frequency;
+    f64 delta_time = 0.0;
+
     while(running) {
+
+        QueryPerformanceFrequency(&frequency);
+        QueryPerformanceCounter(&startTime);
 
         brewpanel_win32_process_pending_messages(window_handle);
 
-        if (brewpanel_core_update_and_render(&brewpanel_input)){
+        if (brewpanel_core_update_and_render(&brewpanel_input,delta_time)){
             brewpanel_win32_draw_bitmap();
         }
+
+            // Get the updated performance counter
+        QueryPerformanceCounter(&endTime);
+
+        // Calculate delta time in milliseconds
+        delta_time = static_cast<double>(endTime.QuadPart - startTime.QuadPart) / frequency.QuadPart * 1000.0;
+
 
         SwapBuffers(device_context);
     }

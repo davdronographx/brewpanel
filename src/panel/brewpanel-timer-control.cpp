@@ -8,7 +8,7 @@
 
 internal void
 brewpanel_timer_control_change_timer_state(
-    timer*      timer,
+    timer_control*      timer,
     timer_state state) {
 
     timer->previous_state = timer->state;
@@ -19,14 +19,14 @@ internal void
 brewpanel_timer_control_on_start_button_click(
     mem_data payload) {
 
-    timer* t = (timer*)payload;
+    timer_control* t = (timer_control*)payload;
 }
 
 internal void
 brewpanel_timer_control_on_stop_button_click(
     mem_data payload) {
 
-    timer* t = (timer*)payload;
+    timer_control* t = (timer_control*)payload;
     brewpanel_timer_control_change_timer_state(t,BREWPANEL_TIMER_STATE_IDLE);
 }
 
@@ -34,14 +34,14 @@ internal void
 brewpanel_timer_control_on_pause_button_click(
     mem_data payload) {
 
-    timer* t = (timer*)payload;
+    timer_control* t = (timer_control*)payload;
 }
 
 internal void
 brewpanel_timer_control_on_reset_button_click(
     mem_data payload) {
 
-    timer* t = (timer*)payload;
+    timer_control* t = (timer_control*)payload;
     brewpanel_timer_control_change_timer_state(t,BREWPANEL_TIMER_STATE_SET);
 }
 
@@ -52,7 +52,7 @@ brewpanel_timer_control_keypad_callback(
     mem_data          payload) {
 
     keypad_input* input = (keypad_input*)keypad_input_reference;
-    timer* t = (timer*)payload;
+    timer_control* t = (timer_control*)payload;
     t->redraw = true;
 
     switch (button_type) {
@@ -71,23 +71,15 @@ brewpanel_timer_control_keypad_callback(
         } break;
 
     }
-
 }
 
 internal void
 brewpanel_timer_control_create(
-    BrewPanelTimerControl* timer_control,
-    BrewPanelButtonStore*  button_store,
-    BrewPanelImagesStore*  image_store) {
+    BrewPanelTimerControl* timer,
+    BrewPanelButtonStore*  buttons,
+    BrewPanelImagesStore*  images) {
 
-    *timer_control = {0};
-    timer_control->off_timer_panel = 
-        brewpanel_images_create_image_instance(
-            image_store,
-            BREWPANEL_IMAGES_ID_TIMER_PANEL_OFF,
-            BREWPANEL_TIMER_PANEL_X, 
-            BREWPANEL_TIMER_PANEL_Y
-    );
+    *timer = {0};
 
     u32 hours_tens_x_offset   = BREWPANEL_TIMER_DIGIT_X;
     u32 hours_ones_x_offset   = BREWPANEL_TIMER_DIGIT_X + BREWPANEL_TIMER_DIGIT_WIDTH;
@@ -99,38 +91,73 @@ brewpanel_timer_control_create(
     u32 seconds_ones_x_offset = BREWPANEL_TIMER_DIGIT_X + (BREWPANEL_TIMER_DIGIT_WIDTH * 7);
 
     //mash timer
-    timer_control->mash_timer.redraw                   = true;
-    timer_control->mash_timer.state                    = BREWPANEL_TIMER_STATE_IDLE;
-    timer_control->mash_timer.panel_image              = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT, BREWPANEL_TIMER_PANEL_X, BREWPANEL_TIMER_PANEL_Y);
-    timer_control->mash_timer.digits.hours.tens_face   = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,hours_tens_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->mash_timer.digits.hours.ones_face   = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,hours_ones_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->mash_timer.colon_1                  = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_1_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->mash_timer.digits.minutes.tens_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,minutes_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->mash_timer.digits.minutes.ones_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,minutes_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->mash_timer.colon_2                  = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_2_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->mash_timer.digits.seconds.tens_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,seconds_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->mash_timer.digits.seconds.ones_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_9,seconds_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->mash_timer.buttons.reset_button_id  = brewpanel_timer_control_create_reset_button(button_store,image_store,timer_control->mash_timer);
-    timer_control->mash_timer.buttons.stop_button_id   = brewpanel_timer_control_create_stop_button(button_store,image_store,timer_control->mash_timer);
-    // timer_control->mash_timer.buttons.start_button_id  = brewpanel_timer_control_create_start_button(button_store,image_store,timer_control->mash_timer);
-    // timer_control->buttons.pause_button_id = brewpanel_timer_control_create_mlt_pause_button(button_store,image_store,(*timer_control));
+    timer->redraw                   = true;
+    timer->state                    = BREWPANEL_TIMER_STATE_IDLE;
+    timer->panel_image              = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT, BREWPANEL_TIMER_PANEL_X, BREWPANEL_TIMER_PANEL_Y);
+    timer->digits.hours.tens_face   = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_9,hours_tens_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
+    timer->digits.hours.ones_face   = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_9,hours_ones_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
+    timer->colon_1                  = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_1_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
+    timer->digits.minutes.tens_face = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_9,minutes_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
+    timer->digits.minutes.ones_face = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_9,minutes_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
+    timer->colon_2                  = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_2_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
+    timer->digits.seconds.tens_face = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_9,seconds_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
+    timer->digits.seconds.ones_face = brewpanel_images_create_image_instance(images,BREWPANEL_IMAGES_ID_RED_DIGIT_9,seconds_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
 
-    //boil timer
-    timer_control->boil_timer.redraw                   = true;
-    timer_control->boil_timer.state                    = BREWPANEL_TIMER_STATE_IDLE;
-    timer_control->boil_timer.panel_image              = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL, BREWPANEL_TIMER_PANEL_X, BREWPANEL_TIMER_PANEL_Y);
-    timer_control->boil_timer.digits.hours.tens_face   = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,hours_tens_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->boil_timer.digits.hours.ones_face   = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,hours_ones_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->boil_timer.colon_1                  = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_1_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->boil_timer.digits.minutes.tens_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,minutes_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->boil_timer.digits.minutes.ones_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,minutes_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->boil_timer.colon_2                  = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_COLON,colon_2_x_offset,  BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->boil_timer.digits.seconds.tens_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,seconds_tens_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->boil_timer.digits.seconds.ones_face = brewpanel_images_create_image_instance(image_store,BREWPANEL_IMAGES_ID_RED_DIGIT_0,seconds_ones_x_offset,BREWPANEL_TIMER_DIGIT_Y);
-    timer_control->boil_timer.buttons.reset_button_id  = brewpanel_timer_control_create_reset_button(button_store,image_store,timer_control->boil_timer);
-    timer_control->boil_timer.buttons.stop_button_id   = brewpanel_timer_control_create_stop_button(button_store,image_store,timer_control->boil_timer);
-    // timer_control->boil_timer.buttons.start_button_id  = brewpanel_timer_control_create_start_button(button_store,image_store,timer_control->boil_timer);
-    // timer_control->buttons.pause_button_id = brewpanel_timer_control_create_boil_pause_button(button_store,image_store,(*timer_control));
+    timer->buttons.reset_button_id = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_timer_control_on_reset_button_click,
+            (mem_data)(timer),
+            BREWPANEL_IMAGES_ID_TIMER_RESET_IDLE,
+            BREWPANEL_IMAGES_ID_TIMER_RESET_HOVER,
+            BREWPANEL_IMAGES_ID_TIMER_RESET_CLICKED,
+            BREWPANEL_IMAGES_ID_TIMER_RESET_DISABLED,
+            BREWPANEL_TIMER_BUTTON_X,
+            BREWPANEL_TIMER_BUTTON_TOP_Y
+    );
+    
+    timer->buttons.stop_button_id  = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_timer_control_on_stop_button_click,
+            (mem_data)(timer),
+            BREWPANEL_IMAGES_ID_TIMER_STOP_IDLE,
+            BREWPANEL_IMAGES_ID_TIMER_STOP_HOVER,
+            BREWPANEL_IMAGES_ID_TIMER_STOP_CLICKED,
+            BREWPANEL_IMAGES_ID_TIMER_STOP_DISABLED, 
+            BREWPANEL_TIMER_BUTTON_X,
+            BREWPANEL_TIMER_BUTTON_BOTTOM_Y
+    );
+
+    timer->buttons.start_button_id = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_timer_control_on_start_button_click,
+            (mem_data)(&timer),
+            BREWPANEL_IMAGES_ID_TIMER_START_IDLE,
+            BREWPANEL_IMAGES_ID_TIMER_START_HOVER,
+            BREWPANEL_IMAGES_ID_TIMER_START_CLICKED,
+            BREWPANEL_IMAGES_ID_TIMER_START_DISABLED,
+            BREWPANEL_TIMER_BUTTON_X,
+            BREWPANEL_TIMER_BUTTON_TOP_Y
+    );
+    
+    timer->buttons.pause_button_id = 
+        brewpanel_buttons_create_button(
+            buttons,
+            images,
+            brewpanel_timer_control_on_pause_button_click,
+            (mem_data)(&timer),
+            BREWPANEL_IMAGES_ID_TIMER_PAUSE_IDLE,
+            BREWPANEL_IMAGES_ID_TIMER_PAUSE_HOVER,
+            BREWPANEL_IMAGES_ID_TIMER_PAUSE_CLICKED,
+            BREWPANEL_IMAGES_ID_TIMER_PAUSE_DISABLED,
+            BREWPANEL_TIMER_BUTTON_X,
+            BREWPANEL_TIMER_BUTTON_TOP_Y
+    );
 }
 
 internal BrewPanelTimerTimestamp
@@ -157,15 +184,14 @@ brewpanel_timer_control_calculate_timestamp(
 }
 
 
-internal bool
+internal void
 brewpanel_timer_control_update_and_render(
-    bool*           redraw,
-    timer*          timer,
+    timer_control*  timer,
     timer_timestamp timestamp,
     images_store*   images_state,
     button_store*   buttons,
     keypad*         keypad,
-    panel_mode      mode) {
+    f64             delta_time) {
 
 
     switch(timer->state) {
@@ -173,14 +199,7 @@ brewpanel_timer_control_update_and_render(
         case BREWPANEL_TIMER_STATE_IDLE: {
             brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
             brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
-            // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
-
-            image_id panel_image = 
-                (mode == BREWPANEL_MODE_BOIL) 
-                ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL 
-                : BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
-
-            images_state->image_instances[timer->panel_image].image_id = panel_image;
+            brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
 
             timer->set_time_seconds = 0;
 
@@ -192,14 +211,7 @@ brewpanel_timer_control_update_and_render(
             
             brewpanel_buttons_set_disabled(buttons,timer->buttons.reset_button_id);
             brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
-            // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
-
-            image_id panel_image = 
-                (mode == BREWPANEL_MODE_BOIL) 
-                    ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL_INPUT 
-                    : BREWPANEL_IMAGES_ID_TIMER_PANEL_MASH_INPUT;
-
-            images_state->image_instances[timer->panel_image].image_id = panel_image; 
+            brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
 
             brewpanel_keypad_active_input(
                 keypad,6,timer->set_time_seconds,
@@ -218,15 +230,8 @@ brewpanel_timer_control_update_and_render(
 
         case BREWPANEL_TIMER_STATE_PAUSED: {
 
-            image_id panel_image = 
-                (mode == BREWPANEL_MODE_BOIL) 
-                    ? BREWPANEL_IMAGES_ID_TIMER_PANEL_BOIL 
-                    : BREWPANEL_IMAGES_ID_TIMER_PANEL_MLT;
-
-            images_state->image_instances[timer->panel_image].image_id = panel_image; 
-
             brewpanel_buttons_hide(buttons, timer->buttons.reset_button_id,images_state);
-            // brewpanel_buttons_show(buttons,timer->buttons.start_button_id,images_state);
+            brewpanel_buttons_show(buttons,timer->buttons.start_button_id,images_state);
             brewpanel_buttons_set_idle(buttons, timer->buttons.stop_button_id);
 
         } break;
@@ -235,7 +240,7 @@ brewpanel_timer_control_update_and_render(
             timer->state = BREWPANEL_TIMER_STATE_IDLE;
             brewpanel_buttons_set_idle(buttons,timer->buttons.reset_button_id);
             brewpanel_buttons_set_disabled(buttons,timer->buttons.stop_button_id);
-            // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
+            brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images_state);
         } break;
     }
 
@@ -263,71 +268,27 @@ brewpanel_timer_control_update_and_render(
     brewpanel_images_draw_image_instance(images_state,timer->colon_2);
     brewpanel_images_draw_image_instance(images_state,timer->digits.seconds.tens_face);
     brewpanel_images_draw_image_instance(images_state,timer->digits.seconds.ones_face);
-
-    return(redraw);
-}
-
-internal void
-brewpanel_timer_control_hide_timer(
-    timer*        timer,
-    button_store* buttons,
-    images_store* images) {
-
-    brewpanel_buttons_hide(buttons,timer->buttons.reset_button_id,images);
-    brewpanel_buttons_hide(buttons,timer->buttons.stop_button_id,images);
-    // brewpanel_buttons_hide(buttons,timer->buttons.start_button_id,images);
-}
-
-internal void
-brewpanel_timer_control_show_timer(
-    timer*        timer,
-    button_store* buttons,
-    images_store* images) {
-
-    brewpanel_buttons_show(buttons,timer->buttons.reset_button_id,images);
-    brewpanel_buttons_show(buttons,timer->buttons.stop_button_id,images);
-    // brewpanel_buttons_show(buttons,timer->buttons.start_button_id,images);
 }
 
 internal bool
 brewpanel_timer_control_update(
-    timer_control* timer_control,
+    timer_control* timer,
     images_store*  images_state,
     button_store*  button_store,
     keypad*        keypad,
-    panel_mode     mode,
-    mem_data       draw_buffer) {
+    mem_data       draw_buffer,
+    f64            delta_time) {
 
-    
+    local bool re_enabled = true;
 
     //get the timer to update
-    timer* timer = (mode == BREWPANEL_MODE_BOIL) ? &timer_control->boil_timer : &timer_control->mash_timer;
-    local panel_mode previous_mode = BREWPANEL_MODE_OFF;
-    local bool re_enabled = false;
-    bool redraw        = previous_mode != mode || timer->previous_state != timer->state;
     bool keypad_in_use = keypad->input_reference != NULL && keypad->input_reference != &timer->keypad_input; 
-
-    //if the panel is off, draw the off panel and we're done
-    if (mode == BREWPANEL_MODE_OFF){
-        
-        brewpanel_images_draw_image_instance(
-            images_state,
-            timer_control->off_timer_panel
-        );
-
-        brewpanel_timer_control_hide_timer(&timer_control->mash_timer,button_store,images_state);
-        brewpanel_timer_control_hide_timer(&timer_control->boil_timer,button_store,images_state);
-
-        redraw = true;
-
-        return(true);
-    }
 
     //first we need to determine if another control is using the keypad
     //if so, we need to disable the timer controls
     if (keypad_in_use) {
         re_enabled = false;
-        // brewpanel_buttons_disable(button_store,timer->buttons.start_button_id,images_state);
+        brewpanel_buttons_disable(button_store,timer->buttons.start_button_id,images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.stop_button_id, images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.pause_button_id,images_state);
         brewpanel_buttons_disable(button_store,timer->buttons.reset_button_id,images_state);
@@ -340,28 +301,10 @@ brewpanel_timer_control_update(
              brewpanel_buttons_is_disabled(button_store,timer->buttons.reset_button_id)) {
         
         re_enabled = true;
-        // brewpanel_buttons_enable(button_store,timer->buttons.start_button_id,images_state);
+        brewpanel_buttons_enable(button_store,timer->buttons.start_button_id,images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.stop_button_id, images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.pause_button_id,images_state);
         brewpanel_buttons_enable(button_store,timer->buttons.reset_button_id,images_state);
-    }
-
-    if (redraw || re_enabled || previous_mode != mode) {
-
-        re_enabled = false;
-
-        switch(mode) {
-            
-            case BREWPANEL_MODE_MASH: {
-                brewpanel_timer_control_hide_timer(&timer_control->boil_timer,button_store,images_state);
-                brewpanel_timer_control_show_timer(&timer_control->mash_timer,button_store,images_state);
-            } break;
-            
-            case BREWPANEL_MODE_BOIL: {
-                brewpanel_timer_control_hide_timer(&timer_control->mash_timer,button_store,images_state);
-                brewpanel_timer_control_show_timer(&timer_control->boil_timer,button_store,images_state);
-            } break;
-        }
     }
 
     //calculate timestamp
@@ -372,18 +315,16 @@ brewpanel_timer_control_update(
     ); 
     
     //update the timer
-    redraw |= brewpanel_timer_control_update_and_render(
-        &redraw,
+    brewpanel_timer_control_update_and_render(
         timer,
         timestamp,
         images_state,
         button_store,
         keypad,
-        mode
+        delta_time
     );
     
-    previous_mode = mode;
     timer->previous_state = timer->state;
 
-    return(redraw);
+    return(true);
 }

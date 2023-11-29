@@ -105,7 +105,7 @@ struct BrewPanelCommunicationMessagePayloadElementOff {
 enum BrewPanelCommunicationAlarmStatus : u8 {
     BREWPANEL_COMMUNICATION_ALARM_STATUS_OFF = 0x01,
     BREWPANEL_COMMUNICATION_ALARM_STATUS_ON  = 0x02,
-}
+};
 
 struct BrewPanelCommunicationMessagePayloadAlarmControl {
     BrewPanelCommunicationAlarmStatus status;

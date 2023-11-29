@@ -147,7 +147,7 @@ brewpanel_communication_send_message_alarm_control(
     message.header.sender                 = BREWPANEL_COMMUNICATION_MESSAGE_SENDER_HMI;
     message.header.message_type           = BREWPANEL_COMMUNICATION_MESSAGE_TYPE_ALARM_CONTROL;
     message.header.message_size           = sizeof(BrewPanelCommunicationMessagePayloadAlarmControl);
-    message.payload.alarm_control         = alarm_status;
+    message.payload.alarm_control.status  = alarm_status;
 
     BrewPanelCommunicationMessageBuffer message_buffer = {0};
     brewpanel_communication_message_buffer_build(

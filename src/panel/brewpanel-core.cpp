@@ -13,7 +13,6 @@
 #include "brewpanel-keypad.cpp"
 #include "brewpanel-pump-control.cpp"
 
-
 internal void
 brewpanel_core_init(BrewPanelControllerInfo controller_info) {
 
@@ -114,7 +113,8 @@ brewpanel_core_init(BrewPanelControllerInfo controller_info) {
 
 internal bool
 brewpanel_core_update_and_render(
-    BrewPanelInput* input) {
+    BrewPanelInput* input,
+    u64             delta_time) {
 
     bool redraw = false;
 
@@ -166,8 +166,8 @@ brewpanel_core_update_and_render(
         &brewpanel_state->images,
         &brewpanel_state->button_store,
         &brewpanel_state->keypad,
-        brewpanel_state->mode_control.mode,
-        (mem_data)brewpanel_state->back_buffer.pixels
+        (mem_data)brewpanel_state->back_buffer.pixels,
+        delta_time
     );
 
     redraw |= brewpanel_pump_control_update(
