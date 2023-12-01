@@ -191,9 +191,6 @@ typedef BrewPanelMessageBuffer                        comm_message_buffer;
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_MLT  A1
 #define BREWPANEL_CONTROL_THERMO_PIN_CS_BOIL A2
 
-double aggKp=4, aggKi=0.2, aggKd=1;
-double consKp=1, consKi=0.05, consKd=0.25;
-
 #define BREWPANEL_CONTROL_PID_HIGH_P 4.00
 #define BREWPANEL_CONTROL_PID_HIGH_I 0.20
 #define BREWPANEL_CONTROL_PID_HIGH_D 1.00
@@ -203,6 +200,10 @@ double consKp=1, consKi=0.05, consKd=0.25;
 #define BREWPANEL_CONTROL_PID_LOW_P 0.01
 #define BREWPANEL_CONTROL_PID_LOW_I 0.001
 #define BREWPANEL_CONTROL_PID_LOW_D 0.01
+
+#define BREWPANEL_CONTROL_PID_P 4.00
+#define BREWPANEL_CONTROL_PID_I 4.00
+#define BREWPANEL_CONTROL_PID_D 1.00
 
 #define BREWPANEL_CONTROL_PID_ADAPTIVE_THRESHOLD 10.00
 

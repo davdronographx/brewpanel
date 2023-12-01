@@ -33,9 +33,9 @@ PID hlt_pid =
         (double*)&control_state.hlt_temp,
         &control_state.hlt_element.output_value,
         (double*)&control_state.hlt_element.set_value,
-        BREWPANEL_CONTROL_PID_HIGH_P,
-        BREWPANEL_CONTROL_PID_HIGH_I,
-        BREWPANEL_CONTROL_PID_HIGH_D,
+        BREWPANEL_CONTROL_PID_P,
+        BREWPANEL_CONTROL_PID_I,
+        BREWPANEL_CONTROL_PID_D,
         DIRECT
     );
 
@@ -199,31 +199,31 @@ void brewpanel_control_handle_incoming_message() {
 
 void brewpanel_control_update_ssr_hlt() {
 
-    double gap = abs(control_state.hlt_element.set_value - control_state.hlt_temp);
+    // double gap = abs(control_state.hlt_element.set_value - control_state.hlt_temp);
 
 
-    if (gap >= 20) {
+    // if (gap >= 20) {
         
-        hlt_pid.SetTunings(
-            BREWPANEL_CONTROL_PID_HIGH_P,
-            BREWPANEL_CONTROL_PID_HIGH_I,
-            BREWPANEL_CONTROL_PID_HIGH_D
-        );
-    }
-    else if (gap > 10 && gap < 20) {
-        hlt_pid.SetTunings(
-            BREWPANEL_CONTROL_PID_MEDIUM_P,
-            BREWPANEL_CONTROL_PID_MEDIUM_I,
-            BREWPANEL_CONTROL_PID_MEDIUM_D
-        );
-    }
-    else {
-        hlt_pid.SetTunings(
-            BREWPANEL_CONTROL_PID_LOW_P,
-            BREWPANEL_CONTROL_PID_LOW_I,
-            BREWPANEL_CONTROL_PID_LOW_D
-        );
-    }
+    //     hlt_pid.SetTunings(
+    //         BREWPANEL_CONTROL_PID_HIGH_P,
+    //         BREWPANEL_CONTROL_PID_HIGH_I,
+    //         BREWPANEL_CONTROL_PID_HIGH_D
+    //     );
+    // }
+    // else if (gap > 10 && gap < 20) {
+    //     hlt_pid.SetTunings(
+    //         BREWPANEL_CONTROL_PID_MEDIUM_P,
+    //         BREWPANEL_CONTROL_PID_MEDIUM_I,
+    //         BREWPANEL_CONTROL_PID_MEDIUM_D
+    //     );
+    // }
+    // else {
+    //     hlt_pid.SetTunings(
+    //         BREWPANEL_CONTROL_PID_LOW_P,
+    //         BREWPANEL_CONTROL_PID_LOW_I,
+    //         BREWPANEL_CONTROL_PID_LOW_D
+    //     );
+    // }
 
     hlt_pid.Compute();
 
