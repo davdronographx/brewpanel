@@ -1,6 +1,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
+#include <X11/extensions/XInput2.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -26,11 +27,36 @@ struct BrewPanelX11Window {
 unsigned long black, white;
 
 internal void
+brewpanel_x11_simulate_click(
+    s32 x,
+    s32 y) {
+
+}
+
+internal void
 brewpanel_x11_process_event(
     BrewPanelX11Window* x11_window) {
 
     XAllowEvents(x11_window->display, AsyncBoth, CurrentTime);
     XNextEvent(x11_window->display, &x11_window->event);
+
+    if (x11_window->event.xcookie.type == GenericEvent) {
+
+        XGetEventData(x11_window->display, &x11_window->event.xcookie);
+
+        if (x11_window->event.xcookie.evtype == XI_TouchBegin) {
+    
+
+            XGetEventData(x11_window->display, &x11_window->event.xcookie);
+            XGetEventData(x11_window->display, &x11_window->event.xcookie);
+            f64 x = *(f64*)x11_window->event.xcookie.data;*(f64*)
+            XGetEventData(x11_window->display, &x11_window->event.xcookie);
+            f64 y = *(f64*)x11_window->event.xcookie.data;
+            XFreeEventData(x11_window->display, &x11_window->event.xcookie);
+        }
+    }
+            
+
 
     switch(x11_window->event.type) {
 
@@ -140,19 +166,6 @@ int main(int argc, char** argv)
     );
 
 
-    // x11_window.window  =
-    //     XCreateSimpleWindow(
-    //         x11_window.display,
-    //         DefaultRootWindow(x11_window.display),
-    //         center_x,
-    //         center_y,
-    //         BREW_PANEL_WIDTH_PIXELS,
-    //         BREW_PANEL_HEIGHT_PIXELS,
-    //         0,
-    //         white,
-    //         black);
-
-
     XSetWindowAttributes attributes = {0};
     attributes.background_pixel = XWhitePixel(x11_window.display,x11_window.screen);
  
@@ -194,6 +207,23 @@ int main(int argc, char** argv)
     XSelectInput(x11_window.display, x11_window.window,  ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyPressMask | PointerMotionMask);
     
     x11_window.gc      = XCreateGC(x11_window.display, x11_window.window, 0, 0);
+
+
+    //add the extension
+    // if (!XQueryExtension(x11_window.display,"XInputExtension",NULL,NULL,NULL)) {
+    //     brewpanel_panic();
+    // }
+
+    XIEventMask x_event_mask;
+    unsigned char mask[(XI_LASTEVENT + 7)/8] = {0};
+    x_event_mask.deviceid = XIAllDevices;
+    x_event_mask.mask_len = sizeof(mask);
+    XISetMask(mask,XI_TouchBegin);
+    XISetMask(mask,XI_TouchEnd);
+    XISetMask(mask,XI_TouchUpdate);
+
+    // XISelectEvents(x11_window.display,x11_window.window,&x_event_mask,1);
+
 
     XFlush(x11_window.display);
     XMapWindow(x11_window.display,   x11_window.window);
