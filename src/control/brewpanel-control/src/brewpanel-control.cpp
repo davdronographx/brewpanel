@@ -206,6 +206,15 @@ void brewpanel_control_update_ssr_hlt() {
 
 void brewpanel_control_update_ssr_boil() {
 
+    static unsigned long chrono = millis();
+    unsigned long elapsed       = millis();
+
+    if (elapsed - chrono < 250) {
+        return;
+    }
+
+    chrono = millis(); 
+
     control_state.boil_element.output_value = 
         map( 
             control_state.boil_element.set_value, //value
